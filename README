@@ -1,0 +1,52 @@
+ #  SOCKS - SOCKS Proxy for iPhone
+ #  Copyright (C) 2009 Ehud Ben-Reuven
+ #  udi@benreuven.com
+ #
+ # This program is free software; you can redistribute it and/or
+ # modify it under the terms of the GNU General Public License
+ # as published by the Free Software Foundation version 2.
+ #
+ # This program is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with this program; if not, write to the Free Software
+ # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,USA.
+
+
+This is an iPhone App that is a SOCS Proxy. It allows you to connect your laptop to the
+Internet through the iPhone's 3G/Edge connection (tethering.)
+If you want to install the application on your iPhone you will have to build and install
+the App from the the supplied code.
+ * Pay Apple for iPhone development program
+ * get a development certificat from Apple's developers portal
+ * download the entire source code to a Mac
+ * double click SOCKS.xcodeproj
+ * in the left panel select Targers and then select SOCKS
+ * press the "i" Info button on the top
+ * select Properties tab
+ * In the Identifier field change "symfi" to your company name
+ * connect an iPhone using a cable
+ * click Build and Debug
+  
+
+In order for this to work you need to follow few steps
+Instructions for Mac:
+ * On your laptop start an add-hoc Wi-Fi network:
+  * System Preferences->Network
+  * select AirPort
+  * click on Network Name and select Create Network
+  * in Name enter "mywifi", press OK, press Apply
+ * Connect you iPhone to the add-hoc wifi network:
+  * Settings->Wi-Fi
+  * select "mywifi"
+ * Run this SOCKS App on your iPhone
+ * In the SOCS Proxy tab press Start
+ * configure your laptop to use SOCKS:
+  * System Preferences->Network->Advanced...->Proxies
+  * select SOCKS proxy
+  * in the SOCKS Proxy Server field enter the address and port that appear on your iPhone screen
+  * press OK
+  * press Apply

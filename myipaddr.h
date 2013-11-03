@@ -1,0 +1,4 @@
+/*
+ */
+
+char * myipaddr(void);

@@ -1,0 +1,18 @@
+/*
+ *  SocksProxy_Prefix.pch
+ *  SOCKS
+ *
+ *  Created by C. Bess on 9/5/10.
+ *  Copyright 2010 Christopher Bess. All rights reserved.
+ *
+ */
+
+#import "UIDevice_Extended.h"
+
+#define DEBUG 1
+
+#ifdef DEBUG
+#define DLog NSLog
+#else
+#define DLog(X, ...) ;;;
+#endif

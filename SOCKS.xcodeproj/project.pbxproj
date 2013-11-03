@@ -1,0 +1,419 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D3623EC0D0F72F000981E51 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */; };
+		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		49720A8B127C1B37001873A0 /* ColorC.m in Sources */ = {isa = PBXBuildFile; fileRef = 49720A8A127C1B37001873A0 /* ColorC.m */; };
+		49847DDD12664F03001645B5 /* MOButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 49847DDA12664F03001645B5 /* MOButton.m */; };
+		49847DDE12664F03001645B5 /* MOGlassButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 49847DDC12664F03001645B5 /* MOGlassButton.m */; };
+		49847E0012665213001645B5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49847DFF12665213001645B5 /* QuartzCore.framework */; };
+		49847E5D126659F6001645B5 /* SocksProxyController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 49847E5C126659F6001645B5 /* SocksProxyController.xib */; };
+		49B6F91D12394DEC005D89AC /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 49B6F91A12394DEC005D89AC /* icon.png */; };
+		49B6F91E12394DEC005D89AC /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 49B6F91B12394DEC005D89AC /* icon@2x.png */; };
+		49B6F91F12394DEC005D89AC /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 49B6F91C12394DEC005D89AC /* iTunesArtwork */; };
+		54122F1B10D88D4900836166 /* SocksProxyController.m in Sources */ = {isa = PBXBuildFile; fileRef = 54122F1A10D88D4900836166 /* SocksProxyController.m */; };
+		542A644E1241261A003497CD /* SocksProxyController_TableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 542A644B1241261A003497CD /* SocksProxyController_TableView.m */; };
+		542A644F1241261A003497CD /* UIDevice_Extended.m in Sources */ = {isa = PBXBuildFile; fileRef = 542A644D1241261A003497CD /* UIDevice_Extended.m */; };
+		546335FE10DAB3BE00D3A3AE /* README in Resources */ = {isa = PBXBuildFile; fileRef = 546335FD10DAB3BE00D3A3AE /* README */; };
+		5463365810DABA8E00D3A3AE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5463365410DABA8E00D3A3AE /* AppDelegate.m */; };
+		5463365910DABA8E00D3A3AE /* InfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5463365610DABA8E00D3A3AE /* InfoController.m */; };
+		5463365A10DABA8E00D3A3AE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5463365710DABA8E00D3A3AE /* main.m */; };
+		54A0F9C6124127CC008878EF /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54A0F9C5124127CC008878EF /* SystemConfiguration.framework */; };
+		9C5C8AB91825468200ED829D /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C5C8AB81825468200ED829D /* Default-568h@2x.png */; };
+		E40F66010FB1E38600D92710 /* SocksProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F65FF0FB1E38600D92710 /* SocksProxy.m */; };
+		E40F66BA0FB3029A00D92710 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E40F66B90FB3029A00D92710 /* CFNetwork.framework */; };
+		E4D544090FAB45DC00630176 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E4D544020FAB45DC00630176 /* MainWindow.xib */; };
+		E4D5443B0FAB4B1600630176 /* Info.html in Resources */ = {isa = PBXBuildFile; fileRef = E4D5443A0FAB4B1600630176 /* Info.html */; };
+		E4D544680FAB4F1A00630176 /* InfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E4D544670FAB4F1A00630176 /* InfoView.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		1D6058910D05DD3D006BFB54 /* Tethering.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tethering.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		49720A89127C1B37001873A0 /* ColorC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorC.h; sourceTree = "<group>"; };
+		49720A8A127C1B37001873A0 /* ColorC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorC.m; sourceTree = "<group>"; };
+		49847DD912664F03001645B5 /* MOButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MOButton.h; sourceTree = "<group>"; };
+		49847DDA12664F03001645B5 /* MOButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MOButton.m; sourceTree = "<group>"; };
+		49847DDB12664F03001645B5 /* MOGlassButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MOGlassButton.h; sourceTree = "<group>"; };
+		49847DDC12664F03001645B5 /* MOGlassButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MOGlassButton.m; sourceTree = "<group>"; };
+		49847DFF12665213001645B5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		49847E5C126659F6001645B5 /* SocksProxyController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SocksProxyController.xib; sourceTree = "<group>"; };
+		49B6F91A12394DEC005D89AC /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
+		49B6F91B12394DEC005D89AC /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon@2x.png"; sourceTree = "<group>"; };
+		49B6F91C12394DEC005D89AC /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
+		54074CF2124127320036116E /* SocksProxy_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxy_Prefix.pch; sourceTree = "<group>"; };
+		54122F1A10D88D4900836166 /* SocksProxyController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SocksProxyController.m; sourceTree = "<group>"; };
+		54122F1F10D88DBE00836166 /* SocksProxyController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxyController.h; sourceTree = "<group>"; };
+		542A644A1241261A003497CD /* SocksProxyController_TableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxyController_TableView.h; sourceTree = "<group>"; };
+		542A644B1241261A003497CD /* SocksProxyController_TableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SocksProxyController_TableView.m; sourceTree = "<group>"; };
+		542A644C1241261A003497CD /* UIDevice_Extended.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDevice_Extended.h; sourceTree = "<group>"; };
+		542A644D1241261A003497CD /* UIDevice_Extended.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDevice_Extended.m; sourceTree = "<group>"; };
+		546335FD10DAB3BE00D3A3AE /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		5463365310DABA8E00D3A3AE /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = AncillaryCode/AppDelegate.h; sourceTree = "<group>"; };
+		5463365410DABA8E00D3A3AE /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = AncillaryCode/AppDelegate.m; sourceTree = "<group>"; };
+		5463365510DABA8E00D3A3AE /* InfoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InfoController.h; path = AncillaryCode/InfoController.h; sourceTree = "<group>"; };
+		5463365610DABA8E00D3A3AE /* InfoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = InfoController.m; path = AncillaryCode/InfoController.m; sourceTree = "<group>"; };
+		5463365710DABA8E00D3A3AE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = AncillaryCode/main.m; sourceTree = "<group>"; };
+		54A0F9C5124127CC008878EF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		9C5C8AB81825468200ED829D /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		E40F65FF0FB1E38600D92710 /* SocksProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SocksProxy.m; sourceTree = "<group>"; };
+		E40F66000FB1E38600D92710 /* SocksProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxy.h; sourceTree = "<group>"; };
+		E40F66B90FB3029A00D92710 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		E4D544010FAB45DC00630176 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E4D544020FAB45DC00630176 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
+		E4D5443A0FAB4B1600630176 /* Info.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Info.html; sourceTree = "<group>"; wrapsLines = 1; };
+		E4D544670FAB4F1A00630176 /* InfoView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InfoView.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
+				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
+				1D3623EC0D0F72F000981E51 /* CoreGraphics.framework in Frameworks */,
+				E40F66BA0FB3029A00D92710 /* CFNetwork.framework in Frameworks */,
+				54A0F9C6124127CC008878EF /* SystemConfiguration.framework in Frameworks */,
+				49847E0012665213001645B5 /* QuartzCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1D6058910D05DD3D006BFB54 /* Tethering.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+			isa = PBXGroup;
+			children = (
+				9C5C8AB81825468200ED829D /* Default-568h@2x.png */,
+				54074CF1124126F10036116E /* Other Sources */,
+				54074CEF124126A70036116E /* View Controllers */,
+				E4D543FE0FAB45DC00630176 /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+				546335FD10DAB3BE00D3A3AE /* README */,
+				49847E5C126659F6001645B5 /* SocksProxyController.xib */,
+			);
+			name = CustomTemplate;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				49847DFF12665213001645B5 /* QuartzCore.framework */,
+				E40F66B90FB3029A00D92710 /* CFNetwork.framework */,
+				1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */,
+				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
+				54A0F9C5124127CC008878EF /* SystemConfiguration.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		54074CEF124126A70036116E /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				54122F1F10D88DBE00836166 /* SocksProxyController.h */,
+				54122F1A10D88D4900836166 /* SocksProxyController.m */,
+				542A644A1241261A003497CD /* SocksProxyController_TableView.h */,
+				542A644B1241261A003497CD /* SocksProxyController_TableView.m */,
+				5463365510DABA8E00D3A3AE /* InfoController.h */,
+				5463365610DABA8E00D3A3AE /* InfoController.m */,
+			);
+			name = "View Controllers";
+			sourceTree = "<group>";
+		};
+		54074CF1124126F10036116E /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				49847DD912664F03001645B5 /* MOButton.h */,
+				49847DDA12664F03001645B5 /* MOButton.m */,
+				49847DDB12664F03001645B5 /* MOGlassButton.h */,
+				49847DDC12664F03001645B5 /* MOGlassButton.m */,
+				54074CF2124127320036116E /* SocksProxy_Prefix.pch */,
+				E40F66000FB1E38600D92710 /* SocksProxy.h */,
+				E40F65FF0FB1E38600D92710 /* SocksProxy.m */,
+				542A644C1241261A003497CD /* UIDevice_Extended.h */,
+				542A644D1241261A003497CD /* UIDevice_Extended.m */,
+				5463365310DABA8E00D3A3AE /* AppDelegate.h */,
+				5463365410DABA8E00D3A3AE /* AppDelegate.m */,
+				5463365710DABA8E00D3A3AE /* main.m */,
+				49720A89127C1B37001873A0 /* ColorC.h */,
+				49720A8A127C1B37001873A0 /* ColorC.m */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		54074CF3124127510036116E /* images */ = {
+			isa = PBXGroup;
+			children = (
+				49B6F91A12394DEC005D89AC /* icon.png */,
+				49B6F91B12394DEC005D89AC /* icon@2x.png */,
+				49B6F91C12394DEC005D89AC /* iTunesArtwork */,
+			);
+			name = images;
+			sourceTree = "<group>";
+		};
+		54074CF4124127690036116E /* xibs */ = {
+			isa = PBXGroup;
+			children = (
+				E4D544020FAB45DC00630176 /* MainWindow.xib */,
+				E4D544670FAB4F1A00630176 /* InfoView.xib */,
+			);
+			name = xibs;
+			sourceTree = "<group>";
+		};
+		E4D543FE0FAB45DC00630176 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				54074CF4124127690036116E /* xibs */,
+				54074CF3124127510036116E /* images */,
+				E4D544010FAB45DC00630176 /* Info.plist */,
+				E4D5443A0FAB4B1600630176 /* Info.html */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1D6058900D05DD3D006BFB54 /* SOCKS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "SOCKS" */;
+			buildPhases = (
+				1D60588D0D05DD3D006BFB54 /* Resources */,
+				1D60588E0D05DD3D006BFB54 /* Sources */,
+				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SOCKS;
+			productName = TrivialStreamTransfer;
+			productReference = 1D6058910D05DD3D006BFB54 /* Tethering.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0500;
+				TargetAttributes = {
+					1D6058900D05DD3D006BFB54 = {
+						DevelopmentTeam = L527N68YVE;
+					};
+				};
+			};
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "SOCKS" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1D6058900D05DD3D006BFB54 /* SOCKS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D60588D0D05DD3D006BFB54 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4D544090FAB45DC00630176 /* MainWindow.xib in Resources */,
+				E4D5443B0FAB4B1600630176 /* Info.html in Resources */,
+				9C5C8AB91825468200ED829D /* Default-568h@2x.png in Resources */,
+				E4D544680FAB4F1A00630176 /* InfoView.xib in Resources */,
+				546335FE10DAB3BE00D3A3AE /* README in Resources */,
+				49B6F91D12394DEC005D89AC /* icon.png in Resources */,
+				49B6F91E12394DEC005D89AC /* icon@2x.png in Resources */,
+				49B6F91F12394DEC005D89AC /* iTunesArtwork in Resources */,
+				49847E5D126659F6001645B5 /* SocksProxyController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D60588E0D05DD3D006BFB54 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E40F66010FB1E38600D92710 /* SocksProxy.m in Sources */,
+				54122F1B10D88D4900836166 /* SocksProxyController.m in Sources */,
+				5463365810DABA8E00D3A3AE /* AppDelegate.m in Sources */,
+				5463365910DABA8E00D3A3AE /* InfoController.m in Sources */,
+				5463365A10DABA8E00D3A3AE /* main.m in Sources */,
+				542A644E1241261A003497CD /* SocksProxyController_TableView.m in Sources */,
+				542A644F1241261A003497CD /* UIDevice_Extended.m in Sources */,
+				49847DDD12664F03001645B5 /* MOButton.m in Sources */,
+				49847DDE12664F03001645B5 /* MOGlassButton.m in Sources */,
+				49720A8B127C1B37001873A0 /* ColorC.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1D6058940D05DD3E006BFB54 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGN_ENTITLEMENTS[sdk=*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Chaowang Zhang (JQPDQJAGUB)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = SocksProxy_Prefix.pch;
+				INFOPLIST_FILE = Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				OTHER_CFLAGS = "-DDEBUG";
+				PRODUCT_NAME = Tethering;
+				PROVISIONING_PROFILE = "F7833829-0080-47FB-8D4D-CDD1899D91CB";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		1D6058950D05DD3E006BFB54 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = entitlements.plist;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Chaowang Zhang (JQPDQJAGUB)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = SocksProxy_Prefix.pch;
+				INFOPLIST_FILE = Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = Tethering;
+				PROVISIONING_PROFILE = "F7833829-0080-47FB-8D4D-CDD1899D91CB";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_POSTPROCESSING = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_PROTOTYPE_CONVERSION = NO;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-DDEBUG";
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+					"-Wfloat-equal",
+					"-Wpointer-arith",
+					"-Wstrict-prototypes",
+					"-Wold-style-definition",
+				);
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_PROTOTYPE_CONVERSION = NO;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = "-DDEBUG";
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+					"-Wfloat-equal",
+					"-Wpointer-arith",
+					"-Wstrict-prototypes",
+					"-Wold-style-definition",
+				);
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "SOCKS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058950D05DD3E006BFB54 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "SOCKS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}
