@@ -25,6 +25,9 @@
  *
  */
 
+DNSServer * DNSServer::dns_instance = NULL;
+
+
 DNSServer::DNSServer()
 {
 
@@ -101,14 +104,29 @@ int DNSServer::startDNSServer(int isDebugMode ,
 
     printf("Starting DNS server...\n");
     //create a new thread.
-    int r = server();
-    if (r != 0)
-        printf("something went wrong with the server: %i\n", r);
-    if (r == -1)
-        printf("failed to bind udp server to %s:%i: %i\n", localDNSIP, localDNSPort, r);
-    printf("ttdnsd exiting now!\n");
-
-    return r;
+    pthread_t *rs_thread = new pthread_t;
+    
+    pthread_attr_t *rs_attr = new pthread_attr_t;
+    
+    pthread_attr_init(rs_attr);
+    
+    pthread_attr_setdetachstate(rs_attr, PTHREAD_CREATE_DETACHED);
+    
+    if(pthread_create(rs_thread, rs_attr, _dns_srv_thread_wrapper, NULL) == 0){
+        
+        printf("DNS server thread is created.\n");
+        
+        pthread_attr_destroy(rs_attr);
+        
+        return 0;
+    }else{
+        
+        printf("Failed to create DNS server thread.\n");
+        
+        pthread_attr_destroy(rs_attr);
+        
+        return -1;
+    }
 }
 
 #ifndef NOT_HAVE_COCOA_FRAMEWORK

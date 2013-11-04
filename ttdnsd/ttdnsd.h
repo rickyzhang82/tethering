@@ -26,6 +26,7 @@
 #include <net/if.h>
 #include <arpa/inet.h>
 #include <limits.h>
+#include <pthread.h>
 #include "ttdnsd_platform.h"
 
 
@@ -114,8 +115,16 @@ struct peer_t
 class DNSServer{
 
 public:
-
-    DNSServer();
+    
+    static DNSServer* getInstance(){
+       
+        if(dns_instance == NULL)
+            
+            dns_instance = new DNSServer();
+        
+        return dns_instance;
+    }
+    
     ~DNSServer();
     /*Start DNS server in posix thread*/
     int startDNSServer(int isDebugMode = 1,
@@ -130,6 +139,8 @@ public:
     void stopDNSServer();
 
 protected:
+
+    DNSServer();
 
     const char * peer_display(struct peer_t *p);
     int peer_connect(struct peer_t *p, struct in_addr ns);
@@ -159,6 +170,15 @@ protected:
     #ifndef NOT_HAVE_COCOA_FRAMEWORK
     int printf(const char * __restrict format, ...);
     #endif
+    
+    static void * _dns_srv_thread_wrapper(void*){
+        
+        DNSServer * dns_srv = DNSServer::getInstance();
+        
+        dns_srv->server();
+        
+        return 0;
+    }
 
     struct in_addr nameservers; /**< nameservers pool */
 
@@ -181,6 +201,8 @@ protected:
     int localDNSPort;
 
     int isDebugMode;
+    
+    static DNSServer * dns_instance;
 
 };
 

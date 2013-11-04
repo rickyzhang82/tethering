@@ -65,6 +65,7 @@
 		5463365610DABA8E00D3A3AE /* InfoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = InfoController.m; path = AncillaryCode/InfoController.m; sourceTree = "<group>"; };
 		5463365710DABA8E00D3A3AE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = AncillaryCode/main.m; sourceTree = "<group>"; };
 		54A0F9C5124127CC008878EF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		9C182A351828295F00F3F950 /* ttdnsd_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ttdnsd_platform.h; path = ttdnsd/ttdnsd_platform.h; sourceTree = "<group>"; };
 		9C310C041826EF0000299F00 /* ttdnsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ttdnsd.h; path = ttdnsd/ttdnsd.h; sourceTree = "<group>"; };
 		9C310C051826EF0000299F00 /* ttdnsd.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ttdnsd.mm; path = ttdnsd/ttdnsd.mm; sourceTree = "<group>"; };
 		9C5C8AB81825468200ED829D /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -187,6 +188,7 @@
 		9C310C031826EEE900299F00 /* ttdnsd */ = {
 			isa = PBXGroup;
 			children = (
+				9C182A351828295F00F3F950 /* ttdnsd_platform.h */,
 				9C310C041826EF0000299F00 /* ttdnsd.h */,
 				9C310C051826EF0000299F00 /* ttdnsd.mm */,
 			);
