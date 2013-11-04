@@ -29,37 +29,35 @@
 #include "ttdnsd_platform.h"
 
 
-#define TTDNSD_VERSION "v1.0"
+const char TTDNSD_VERSION[]= "v1.0";
 
 // number of parallel connected tcp peers
-#define MAX_PEERS 1
+const int MAX_PEERS = 1;
 // request timeout
-#define MAX_TIME 3 /* QUASIBUG 3 seconds is too short! */
+const int MAX_TIME = 3; /* QUASIBUG 3 seconds is too short! */
 // number of trys per request (not used so far)
-#define MAX_TRY 1
+const int MAX_TRY = 1;
 // maximal number of nameservers
-#define MAX_NAMESERVERS 32
+const int MAX_NAMESERVERS = 32;
 // request queue size (use a prime number for hashing)
-#define MAX_REQUESTS 499
+const int MAX_REQUESTS = 499;
 // 199, 1009
 // max line size for configuration processing
-#define MAX_LINE_SIZE 1025
+const int MAX_LINE_SIZE = 1025;
+
+const int MAX_IPV4_ADDR_LENGTH = 20;
 
 // Magic numbers
-#define RECV_BUF_SIZE 1502
+const int RECV_BUF_SIZE = 1502;
 
-#define NOBODY 65534
-#define NOGROUP 65534
-#define DEFAULT_BIND_PORT 53
-#define DEFAULT_BIND_IP "127.0.0.1"
-#define DEFAULT_RESOLVERS "ttdnsd.conf"
-#define DEFAULT_LOG "ttdnsd.log"
-#define DEFAULT_CHROOT "/var/run/ttdnsd"
-#define DEFAULT_TSOCKS_CONF "tsocks.conf"
-#define TSOCKS_CONF_ENV "TSOCKS_CONF_FILE"
-#define DEFAULT_PID_FILE DEFAULT_CHROOT"/ttdnsd.pid"
-#define DEFAULT_SOCKS5_IP "192.168.1.3"
-#define DEFAULT_SOCKS5_PORT 1080
+const int NOBODY = 65534;
+const int NOGROUP = 65534;
+const int DEFAULT_DNS_PORT = 53;
+const char DEFAULT_DNS_IP[]= "8.8.8.8";
+const int DEFAULT_BIND_PORT = 53;
+const char  DEFAULT_BIND_IP[]= "127.0.0.1";
+const char  DEFAULT_SOCKS5_IP[]= "192.168.1.3";
+const int DEFAULT_SOCKS5_PORT = 1080;
 
 #define HELP_STR ""\
     "syntax: ttdnsd [bpfPCcdlhV]\n"\
@@ -116,14 +114,22 @@ struct peer_t
 class DNSServer{
 
 public:
+
     DNSServer();
-    /*public function*/
-    int startDNSServer(int udp_port);
+    ~DNSServer();
+    /*Start DNS server in posix thread*/
+    int startDNSServer(int isDebugMode = 1,
+                       const char* localDNSIP = DEFAULT_BIND_IP,
+                       int localDNSPort = DEFAULT_BIND_PORT,
+                       const char* remoteDNSIP = DEFAULT_DNS_IP,
+                       int remoteDNSPort = DEFAULT_DNS_PORT,
+                       int isSockify = 0,
+                       const char* remoteSockProxyIP = DEFAULT_SOCKS5_IP,
+                       int remoteSockProxyPort = DEFAULT_SOCKS5_PORT);
+
+    void stopDNSServer();
 
 protected:
-
-    /*private function*/
-
 
     const char * peer_display(struct peer_t *p);
     int peer_connect(struct peer_t *p, struct in_addr ns);
@@ -138,8 +144,7 @@ protected:
 
     int request_find(uint id);
     int request_add(struct request_t *r);
-    int server(char *bind_ip, int bind_port);
-    int load_nameservers(char *filename);
+    int server();
     void process_incoming_request(struct request_t *tmp);
 
     const char *  peer_socks5_display(struct peer_t *p);
@@ -151,15 +156,11 @@ protected:
     int peer_socks5_rcv_cmd_process(struct peer_t *p);    
     struct in_addr socks5_proxy_select(void);
 
-    void main_entry(int argc, char **argv);
-
-
     #ifndef NOT_HAVE_COCOA_FRAMEWORK
     int printf(const char * __restrict format, ...);
     #endif
 
-    struct in_addr *nameservers; /**< nameservers pool */
-    unsigned int num_nameservers; /**< number of nameservers */
+    struct in_addr nameservers; /**< nameservers pool */
 
     struct peer_t peers[MAX_PEERS]; /**< TCP peers */
     struct request_t requests[MAX_REQUESTS]; /**< request queue */
@@ -167,9 +168,17 @@ protected:
 
     int isSockify; /*Flag to determine if TCP should be sockify*/
 
-    char* SOCKS5_IP;
+    char *remoteSocksIP;
 
-    int SOCKS5_PORT;
+    int remoteSocksPort;
+
+    char *remoteDNSIP;
+
+    int remoteDNSPort;
+
+    char *localDNSIP;
+
+    int localDNSPort;
 
     int isDebugMode;
 

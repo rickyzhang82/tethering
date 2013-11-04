@@ -27,16 +27,88 @@
 
 DNSServer::DNSServer()
 {
-    this->isSockify = 0;
 
-    this->SOCKS5_PORT = DEFAULT_SOCKS5_PORT;
 
-    this->SOCKS5_IP = new char[20];
+    this->remoteSocksIP = new char[MAX_IPV4_ADDR_LENGTH];
 
-    strcpy(this->SOCKS5_IP, DEFAULT_SOCKS5_IP);
+    memset(this->remoteSocksIP, 0, MAX_IPV4_ADDR_LENGTH);
 
-    this->isDebugMode = 0;
+    this->remoteDNSIP = new char[MAX_IPV4_ADDR_LENGTH];
 
+    memset(this->remoteDNSIP, 0, MAX_IPV4_ADDR_LENGTH);
+
+    this->localDNSIP = new char[MAX_IPV4_ADDR_LENGTH];
+
+    memset(this->localDNSIP, 0, MAX_IPV4_ADDR_LENGTH);
+
+}
+
+DNSServer::~DNSServer()
+
+{
+    delete this->remoteDNSIP;
+    delete this->remoteSocksIP;
+    delete this->localDNSIP;
+}
+
+int DNSServer::startDNSServer(int isDebugMode ,
+                              const char* localDNSIP ,
+                              int localDNSPort ,
+                              const char* remoteDNSIP,
+                              int remoteDNSPort ,
+                              int isSockify ,
+                              const char* remoteSockProxyIP ,
+                              int remoteSockProxyPort)
+{
+    this->isSockify = isSockify;
+
+    this->isDebugMode = isDebugMode;
+
+    if(isSockify){
+
+        this->remoteSocksPort = remoteSockProxyPort;
+
+        memset(this->remoteSocksIP, 0,MAX_IPV4_ADDR_LENGTH);
+
+        strcpy(this->remoteSocksIP,remoteSockProxyIP);
+
+    }
+
+    in_addr_t ns;
+
+    if(inet_pton(AF_INET, remoteDNSIP, &ns)){
+
+        nameservers.s_addr = ns;
+
+        memset(this->remoteDNSIP, 0, MAX_IPV4_ADDR_LENGTH);
+
+        strcpy(this->remoteDNSIP, remoteDNSIP);
+
+    }else{
+
+        printf("%s: is not a valid IPv4 address for DNS server.\n", remoteSocksIP);
+
+        return -1;
+    }
+
+    this->remoteDNSPort = remoteDNSPort;
+
+    memset(this->localDNSIP, 0, MAX_IPV4_ADDR_LENGTH);
+
+    strcpy(this->localDNSIP, localDNSIP);
+
+    this->localDNSPort = localDNSPort;
+
+    printf("Starting DNS server...\n");
+    //create a new thread.
+    int r = server();
+    if (r != 0)
+        printf("something went wrong with the server: %i\n", r);
+    if (r == -1)
+        printf("failed to bind udp server to %s:%i: %i\n", localDNSIP, localDNSPort, r);
+    printf("ttdnsd exiting now!\n");
+
+    return r;
 }
 
 #ifndef NOT_HAVE_COCOA_FRAMEWORK
@@ -143,7 +215,7 @@ int DNSServer::peer_socks5_connect(struct peer_t *p, struct in_addr socks5_addr,
 
     p->socks5_tcp.sin_addr = socks5_addr;
 
-    p->socks5_tcp.sin_port = htons(SOCKS5_PORT);
+    p->socks5_tcp.sin_port = htons(remoteSocksPort);
 
     printf("connecting to Socks5 proxy %s on port %i\n", peer_socks5_display(p), ntohs(p->socks5_tcp.sin_port));
 
@@ -572,14 +644,14 @@ struct in_addr DNSServer::socks5_proxy_select(void)
 
     unsigned long int ns;
 
-    if(inet_pton(AF_INET, SOCKS5_IP, &ns)){
+    if(inet_pton(AF_INET, remoteSocksIP, &ns)){
 
         socks5_proxy.s_addr = ns;
 
         return socks5_proxy;
     }else{
 
-        printf("%s: is not a valid IPv4 address\n", SOCKS5_IP);
+        printf("%s: is not a valid IPv4 address\n", remoteSocksIP);
 
         socks5_proxy.s_addr = 0;
 
@@ -591,7 +663,7 @@ struct in_addr DNSServer::socks5_proxy_select(void)
 struct in_addr DNSServer::ns_select(void)
 {
     // This could use a real bit of randomness, I suspect
-    return nameservers[(rand()>>16) % num_nameservers];
+    return nameservers;
 }
 
 /* Return 0 for a request that is pending or if all slots are full, otherwise
@@ -700,7 +772,7 @@ void DNSServer::process_incoming_request(struct request_t *tmp)
     request_add(tmp); // This should be checked; we're currently ignoring important returns.
 }
 
-int DNSServer::server(char *bind_ip, int bind_port)
+int DNSServer::server()
 {
     struct sockaddr_in udp;
     struct pollfd pfd[MAX_PEERS+1];
@@ -708,7 +780,6 @@ int DNSServer::server(char *bind_ip, int bind_port)
     int fr;
     int i;
     int pfd_num;
-    int r;
 
     for (i = 0; i < MAX_PEERS; i++) {
         peers[i].tcp_fd = -1;
@@ -724,31 +795,18 @@ int DNSServer::server(char *bind_ip, int bind_port)
     }
     memset((char*)&udp, 0, sizeof(struct sockaddr_in)); // bzero love
     udp.sin_family = AF_INET;
-    udp.sin_port = htons(bind_port);
-    if (!inet_aton(bind_ip, (struct in_addr*)&udp.sin_addr)) {
-        printf("is not a valid IPv4 address: %s\n", bind_ip);
+    udp.sin_port = htons(localDNSPort);
+    if (!inet_aton(localDNSIP, (struct in_addr*)&udp.sin_addr)) {
+        printf("is not a valid IPv4 address: %s\n", localDNSIP);
         return(0); // Why is this 0?
     }
 
     if (bind(udp_fd, (struct sockaddr*)&udp, sizeof(struct sockaddr_in)) < 0) {
-        printf("can't bind to %s:%d\n", bind_ip, bind_port);
+        printf("Failed to bind to %s:%d\n", localDNSIP, localDNSPort);
         close(udp_fd);
         return(-1); // Perhaps this should be more useful?
     }
 
-    // drop privileges
-    if (!isDebugMode) {
-        r = setgid(NOGROUP);
-        if (r != 0) {
-            printf("setgid failed!\n");
-            return(-1);
-        }
-        r = setuid(NOBODY);
-        if (r != 0) {
-            printf("setuid failed!\n");
-            return(-1);
-        }
-    }
 
     for (;;) {
         // populate poll array
@@ -852,230 +910,4 @@ int DNSServer::server(char *bind_ip, int bind_port)
             }
         }
     }
-}
-
-int DNSServer::load_nameservers(char *filename)
-{
-    FILE *fp;
-    char line[MAX_LINE_SIZE] = {0};
-    unsigned long int ns;
-    char *eolp;
-
-
-    if (!(fp = fopen(filename, "r"))) {
-        printf("can't open %s\n", filename);
-        return 0;
-    }
-    num_nameservers = 0;
-    if (!(nameservers = (struct in_addr*)malloc(sizeof(nameservers[0]) * MAX_NAMESERVERS))) {
-        fclose(fp);
-        return 0;
-    }
-
-    if (!fp) return 0;                       /* QUASIBUG can’t happen */
-    while (fgets(line, MAX_LINE_SIZE, fp)) {
-        if (line[0] == '#' || line[0] == '\n' || line[0] == ' ') continue;
-        if ((eolp = strrchr(line, '\n')) != NULL){
-            *eolp = 0;
-        }
-        if (strstr(line, "192.168.") == line) continue;
-        if (strstr(line, "172.16.") == line) continue;
-        if (strstr(line, "127.") == line) continue;
-        if (strstr(line, "10.") == line) continue;
-        if (inet_pton(AF_INET, line, &ns)) {
-            if (num_nameservers >= MAX_NAMESERVERS) {
-                printf("We've loaded %d nameservers; this is our maximum\n", num_nameservers);
-                break;
-            }
-            nameservers[num_nameservers].s_addr = ns;
-            num_nameservers++;
-            printf("We've loaded %s as a nameserver.\n", line);
-        }
-        else {
-            printf("%s: is not a valid IPv4 address\n", line);
-        }
-    }
-    fclose(fp);
-    nameservers = (struct in_addr*)realloc(nameservers, sizeof(unsigned long int) * num_nameservers);
-    printf("%d nameservers loaded\n", num_nameservers);
-
-    return 1;
-}
-
-void DNSServer::main_entry(int argc, char **argv)
-{
-    int opt;
-    int dochroot = 1;
-    char resolvers[250] = {DEFAULT_RESOLVERS};
-    char bind_ip[250] = {DEFAULT_BIND_IP};
-    char chroot_dir[PATH_MAX] = {DEFAULT_CHROOT};
-    char tsocks_conf[PATH_MAX];
-    int log = 0;
-    int lfd;
-    int bind_port = DEFAULT_BIND_PORT;
-    int devnull;
-    char pid_file[PATH_MAX] = {0};
-    FILE *pf;
-    int r;
-    char *env_ptr;
-
-    while ((opt = getopt(argc, argv, "sVlhdcC:b:f:p:P:")) != EOF) {
-        switch (opt) {
-        // TCP connection through socksv5
-        case 's':
-            isSockify = 1;
-            break;
-        // log debug to file
-        case 'l':
-            log = 1;
-            break;
-        // debug
-        case 'd':
-            isDebugMode = 1;
-            break;
-        // DON'T chroot
-        case 'c':
-            dochroot = 0;
-            break;
-        // Chroot directory
-        case 'C':
-            strncpy(chroot_dir, optarg, sizeof(chroot_dir)-1);
-            break;
-        // PORT
-        case 'p':
-            bind_port = atoi(optarg);
-            if (bind_port < 1) bind_port = DEFAULT_BIND_PORT;
-            break;
-        // config file
-        case 'f':
-            strncpy(resolvers, optarg, sizeof(resolvers)-1);
-            break;
-        // IP
-        case 'b':
-            strncpy(bind_ip, optarg, sizeof(bind_ip)-1);
-            break;
-        // PID file
-        case 'P':
-            strncpy(pid_file, optarg, sizeof(pid_file)-1);
-            break;
-        // print version and exit
-        case 'V':
-            printf("ttdnsd version %s\n", TTDNSD_VERSION);
-            exit(0);
-        // help
-        case 'h':
-        default:
-            printf("%s", HELP_STR);
-            exit(0);
-            break;
-        }
-    }
-
-    srand(time(NULL)); // This should use OpenSSL in the future
-
-    if (getuid() != 0 && (bind_port == DEFAULT_BIND_PORT || dochroot == 1)) {
-        printf("ttdnsd must run as root to bind to port 53 and chroot(2)\n");
-        exit(1);
-    }
-
-    if (!load_nameservers(resolvers)) { // perhaps we want to move this entirely into the chroot?
-        printf("can't open resolvers file %s, will try again after chroot\n", resolvers);
-    }
-
-    devnull = open("/dev/null", O_RDWR); // Leaked fd?
-    if (devnull < 0) {
-        printf("can't open /dev/null, exit\n");
-        exit(1);
-    }
-
-    // become a daemon
-    if (!isDebugMode) {
-        if (fork()) exit(0); // Could be clearer
-        setsid(); // Safe?
-    }
-
-    /* Why does this happen before the chroot? */
-    // write PID to file
-    if (strlen(pid_file) > 0) {
-        int pfd = open(pid_file, O_WRONLY|O_TRUNC|O_CREAT, 00644);
-        if (pfd < 0) {
-            printf("can't open pid file %s, exit\n", pid_file);
-            exit(1);
-        }
-        pf = fdopen(pfd, "w");
-        if (pf == NULL) {
-            printf("can't reopen pid file %s, exit\n", pid_file);
-            exit(1);
-        }
-        fprintf(pf, "%d", getpid());
-        fclose(pf);
-        close(pfd);
-    }
-
-    if (dochroot) {
-        if (chdir(chroot_dir)) {
-            printf("can't chdir to %s, exit\n", chroot_dir);
-            exit(1);
-        }
-        if (chroot(chroot_dir)) {
-            printf("can't chroot to %s, exit\n", chroot_dir);
-            exit(1);
-        }
-        env_ptr = getenv("TSOCKS_CONF_FILE");
-        if (env_ptr == NULL) {
-          strncpy(tsocks_conf, DEFAULT_TSOCKS_CONF, (sizeof(tsocks_conf)-1));
-          tsocks_conf[PATH_MAX-1] = '\0';
-          printf("chroot=%s, TSOCKS_CONF_FILE is unset - using default: %s\n", chroot_dir, DEFAULT_TSOCKS_CONF);
-          setenv("TSOCKS_CONF_FILE", tsocks_conf, 1);
-        } else {
-           strncpy(tsocks_conf, env_ptr, (sizeof(tsocks_conf)-1));
-           tsocks_conf[PATH_MAX-1] = '\0';
-           printf("tsocks_conf: %s\n", tsocks_conf);
-        }
-        if (access(DEFAULT_TSOCKS_CONF, R_OK) == 0 ){
-            printf("chroot=%s, default tsocks config available at %s\n", chroot_dir, DEFAULT_TSOCKS_CONF);
-        }
-        if (access(tsocks_conf, R_OK) != 0) { /* access() is a race condition and unsafe */
-            printf("chroot=%s, unable to access tsocks config set in TSOCKS_CONF_ENV at %s, exit\n", chroot_dir, tsocks_conf);
-        }
-    }
-
-    // privs will be dropped in server right after binding to port 53
-    if (log) {
-        printf("log init...\n");
-        lfd = open(DEFAULT_LOG, O_WRONLY|O_APPEND|O_CREAT, 00644);
-        if (lfd < 0) {
-            if (dochroot)
-              printf("chroot=%s ", chroot_dir);
-            printf("can't open log file %s, exit\n", DEFAULT_LOG);
-            exit(1);
-        } else {
-            printf("log file opened: %s\n", DEFAULT_LOG);
-            printf("log file opened as fd: %i\n", lfd);
-        }
-        printf("duping fds... check %s from here on out...\n", DEFAULT_LOG);
-        r = dup2(lfd, 1);
-        printf("dup2 says: %i\n", r);
-        r = dup2(lfd, 2);
-        printf("dup2 says: %i\n", r);
-        printf("closing original fd: %i...\n", lfd);
-        close(lfd);
-        dup2(devnull, 0);
-        close(devnull);
-    }
-    else if (!isDebugMode) {
-        dup2(devnull, 0);
-        dup2(devnull, 1);
-        dup2(devnull, 2);
-        close(devnull);
-    }
-
-    printf("starting server...\n");
-    r = server(bind_ip, bind_port);
-    if (r != 0)
-        printf("something went wrong with the server: %i\n", r);
-    if (r == -1)
-        printf("failed to bind udp server to %s:%i: %i\n", bind_ip, bind_port, r);
-    printf("ttdnsd exiting now!\n");
-    exit(r);
 }
