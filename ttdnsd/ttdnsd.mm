@@ -12,23 +12,9 @@
  *  Feature enhancement:
  *  1. Add simple socks5 support. Sockify TCP connection to DNS
  *  2. Moduleze ttdns called by socks proxy
+ *  3. Encasuplate interface in C++ class
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <getopt.h>
-#include <time.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <sys/poll.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <net/if.h>
-#include <arpa/inet.h>
-#include <limits.h>
+
 #include "ttdnsd.h"
 
 /*
@@ -39,25 +25,22 @@
  *
  */
 
-static struct in_addr *nameservers; /**< nameservers pool */
-static unsigned int num_nameservers; /**< number of nameservers */
+DNSServer::DNSServer()
+{
+    this->isSockify = 0;
 
-static struct peer_t peers[MAX_PEERS]; /**< TCP peers */
-static struct request_t requests[MAX_REQUESTS]; /**< request queue */
-static int udp_fd; /**< port 53 socket */
+    this->SOCKS5_PORT = DEFAULT_SOCKS5_PORT;
 
-static int isSockify = 0; /*Flag to determine if TCP should be sockify*/
+    this->SOCKS5_IP = new char[20];
 
-static char SOCKS5_IP[20] = {DEFAULT_SOCKS5_IP};
-static int SOCKS5_PORT = DEFAULT_SOCKS5_PORT;
+    strcpy(this->SOCKS5_IP, DEFAULT_SOCKS5_IP);
 
-/*
-Someday:
-static int multipeer = 0;
-static int multireq = 0;
-*/
+    this->isDebugMode = 0;
 
-int printf(const char * __restrict format, ...)
+}
+
+#ifndef NOT_HAVE_COCOA_FRAMEWORK
+int DNSServer::printf(const char * __restrict format, ...)
 {
     va_list args;
     va_start(args,format);
@@ -65,16 +48,17 @@ int printf(const char * __restrict format, ...)
     va_end(args);
     return 1;
 }
+#endif
 
 /* Returns a display name for the peer; currently inet_ntoa, so
    statically allocated */
-static const char *peer_display(struct peer_t *p)
+const char * DNSServer::peer_display(struct peer_t *p)
 {
     return inet_ntoa(p->tcp.sin_addr);
 }
 
 
-static void peer_mark_as_dead(struct peer_t *p)
+void DNSServer::peer_mark_as_dead(struct peer_t *p)
 {
     close(p->tcp_fd);
     p->tcp_fd = -1;
@@ -83,7 +67,7 @@ static void peer_mark_as_dead(struct peer_t *p)
 }
 
 /* Return a positive positional number or -1 for unfound entries. */
-int request_find(uint id)
+int DNSServer::request_find(uint id)
 {
     uint pos = id % MAX_REQUESTS;
 
@@ -120,12 +104,12 @@ int request_find(uint id)
 
 /* Returns a display name for the peer; currently inet_ntoa, so
    statically allocated */
-static const char *peer_socks5_display(struct peer_t *p)
+const char * DNSServer::peer_socks5_display(struct peer_t *p)
 {
     return inet_ntoa(p->socks5_tcp.sin_addr);
 }
 
-int peer_socks5_connect(struct peer_t *p, struct in_addr socks5_addr, struct in_addr ns_addr)
+int DNSServer::peer_socks5_connect(struct peer_t *p, struct in_addr socks5_addr, struct in_addr ns_addr)
 {
     int socket_opt_val = 1;
     int cs;
@@ -179,7 +163,7 @@ int peer_socks5_connect(struct peer_t *p, struct in_addr socks5_addr, struct in_
 }
 
 /* Returns 1 upon non-blocking connection; 0 upon serious error */
-int peer_socks5_connected(struct peer_t *p)
+int DNSServer::peer_socks5_connected(struct peer_t *p)
 {
     int cs;
      /* QUASIBUG This is not documented as a correct way to poll for
@@ -228,7 +212,7 @@ int peer_socks5_connected(struct peer_t *p)
 
 // assuming connection is established, send out authentication negotitation.
 
-int peer_socks5_snd_auth_neg(struct peer_t *p)
+int DNSServer::peer_socks5_snd_auth_neg(struct peer_t *p)
 {
     /*send socks5 non-authentication negotitation*/
     const char socks5_neg_msg[]={0x5,0x1,0x0};
@@ -250,7 +234,7 @@ int peer_socks5_snd_auth_neg(struct peer_t *p)
 
 // process authentication feedback
 
-int peer_socks5_rcv_auth_process(struct peer_t *p)
+int DNSServer::peer_socks5_rcv_auth_process(struct peer_t *p)
 {
     int ret;
     char buff[100];
@@ -275,7 +259,7 @@ int peer_socks5_rcv_auth_process(struct peer_t *p)
 
 // send out command request
 
-int peer_socks5_snd_cmd(struct peer_t *p)
+int DNSServer::peer_socks5_snd_cmd(struct peer_t *p)
 {
     /*
      The SOCKS request is formed as follows:
@@ -336,7 +320,7 @@ int peer_socks5_snd_cmd(struct peer_t *p)
 }
 
 // process commnd response
-int peer_socks5_rcv_cmd_process(struct peer_t *p)
+int DNSServer::peer_socks5_rcv_cmd_process(struct peer_t *p)
 {
     int ret;
     char buff[1024];
@@ -360,7 +344,7 @@ int peer_socks5_rcv_cmd_process(struct peer_t *p)
 }
 
 /* Returns 1 upon non-blocking connection setup; 0 upon serious error */
-int peer_connect(struct peer_t *p, struct in_addr ns)
+int DNSServer::peer_connect(struct peer_t *p, struct in_addr ns)
 {
     int socket_opt_val = 1;
     int cs;
@@ -406,7 +390,7 @@ int peer_connect(struct peer_t *p, struct in_addr ns)
 }
 
 /* Returns 1 upon non-blocking connection; 0 upon serious error */
-int peer_connected(struct peer_t *p)
+int DNSServer::peer_connected(struct peer_t *p)
 {
     int cs;
      /* QUASIBUG This is not documented as a correct way to poll for
@@ -441,15 +425,8 @@ int peer_connected(struct peer_t *p)
     }
 }
 
-/*
-int peer_keepalive(uint peer)
-{
-    return 1;
-}
-*/
-
 /* Returns 1 upon sent request; 0 upon serious error and 2 upon disconnect */
-int peer_sendreq(struct peer_t *p, struct request_t *r)
+int DNSServer::peer_sendreq(struct peer_t *p, struct request_t *r)
 {
     int ret;
     r->active = SENT;        /* BUG: even if the write below fails? */
@@ -474,12 +451,12 @@ int peer_sendreq(struct peer_t *p, struct request_t *r)
 
 /* Returns -1 on error, returns 1 on something, returns 2 on something, returns 3 on disconnect. */
 /* XXX This function needs a really serious re-write/audit/etc. */
-int peer_readres(struct peer_t *p)
+int DNSServer::peer_readres(struct peer_t *p)
 {
     struct request_t *r;
     int ret;
     unsigned short int *ul;
-    int id;
+    int req_id;
     int req;
     unsigned short int *l;
     int len;
@@ -522,16 +499,16 @@ int peer_readres(struct peer_t *p)
         printf("received answer %d bytes\n", p->bl);
 
         ul = (unsigned short int*)(p->b + 2);
-        id = ntohs(*ul);
+        req_id = ntohs(*ul);
 
-        if ((req = request_find(id)) == -1) {
+        if ((req = request_find(req_id)) == -1) {
             memmove(p->b, (p->b + len + 2), (p->bl - len - 2));
             p->bl -= len + 2;
             return 0;
         }
         r = &requests[req];
 
-        // write back real id
+        // write back real req_id
         *ul = htons(r->rid);
 
         // Remove the AD flag from the reply if it has one. Because we might be
@@ -560,7 +537,7 @@ int peer_readres(struct peer_t *p)
 }
 
 /* Handles outstanding peer requests and does not return anything. */
-void peer_handleoutstanding(struct peer_t *p)
+void DNSServer::peer_handleoutstanding(struct peer_t *p)
 {
     int i;
     int ret;
@@ -584,12 +561,12 @@ void peer_handleoutstanding(struct peer_t *p)
 /* REFACTOR if we aren't going to round-robin among the peers, we
    should remove all the complexity having to do with having more than
    one peer. */
-struct peer_t *peer_select(void)
+struct peer_t * DNSServer::peer_select(void)
 {
     return &peers[0];
 }
 
-struct in_addr socks5_proxy_select(void)
+struct in_addr DNSServer::socks5_proxy_select(void)
 {
     struct in_addr socks5_proxy;
 
@@ -611,7 +588,7 @@ struct in_addr socks5_proxy_select(void)
 }
 
 /* Selects a random nameserver from the pool and returns the number. */
-struct in_addr ns_select(void)
+struct in_addr DNSServer::ns_select(void)
 {
     // This could use a real bit of randomness, I suspect
     return nameservers[(rand()>>16) % num_nameservers];
@@ -619,7 +596,7 @@ struct in_addr ns_select(void)
 
 /* Return 0 for a request that is pending or if all slots are full, otherwise
    return the value of peer_sendreq or peer_connect respectively... */
-int request_add(struct request_t *r)
+int DNSServer::request_add(struct request_t *r)
 {
     uint pos = r->id % MAX_REQUESTS; // XXX r->id is unchecked
     struct peer_t *dst_peer;
@@ -709,7 +686,8 @@ int request_add(struct request_t *r)
     }
 }
 
-static void process_incoming_request(struct request_t *tmp) {
+void DNSServer::process_incoming_request(struct request_t *tmp)
+{
     // get request id
     unsigned short int *ul = (unsigned short int*) (tmp->b + 2);
     tmp->rid = tmp->id = ntohs(*ul);
@@ -722,7 +700,7 @@ static void process_incoming_request(struct request_t *tmp) {
     request_add(tmp); // This should be checked; we're currently ignoring important returns.
 }
 
-int server(char *bind_ip, int bind_port)
+int DNSServer::server(char *bind_ip, int bind_port)
 {
     struct sockaddr_in udp;
     struct pollfd pfd[MAX_PEERS+1];
@@ -759,7 +737,7 @@ int server(char *bind_ip, int bind_port)
     }
 
     // drop privileges
-    if (!DEBUG) {
+    if (!isDebugMode) {
         r = setgid(NOGROUP);
         if (r != 0) {
             printf("setgid failed!\n");
@@ -876,7 +854,7 @@ int server(char *bind_ip, int bind_port)
     }
 }
 
-int load_nameservers(char *filename)
+int DNSServer::load_nameservers(char *filename)
 {
     FILE *fp;
     char line[MAX_LINE_SIZE] = {0};
@@ -924,10 +902,9 @@ int load_nameservers(char *filename)
     return 1;
 }
 
-void main_entry(int argc, char **argv)
+void DNSServer::main_entry(int argc, char **argv)
 {
     int opt;
-    int debug = 0;
     int dochroot = 1;
     char resolvers[250] = {DEFAULT_RESOLVERS};
     char bind_ip[250] = {DEFAULT_BIND_IP};
@@ -954,7 +931,7 @@ void main_entry(int argc, char **argv)
             break;
         // debug
         case 'd':
-            debug = 1;
+            isDebugMode = 1;
             break;
         // DON'T chroot
         case 'c':
@@ -1012,7 +989,7 @@ void main_entry(int argc, char **argv)
     }
 
     // become a daemon
-    if (!debug) {
+    if (!isDebugMode) {
         if (fork()) exit(0); // Could be clearer
         setsid(); // Safe?
     }
@@ -1086,7 +1063,7 @@ void main_entry(int argc, char **argv)
         dup2(devnull, 0);
         close(devnull);
     }
-    else if (!debug) {
+    else if (!isDebugMode) {
         dup2(devnull, 0);
         dup2(devnull, 1);
         dup2(devnull, 2);

@@ -16,3 +16,11 @@ profile
 *.moved-aside
 DerivedData
 .idea/
+
+#Qt unit test
+ttdnsd.config
+ttdnsd.creator
+ttdnsd.creator.user
+ttdnsd.files
+ttdnsd.includes
+ttdnsd/ttdnsd_platform.h

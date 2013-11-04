@@ -6,8 +6,30 @@
  *
  */
 
-// Update this version upon release
-#define TTDNSD_VERSION "0.7"
+#ifndef TTDNSDH
+#define TTDNSDH
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+#include <getopt.h>
+#include <time.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/poll.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <net/if.h>
+#include <arpa/inet.h>
+#include <limits.h>
+#include "ttdnsd_platform.h"
+
+
+#define TTDNSD_VERSION "v1.0"
 
 // number of parallel connected tcp peers
 #define MAX_PEERS 1
@@ -91,28 +113,68 @@ struct peer_t
     int bl; /**< bytes in receive buffer */ // bl? Why don't we call this bytes_in_recv_buf or something meaningful?
 };
 
+class DNSServer{
 
-int request_find(uint id);
-int peer_connect(struct peer_t *p, struct in_addr ns);
-int peer_connected(struct peer_t *p);
-int peer_sendreq(struct peer_t *p, struct request_t *r);
-int peer_readres(struct peer_t *p);
-void peer_handleoutstanding(struct peer_t *p);
-struct peer_t *peer_select(void);
-struct in_addr ns_select(void);
-int request_add(struct request_t *r);
-int server(char *bind_ip, int bind_port);
-int load_nameservers(char *filename);
-int peer_socks5_connect(struct peer_t *p, struct in_addr socks5_addr, struct in_addr ns_addr);
-int peer_socks5_connected(struct peer_t *p);
-int peer_socks5_snd_auth_neg(struct peer_t *p);
-int peer_socks5_rcv_auth_process(struct peer_t *p);
-int peer_socks5_snd_cmd(struct peer_t *p);
-int peer_socks5_rcv_cmd_process(struct peer_t *p);
-struct in_addr socks5_proxy_select(void);
-void main_entry(int argc, char **argv);
-int printf(const char * __restrict format, ...);
+public:
+    DNSServer();
+    /*public function*/
+    int startDNSServer(int udp_port);
+
+protected:
+
+    /*private function*/
 
 
+    const char * peer_display(struct peer_t *p);
+    int peer_connect(struct peer_t *p, struct in_addr ns);
+    int peer_connected(struct peer_t *p);
+    int peer_sendreq(struct peer_t *p, struct request_t *r);
+    int peer_readres(struct peer_t *p);
+    void peer_mark_as_dead(struct peer_t *p);
+    void peer_handleoutstanding(struct peer_t *p);
 
+    struct peer_t *peer_select(void);
+    struct in_addr ns_select(void);
+
+    int request_find(uint id);
+    int request_add(struct request_t *r);
+    int server(char *bind_ip, int bind_port);
+    int load_nameservers(char *filename);
+    void process_incoming_request(struct request_t *tmp);
+
+    const char *  peer_socks5_display(struct peer_t *p);
+    int peer_socks5_connect(struct peer_t *p, struct in_addr socks5_addr, struct in_addr ns_addr);
+    int peer_socks5_connected(struct peer_t *p);
+    int peer_socks5_snd_auth_neg(struct peer_t *p);
+    int peer_socks5_rcv_auth_process(struct peer_t *p);
+    int peer_socks5_snd_cmd(struct peer_t *p);
+    int peer_socks5_rcv_cmd_process(struct peer_t *p);    
+    struct in_addr socks5_proxy_select(void);
+
+    void main_entry(int argc, char **argv);
+
+
+    #ifndef NOT_HAVE_COCOA_FRAMEWORK
+    int printf(const char * __restrict format, ...);
+    #endif
+
+    struct in_addr *nameservers; /**< nameservers pool */
+    unsigned int num_nameservers; /**< number of nameservers */
+
+    struct peer_t peers[MAX_PEERS]; /**< TCP peers */
+    struct request_t requests[MAX_REQUESTS]; /**< request queue */
+    int udp_fd; /**< port 53 socket */
+
+    int isSockify; /*Flag to determine if TCP should be sockify*/
+
+    char* SOCKS5_IP;
+
+    int SOCKS5_PORT;
+
+    int isDebugMode;
+
+};
+
+
+#endif
 
