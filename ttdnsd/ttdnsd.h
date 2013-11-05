@@ -170,6 +170,7 @@ protected:
 
     #ifndef NOT_HAVE_COCOA_FRAMEWORK
     int printf(const char * __restrict format, ...);
+    void perror(const char *__s);
     #endif
     
     static void * _dns_srv_thread_wrapper(void*){

@@ -20,6 +20,8 @@ cmake_minimum_required (VERSION 2.6)
 
 project (unit_test)
 
+find_package(Threads REQUIRED)
+
 set(SOURCES ttdnsd.mm unit_test.cpp)
 
 #platform check
@@ -35,3 +37,6 @@ configure_file("${CMAKE_SOURCE_DIR}/ttdnsd_platform.h.cmake" "${CMAKE_SOURCE_DIR
 set(CMAKE_CXX_FLAGS "-Wall -g")
 
 add_executable(Console ${SOURCES})
+
+#link in test case
+target_link_libraries(Console ${CMAKE_THREAD_LIBS_INIT})

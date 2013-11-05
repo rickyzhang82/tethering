@@ -141,6 +141,12 @@ int DNSServer::printf(const char * __restrict format, ...)
     va_end(args);
     return 1;
 }
+
+void DNSServer::perror(const char *__s)
+{
+    NSLog("Error: %s : %d\n",__s, errno);
+
+}
 #endif
 
 /* Returns a display name for the peer; currently inet_ntoa, so
@@ -874,11 +880,11 @@ int DNSServer::server()
         pfd[0].fd = udp_fd;
         pfd[0].events = POLLIN|POLLPRI;
 
-        printf("watching %d file descriptors\n", pfd_num);
+        printf("Watching %d file descriptors\n", pfd_num);
 
         fr = poll(pfd, pfd_num, -1);
 
-        printf("%d file descriptors became ready\n", fr);
+        printf("Number %d file descriptors became ready\n", fr);
 
         // handle tcp connections
         for (i = 1; i < pfd_num; i++) {
