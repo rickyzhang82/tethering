@@ -890,7 +890,7 @@ int DNSServer::_start_server()
     }
 
     if (bind(udp_fd, (struct sockaddr*)&udp, sizeof(struct sockaddr_in)) < 0) {
-        printf("Failed to bind to %s:%d\n", localDNSIP, localDNSPort);
+        printf("Errno (%d). Failed to bind to %s:%d\n", errno, localDNSIP, localDNSPort);
         close(udp_fd);
         return(-1); // Perhaps this should be more useful?
     }
