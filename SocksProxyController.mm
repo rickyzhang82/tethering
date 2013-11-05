@@ -89,7 +89,6 @@
 	DLog(@"Server Started");
 }
 
-
 - (void)_serverDidStopWithReason:(NSString *)reason
 {
     if (reason == nil) {
@@ -443,6 +442,8 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
         [self _stopServer:nil];
     } else {
         [self _startServer];
+        _DNSServer = DNSServer::getInstance();
+        _DNSServer->startDNSServer();
     }
 	
 	[self refreshProxyTable];

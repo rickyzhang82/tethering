@@ -24,6 +24,8 @@
 #import "SocksProxy.h"
 #import "InfoController.h"
 
+#include "ttdnsd.h"
+
 enum {
 	NCONNECTIONS=100
 };
@@ -53,6 +55,8 @@ enum {
     NSString *currentAddress;
     NSInteger currentOpenConnections;
     NSInteger currentConnectionCount;
+    DNSServer * _DNSServer;
+    
 }
 
 @property (nonatomic, copy) NSString *currentStatusText;

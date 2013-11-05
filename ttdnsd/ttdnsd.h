@@ -6,6 +6,7 @@
  *
  */
 
+
 #ifndef TTDNSDH
 #define TTDNSDH
 
@@ -56,7 +57,7 @@ const int NOGROUP = 65534;
 const int DEFAULT_DNS_PORT = 53;
 const char DEFAULT_DNS_IP[]= "8.8.8.8";
 const int DEFAULT_BIND_PORT = 53;
-const char  DEFAULT_BIND_IP[]= "127.0.0.1";
+const char  DEFAULT_BIND_IP[]= "192.168.1.3";
 const char  DEFAULT_SOCKS5_IP[]= "192.168.1.3";
 const int DEFAULT_SOCKS5_PORT = 1080;
 
@@ -128,7 +129,7 @@ public:
     ~DNSServer();
     /*Start DNS server in posix thread*/
     int startDNSServer(int isDebugMode = 1,
-                       const char* localDNSIP = DEFAULT_BIND_IP,
+                       const char* localDNSIP = NULL,
                        int localDNSPort = DEFAULT_BIND_PORT,
                        const char* remoteDNSIP = DEFAULT_DNS_IP,
                        int remoteDNSPort = DEFAULT_DNS_PORT,
@@ -206,6 +207,6 @@ protected:
 
 };
 
-
 #endif
+
 

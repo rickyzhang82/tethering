@@ -10,25 +10,25 @@
 		1D3623EC0D0F72F000981E51 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		49720A8B127C1B37001873A0 /* ColorC.m in Sources */ = {isa = PBXBuildFile; fileRef = 49720A8A127C1B37001873A0 /* ColorC.m */; };
-		49847DDD12664F03001645B5 /* MOButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 49847DDA12664F03001645B5 /* MOButton.m */; };
-		49847DDE12664F03001645B5 /* MOGlassButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 49847DDC12664F03001645B5 /* MOGlassButton.m */; };
+		49720A8B127C1B37001873A0 /* ColorC.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49720A8A127C1B37001873A0 /* ColorC.mm */; };
+		49847DDD12664F03001645B5 /* MOButton.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49847DDA12664F03001645B5 /* MOButton.mm */; };
+		49847DDE12664F03001645B5 /* MOGlassButton.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49847DDC12664F03001645B5 /* MOGlassButton.mm */; };
 		49847E0012665213001645B5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49847DFF12665213001645B5 /* QuartzCore.framework */; };
 		49847E5D126659F6001645B5 /* SocksProxyController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 49847E5C126659F6001645B5 /* SocksProxyController.xib */; };
 		49B6F91D12394DEC005D89AC /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 49B6F91A12394DEC005D89AC /* icon.png */; };
 		49B6F91E12394DEC005D89AC /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 49B6F91B12394DEC005D89AC /* icon@2x.png */; };
 		49B6F91F12394DEC005D89AC /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 49B6F91C12394DEC005D89AC /* iTunesArtwork */; };
-		54122F1B10D88D4900836166 /* SocksProxyController.m in Sources */ = {isa = PBXBuildFile; fileRef = 54122F1A10D88D4900836166 /* SocksProxyController.m */; };
-		542A644E1241261A003497CD /* SocksProxyController_TableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 542A644B1241261A003497CD /* SocksProxyController_TableView.m */; };
-		542A644F1241261A003497CD /* UIDevice_Extended.m in Sources */ = {isa = PBXBuildFile; fileRef = 542A644D1241261A003497CD /* UIDevice_Extended.m */; };
+		54122F1B10D88D4900836166 /* SocksProxyController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 54122F1A10D88D4900836166 /* SocksProxyController.mm */; };
+		542A644E1241261A003497CD /* SocksProxyController_TableView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 542A644B1241261A003497CD /* SocksProxyController_TableView.mm */; };
+		542A644F1241261A003497CD /* UIDevice_Extended.mm in Sources */ = {isa = PBXBuildFile; fileRef = 542A644D1241261A003497CD /* UIDevice_Extended.mm */; };
 		546335FE10DAB3BE00D3A3AE /* README in Resources */ = {isa = PBXBuildFile; fileRef = 546335FD10DAB3BE00D3A3AE /* README */; };
-		5463365810DABA8E00D3A3AE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5463365410DABA8E00D3A3AE /* AppDelegate.m */; };
-		5463365910DABA8E00D3A3AE /* InfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5463365610DABA8E00D3A3AE /* InfoController.m */; };
-		5463365A10DABA8E00D3A3AE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5463365710DABA8E00D3A3AE /* main.m */; };
+		5463365810DABA8E00D3A3AE /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5463365410DABA8E00D3A3AE /* AppDelegate.mm */; };
+		5463365910DABA8E00D3A3AE /* InfoController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5463365610DABA8E00D3A3AE /* InfoController.mm */; };
+		5463365A10DABA8E00D3A3AE /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5463365710DABA8E00D3A3AE /* main.mm */; };
 		54A0F9C6124127CC008878EF /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54A0F9C5124127CC008878EF /* SystemConfiguration.framework */; };
 		9C310C061826EF0000299F00 /* ttdnsd.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9C310C051826EF0000299F00 /* ttdnsd.mm */; };
 		9C5C8AB91825468200ED829D /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C5C8AB81825468200ED829D /* Default-568h@2x.png */; };
-		E40F66010FB1E38600D92710 /* SocksProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F65FF0FB1E38600D92710 /* SocksProxy.m */; };
+		E40F66010FB1E38600D92710 /* SocksProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = E40F65FF0FB1E38600D92710 /* SocksProxy.mm */; };
 		E40F66BA0FB3029A00D92710 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E40F66B90FB3029A00D92710 /* CFNetwork.framework */; };
 		E4D544090FAB45DC00630176 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E4D544020FAB45DC00630176 /* MainWindow.xib */; };
 		E4D5443B0FAB4B1600630176 /* Info.html in Resources */ = {isa = PBXBuildFile; fileRef = E4D5443A0FAB4B1600630176 /* Info.html */; };
@@ -41,35 +41,35 @@
 		1D6058910D05DD3D006BFB54 /* Tethering.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tethering.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		49720A89127C1B37001873A0 /* ColorC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorC.h; sourceTree = "<group>"; };
-		49720A8A127C1B37001873A0 /* ColorC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorC.m; sourceTree = "<group>"; };
+		49720A8A127C1B37001873A0 /* ColorC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ColorC.mm; sourceTree = "<group>"; };
 		49847DD912664F03001645B5 /* MOButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MOButton.h; sourceTree = "<group>"; };
-		49847DDA12664F03001645B5 /* MOButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MOButton.m; sourceTree = "<group>"; };
+		49847DDA12664F03001645B5 /* MOButton.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MOButton.mm; sourceTree = "<group>"; };
 		49847DDB12664F03001645B5 /* MOGlassButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MOGlassButton.h; sourceTree = "<group>"; };
-		49847DDC12664F03001645B5 /* MOGlassButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MOGlassButton.m; sourceTree = "<group>"; };
+		49847DDC12664F03001645B5 /* MOGlassButton.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MOGlassButton.mm; sourceTree = "<group>"; };
 		49847DFF12665213001645B5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		49847E5C126659F6001645B5 /* SocksProxyController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SocksProxyController.xib; sourceTree = "<group>"; };
 		49B6F91A12394DEC005D89AC /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		49B6F91B12394DEC005D89AC /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon@2x.png"; sourceTree = "<group>"; };
 		49B6F91C12394DEC005D89AC /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
 		54074CF2124127320036116E /* SocksProxy_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxy_Prefix.pch; sourceTree = "<group>"; };
-		54122F1A10D88D4900836166 /* SocksProxyController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SocksProxyController.m; sourceTree = "<group>"; };
+		54122F1A10D88D4900836166 /* SocksProxyController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SocksProxyController.mm; sourceTree = "<group>"; };
 		54122F1F10D88DBE00836166 /* SocksProxyController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxyController.h; sourceTree = "<group>"; };
 		542A644A1241261A003497CD /* SocksProxyController_TableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxyController_TableView.h; sourceTree = "<group>"; };
-		542A644B1241261A003497CD /* SocksProxyController_TableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SocksProxyController_TableView.m; sourceTree = "<group>"; };
+		542A644B1241261A003497CD /* SocksProxyController_TableView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SocksProxyController_TableView.mm; sourceTree = "<group>"; };
 		542A644C1241261A003497CD /* UIDevice_Extended.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDevice_Extended.h; sourceTree = "<group>"; };
-		542A644D1241261A003497CD /* UIDevice_Extended.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDevice_Extended.m; sourceTree = "<group>"; };
+		542A644D1241261A003497CD /* UIDevice_Extended.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UIDevice_Extended.mm; sourceTree = "<group>"; };
 		546335FD10DAB3BE00D3A3AE /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		5463365310DABA8E00D3A3AE /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = AncillaryCode/AppDelegate.h; sourceTree = "<group>"; };
-		5463365410DABA8E00D3A3AE /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = AncillaryCode/AppDelegate.m; sourceTree = "<group>"; };
+		5463365410DABA8E00D3A3AE /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = AncillaryCode/AppDelegate.mm; sourceTree = "<group>"; };
 		5463365510DABA8E00D3A3AE /* InfoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InfoController.h; path = AncillaryCode/InfoController.h; sourceTree = "<group>"; };
-		5463365610DABA8E00D3A3AE /* InfoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = InfoController.m; path = AncillaryCode/InfoController.m; sourceTree = "<group>"; };
-		5463365710DABA8E00D3A3AE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = AncillaryCode/main.m; sourceTree = "<group>"; };
+		5463365610DABA8E00D3A3AE /* InfoController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = InfoController.mm; path = AncillaryCode/InfoController.mm; sourceTree = "<group>"; };
+		5463365710DABA8E00D3A3AE /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = AncillaryCode/main.mm; sourceTree = "<group>"; };
 		54A0F9C5124127CC008878EF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		9C182A351828295F00F3F950 /* ttdnsd_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ttdnsd_platform.h; path = ttdnsd/ttdnsd_platform.h; sourceTree = "<group>"; };
 		9C310C041826EF0000299F00 /* ttdnsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ttdnsd.h; path = ttdnsd/ttdnsd.h; sourceTree = "<group>"; };
 		9C310C051826EF0000299F00 /* ttdnsd.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ttdnsd.mm; path = ttdnsd/ttdnsd.mm; sourceTree = "<group>"; };
 		9C5C8AB81825468200ED829D /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		E40F65FF0FB1E38600D92710 /* SocksProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SocksProxy.m; sourceTree = "<group>"; };
+		E40F65FF0FB1E38600D92710 /* SocksProxy.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SocksProxy.mm; sourceTree = "<group>"; };
 		E40F66000FB1E38600D92710 /* SocksProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxy.h; sourceTree = "<group>"; };
 		E40F66B90FB3029A00D92710 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		E4D544010FAB45DC00630176 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -135,11 +135,11 @@
 			isa = PBXGroup;
 			children = (
 				54122F1F10D88DBE00836166 /* SocksProxyController.h */,
-				54122F1A10D88D4900836166 /* SocksProxyController.m */,
+				54122F1A10D88D4900836166 /* SocksProxyController.mm */,
 				542A644A1241261A003497CD /* SocksProxyController_TableView.h */,
-				542A644B1241261A003497CD /* SocksProxyController_TableView.m */,
+				542A644B1241261A003497CD /* SocksProxyController_TableView.mm */,
 				5463365510DABA8E00D3A3AE /* InfoController.h */,
-				5463365610DABA8E00D3A3AE /* InfoController.m */,
+				5463365610DABA8E00D3A3AE /* InfoController.mm */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -149,19 +149,19 @@
 			children = (
 				9C310C031826EEE900299F00 /* ttdnsd */,
 				49847DD912664F03001645B5 /* MOButton.h */,
-				49847DDA12664F03001645B5 /* MOButton.m */,
+				49847DDA12664F03001645B5 /* MOButton.mm */,
 				49847DDB12664F03001645B5 /* MOGlassButton.h */,
-				49847DDC12664F03001645B5 /* MOGlassButton.m */,
+				49847DDC12664F03001645B5 /* MOGlassButton.mm */,
 				54074CF2124127320036116E /* SocksProxy_Prefix.pch */,
 				E40F66000FB1E38600D92710 /* SocksProxy.h */,
-				E40F65FF0FB1E38600D92710 /* SocksProxy.m */,
+				E40F65FF0FB1E38600D92710 /* SocksProxy.mm */,
 				542A644C1241261A003497CD /* UIDevice_Extended.h */,
-				542A644D1241261A003497CD /* UIDevice_Extended.m */,
+				542A644D1241261A003497CD /* UIDevice_Extended.mm */,
 				5463365310DABA8E00D3A3AE /* AppDelegate.h */,
-				5463365410DABA8E00D3A3AE /* AppDelegate.m */,
-				5463365710DABA8E00D3A3AE /* main.m */,
+				5463365410DABA8E00D3A3AE /* AppDelegate.mm */,
+				5463365710DABA8E00D3A3AE /* main.mm */,
 				49720A89127C1B37001873A0 /* ColorC.h */,
-				49720A8A127C1B37001873A0 /* ColorC.m */,
+				49720A8A127C1B37001873A0 /* ColorC.mm */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -283,16 +283,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				9C310C061826EF0000299F00 /* ttdnsd.mm in Sources */,
-				E40F66010FB1E38600D92710 /* SocksProxy.m in Sources */,
-				54122F1B10D88D4900836166 /* SocksProxyController.m in Sources */,
-				5463365810DABA8E00D3A3AE /* AppDelegate.m in Sources */,
-				5463365910DABA8E00D3A3AE /* InfoController.m in Sources */,
-				5463365A10DABA8E00D3A3AE /* main.m in Sources */,
-				542A644E1241261A003497CD /* SocksProxyController_TableView.m in Sources */,
-				542A644F1241261A003497CD /* UIDevice_Extended.m in Sources */,
-				49847DDD12664F03001645B5 /* MOButton.m in Sources */,
-				49847DDE12664F03001645B5 /* MOGlassButton.m in Sources */,
-				49720A8B127C1B37001873A0 /* ColorC.m in Sources */,
+				E40F66010FB1E38600D92710 /* SocksProxy.mm in Sources */,
+				54122F1B10D88D4900836166 /* SocksProxyController.mm in Sources */,
+				5463365810DABA8E00D3A3AE /* AppDelegate.mm in Sources */,
+				5463365910DABA8E00D3A3AE /* InfoController.mm in Sources */,
+				5463365A10DABA8E00D3A3AE /* main.mm in Sources */,
+				542A644E1241261A003497CD /* SocksProxyController_TableView.mm in Sources */,
+				542A644F1241261A003497CD /* UIDevice_Extended.mm in Sources */,
+				49847DDD12664F03001645B5 /* MOButton.mm in Sources */,
+				49847DDE12664F03001645B5 /* MOGlassButton.mm in Sources */,
+				49720A8B127C1B37001873A0 /* ColorC.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

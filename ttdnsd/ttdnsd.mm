@@ -98,7 +98,10 @@ int DNSServer::startDNSServer(int isDebugMode ,
 
     memset(this->localDNSIP, 0, MAX_IPV4_ADDR_LENGTH);
 
-    strcpy(this->localDNSIP, localDNSIP);
+    if(localDNSIP != NULL)
+        strcpy(this->localDNSIP, localDNSIP);
+    else
+        this->localDNSIP = NULL;
 
     this->localDNSPort = localDNSPort;
 
@@ -814,9 +817,17 @@ int DNSServer::server()
     memset((char*)&udp, 0, sizeof(struct sockaddr_in)); // bzero love
     udp.sin_family = AF_INET;
     udp.sin_port = htons(localDNSPort);
-    if (!inet_aton(localDNSIP, (struct in_addr*)&udp.sin_addr)) {
-        printf("is not a valid IPv4 address: %s\n", localDNSIP);
+    
+    if(localDNSIP == NULL)
+        udp.sin_addr.s_addr = htonl(INADDR_ANY);
+    
+    else{
+        
+        if (!inet_aton(localDNSIP, (struct in_addr*)&udp.sin_addr)) {
+            printf("is not a valid IPv4 address: %s\n", localDNSIP);
         return(0); // Why is this 0?
+        }
+        
     }
 
     if (bind(udp_fd, (struct sockaddr*)&udp, sizeof(struct sockaddr_in)) < 0) {

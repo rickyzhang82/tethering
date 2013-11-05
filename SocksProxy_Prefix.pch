@@ -7,7 +7,9 @@
  *
  */
 
+#ifdef __OBJC__
 #import "UIDevice_Extended.h"
+#endif
 
 #define DEBUG 1
 
