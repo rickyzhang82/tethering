@@ -545,9 +545,17 @@ int DNSServer::peer_connected(struct peer_t *p)
      */
 
 
-    cs = connect(p->tcp_fd, (struct sockaddr*)&p->tcp, sizeof(struct sockaddr_in));
+    //cs = connect(p->tcp_fd, (struct sockaddr*)&p->tcp, sizeof(struct sockaddr_in));
+    /*
+    if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &n) < 0 ||
+                    error != 0) {
+                    err_ret("nonblocking connect failed for %s",
+                            file[i].f_name);
+                }
+    */
 
     if (cs == 0 || (cs == -1 && errno == EISCONN)) {
+        printf("Remote DNS %s is connected.\n", this->remoteDNSIP);
         p->con = CONNECTED;
         return 1;
     } else {
@@ -564,8 +572,8 @@ int DNSServer::peer_connected(struct peer_t *p)
 /* Returns 1 upon sent request; 0 upon serious error and 2 upon disconnect */
 int DNSServer::peer_sendreq(struct peer_t *p, struct request_t *r)
 {
-    int ret;
-    r->active = SENT;        /* BUG: even if the write below fails? */
+    //int ret;
+            /* BUG: even if the write below fails? */
 
      /* QUASIBUG Busy-waiting on the network buffer to free up some
         space is not acceptable; at best, it wastes CPU; at worst, it
@@ -574,14 +582,33 @@ int DNSServer::peer_sendreq(struct peer_t *p, struct request_t *r)
         failure mode.) */
     /* BUG: what if write() doesn't write all the data? */
     /* This is writing data to the remote DNS server over Tor with TCP */
-    while ((ret = write(p->tcp_fd, r->b, (r->bl + 2))) < 0 && errno == EAGAIN);
+    /* Comment: Busy loop is too simple too naive for nonblocking socket.*/
+    int nByteWritten = 0;
+    int nByteToWrite = r->bl + 2;
+    unsigned char* topPtr = r->b;
 
-    if (ret == 0) {
-        peer_mark_as_dead(p);
-        return 2;
+    printf("Send request %d: %d of byte to write, %d of byte written\n", r->id, nByteToWrite, nByteWritten);
+
+    while(nByteToWrite > 0){
+        nByteWritten = write(p->tcp_fd, topPtr, nByteToWrite);
+        if(nByteWritten <0 && errno != EWOULDBLOCK){
+            printf("Errno (%d): Failed to send DNS request to remote DNS\n", errno);
+            peer_mark_as_dead(p);
+            return 2;
+        }else{
+            topPtr += nByteWritten;
+            nByteToWrite -= nByteWritten;
+            printf("Send request %d: %d of byte to write, %d of byte written\n", r->id, nByteToWrite, nByteWritten);
+        }
     }
+    //while ((ret = write(p->tcp_fd, r->b, (r->bl + 2))) < 0 && errno == EAGAIN);
 
-    printf("peer_sendreq write attempt returned: %d\n", ret);
+    //if (ret == 0) {
+    //    peer_mark_as_dead(p);
+    //    return 2;
+    //}
+    r->active = SENT;
+    printf("peer_sendreq write attempt returned\n");
     return 1;
 }
 
