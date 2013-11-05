@@ -24,6 +24,8 @@ find_package(Threads REQUIRED)
 
 set(SOURCES ttdnsd.mm unit_test.cpp)
 
+set(STOP_SOURCES ttdnsd.mm stopConsole.cpp)
+
 #platform check
 if(APPLE)
 else(APPLE)
@@ -37,6 +39,7 @@ configure_file("${CMAKE_SOURCE_DIR}/ttdnsd_platform.h.cmake" "${CMAKE_SOURCE_DIR
 set(CMAKE_CXX_FLAGS "-Wall -g")
 
 add_executable(Console ${SOURCES})
-
-#link in test case
 target_link_libraries(Console ${CMAKE_THREAD_LIBS_INIT})
+
+add_executable(stopConsole ${STOP_SOURCES})
+target_link_libraries(stopConsole ${CMAKE_THREAD_LIBS_INIT})

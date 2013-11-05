@@ -30,19 +30,24 @@ DNSServer * DNSServer::dns_instance = NULL;
 
 DNSServer::DNSServer()
 {
-
-
-    this->remoteSocksIP = new char[MAX_IPV4_ADDR_LENGTH];
-
-    memset(this->remoteSocksIP, 0, MAX_IPV4_ADDR_LENGTH);
+    this->isDebugMode = 0;
 
     this->remoteDNSIP = new char[MAX_IPV4_ADDR_LENGTH];
-
     memset(this->remoteDNSIP, 0, MAX_IPV4_ADDR_LENGTH);
+    strcpy(this->remoteDNSIP, DEFAULT_DNS_IP),
+    this->remoteDNSPort = DEFAULT_DNS_PORT;
 
     this->localDNSIP = new char[MAX_IPV4_ADDR_LENGTH];
-
     memset(this->localDNSIP, 0, MAX_IPV4_ADDR_LENGTH);
+    strcpy(this->localDNSIP, DEFAULT_MAGIC_IPV4_ADDR);
+    this->localDNSPort = DEFAULT_BIND_PORT;
+
+    this->isSockify = 0;
+
+    this->remoteSocksIP = new char[MAX_IPV4_ADDR_LENGTH];
+    memset(this->remoteSocksIP, 0, MAX_IPV4_ADDR_LENGTH);    
+    strcpy(this->remoteSocksIP, DEFAULT_SOCKS5_IP);
+    this->remoteSocksPort = DEFAULT_SOCKS5_PORT;
 
 }
 
@@ -54,11 +59,11 @@ DNSServer::~DNSServer()
     delete this->localDNSIP;
 }
 
-int DNSServer::startDNSServer(int isDebugMode ,
-                              const char* localDNSIP ,
-                              int localDNSPort ,
+int DNSServer::startDNSServer(int isDebugMode ,                              
                               const char* remoteDNSIP,
                               int remoteDNSPort ,
+                              const char* localDNSIP ,
+                              int localDNSPort ,
                               int isSockify ,
                               const char* remoteSockProxyIP ,
                               int remoteSockProxyPort)
@@ -101,35 +106,67 @@ int DNSServer::startDNSServer(int isDebugMode ,
     if(localDNSIP != NULL)
         strcpy(this->localDNSIP, localDNSIP);
     else
-        this->localDNSIP = NULL;
+        strcpy(this->localDNSIP, DEFAULT_MAGIC_IPV4_ADDR);
 
     this->localDNSPort = localDNSPort;
 
     printf("Starting DNS server...\n");
-    //create a new thread.
-    pthread_t *rs_thread = new pthread_t;
-    
-    pthread_attr_t *rs_attr = new pthread_attr_t;
-    
-    pthread_attr_init(rs_attr);
-    
-    pthread_attr_setdetachstate(rs_attr, PTHREAD_CREATE_DETACHED);
-    
-    if(pthread_create(rs_thread, rs_attr, _dns_srv_thread_wrapper, NULL) == 0){
-        
-        printf("DNS server thread is created.\n");
-        
-        pthread_attr_destroy(rs_attr);
-        
-        return 0;
+
+    if(this->isDebugMode){
+
+        return _start_server();
+
     }else{
-        
-        printf("Failed to create DNS server thread.\n");
-        
-        pthread_attr_destroy(rs_attr);
-        
-        return -1;
+        //create a new thread.
+        pthread_t *rs_thread = new pthread_t;
+
+        pthread_attr_t *rs_attr = new pthread_attr_t;
+
+        pthread_attr_init(rs_attr);
+
+        pthread_attr_setdetachstate(rs_attr, PTHREAD_CREATE_DETACHED);
+
+        if(pthread_create(rs_thread, rs_attr, _dns_srv_thread_wrapper, NULL) == 0){
+
+            printf("DNS server thread is created.\n");
+
+            pthread_attr_destroy(rs_attr);
+
+            return 0;
+        }else{
+
+            printf("Failed to create DNS server thread.\n");
+
+            pthread_attr_destroy(rs_attr);
+
+            return -1;
+        }
     }
+}
+
+void DNSServer::stopDNSServer()
+{
+    //send magic string to DNS server
+    const char * ipv4_dns_addr;
+    int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    struct sockaddr_in  addr;
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(this->localDNSPort);
+    if(this->localDNSIP == NULL || strcmp(this->localDNSIP, DEFAULT_MAGIC_IPV4_ADDR) == 0 )
+        ipv4_dns_addr = DEFAULT_BIND_IP;
+    else
+        ipv4_dns_addr = this->localDNSIP;
+
+
+    if(!inet_aton(ipv4_dns_addr, &addr.sin_addr)){
+        printf("Invalid IPv4 address for DNS server.\n Failed to terminate DNS server.\n");
+    }
+
+    sendto(sockfd, MAGIC_STRING_STOP_DNS, strlen(MAGIC_STRING_STOP_DNS), 0, (struct sockaddr*)&addr, sizeof(addr));
+
+    printf("Send magic string to terminate DNS server: %s.\n", ipv4_dns_addr );
+
+    close(sockfd);
 }
 
 #ifndef NOT_HAVE_COCOA_FRAMEWORK
@@ -714,11 +751,12 @@ int DNSServer::request_add(struct request_t *r)
         else {
             if (requests[pos].id == r->id) {
                 if (memcmp((char*)&r->a, (char*)&requests[pos].a, sizeof(r->a)) == 0) {
-                    printf("hash position %d already taken by request with same id; dropping it\n", pos);
+                    printf("For DNS request with ID %d, hash position %d is already taken by request with the same ID. Drop this request.\n", r->id, pos);
+                    delete r;
                     return 0;
                 }
                 else {
-                    printf("hash position %d selected\n", pos);
+                    printf("Hash position %d selected\n", pos);
                      /* REFACTOR If it’s okay to do this, it would be
                         simpler to always do it, instead of only on
                         collisions. Then, if it’s buggy, it’ll show up
@@ -733,7 +771,7 @@ int DNSServer::request_add(struct request_t *r)
             }
             else if ((requests[pos].timeout + MAX_TIME) > ct) {
                 // request timed out, take it
-                printf("taking pos from timed out request\n");
+                printf("Taking pos from timed out request.\n");
                 req_in_table = &requests[pos];
                 break;
             }
@@ -742,6 +780,7 @@ int DNSServer::request_add(struct request_t *r)
                 pos %= MAX_REQUESTS;
                 if (pos == (r->id % MAX_REQUESTS)) {
                     printf("no more free request slots, wow this is a busy node. dropping request!\n");
+                    delete r;
                     return 0;
                 }
             }
@@ -760,6 +799,7 @@ int DNSServer::request_add(struct request_t *r)
         return -1;
     } else {
         memcpy((char*)req_in_table, (char*)r, sizeof(*req_in_table));
+        delete r;
     }
 
     // XXX: nice feature to have: send request to multiple peers for speedup and reliability
@@ -799,7 +839,19 @@ void DNSServer::process_incoming_request(struct request_t *tmp)
     request_add(tmp); // This should be checked; we're currently ignoring important returns.
 }
 
-int DNSServer::server()
+void DNSServer::_stop_server()
+{
+    //close binded UDP socket
+    close(udp_fd);
+
+    for(int i=0; i<MAX_PEERS; i++){
+        if(peers[i].tcp_fd > 0 && peers[i].con != DEAD )
+            close(peers[i].tcp_fd);
+    }
+    printf("DNS server is terminated.\n");
+}
+
+int DNSServer::_start_server()
 {
     struct sockaddr_in udp;
     struct pollfd pfd[MAX_PEERS+1];
@@ -824,14 +876,15 @@ int DNSServer::server()
     udp.sin_family = AF_INET;
     udp.sin_port = htons(localDNSPort);
     
-    if(localDNSIP == NULL)
+    if(strcmp(localDNSIP, DEFAULT_MAGIC_IPV4_ADDR) == 0)
+
         udp.sin_addr.s_addr = htonl(INADDR_ANY);
     
     else{
         
         if (!inet_aton(localDNSIP, (struct in_addr*)&udp.sin_addr)) {
             printf("is not a valid IPv4 address: %s\n", localDNSIP);
-        return(0); // Why is this 0?
+            return(0); // Why is this 0?
         }
         
     }
@@ -931,17 +984,23 @@ int DNSServer::server()
 
         // handle port 53
         if ((pfd[0].revents & POLLIN) == POLLIN || (pfd[0].revents & POLLPRI) == POLLPRI) {
-            struct request_t tmp;
-            memset((char*)&tmp, 0, sizeof(struct request_t)); // bzero
-            tmp.al = sizeof(struct sockaddr_in);
+            struct request_t * dns_request = new request_t;
+            memset((char*)dns_request, 0, sizeof(struct request_t)); // bzero
+            dns_request->al = sizeof(struct sockaddr_in);
 
-            tmp.bl = recvfrom(udp_fd, tmp.b+2, RECV_BUF_SIZE-2, 0,
-                              (struct sockaddr*)&tmp.a, &tmp.al);
-            if (tmp.bl < 0) {
+            dns_request->bl = recvfrom(udp_fd, dns_request->b+2, RECV_BUF_SIZE-2, 0,
+                              (struct sockaddr*)&(dns_request->a), &(dns_request->al));
+            if (dns_request->bl < 0) {
                 perror("recvfrom on UDP fd");
             } else {
-                printf("Receive DNS request from UDP port.\n");
-                process_incoming_request(&tmp);
+                if(memcmp((char*)dns_request->b+2, (char*)MAGIC_STRING_STOP_DNS,strlen(MAGIC_STRING_STOP_DNS)) == 0){
+                    _stop_server();
+                    delete dns_request;
+                    return 0;
+                }else{
+                    printf("Receive DNS request from UDP port.\n");
+                    process_incoming_request(dns_request);
+                }
             }
         }
     }

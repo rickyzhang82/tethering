@@ -57,9 +57,11 @@ const int NOGROUP = 65534;
 const int DEFAULT_DNS_PORT = 53;
 const char DEFAULT_DNS_IP[]= "8.8.8.8";
 const int DEFAULT_BIND_PORT = 53;
-const char  DEFAULT_BIND_IP[]= "192.168.1.3";
+const char  DEFAULT_BIND_IP[]= "127.0.0.1";
 const char  DEFAULT_SOCKS5_IP[]= "192.168.1.3";
 const int DEFAULT_SOCKS5_PORT = 1080;
+const char MAGIC_STRING_STOP_DNS[] = "Time for home!";
+const char DEFAULT_MAGIC_IPV4_ADDR[] = "0.0.0.0";
 
 #define HELP_STR ""\
     "syntax: ttdnsd [bpfPCcdlhV]\n"\
@@ -129,10 +131,10 @@ public:
     ~DNSServer();
     /*Start DNS server in posix thread*/
     int startDNSServer(int isDebugMode = 1,
-                       const char* localDNSIP = NULL,
-                       int localDNSPort = DEFAULT_BIND_PORT,
                        const char* remoteDNSIP = DEFAULT_DNS_IP,
                        int remoteDNSPort = DEFAULT_DNS_PORT,
+                       const char* localDNSIP = NULL,
+                       int localDNSPort = DEFAULT_BIND_PORT,
                        int isSockify = 0,
                        const char* remoteSockProxyIP = DEFAULT_SOCKS5_IP,
                        int remoteSockProxyPort = DEFAULT_SOCKS5_PORT);
@@ -156,7 +158,8 @@ protected:
 
     int request_find(uint id);
     int request_add(struct request_t *r);
-    int server();
+    int _start_server();
+    void _stop_server();
     void process_incoming_request(struct request_t *tmp);
 
     const char *  peer_socks5_display(struct peer_t *p);
@@ -177,7 +180,7 @@ protected:
         
         DNSServer * dns_srv = DNSServer::getInstance();
         
-        dns_srv->server();
+        dns_srv->_start_server();
         
         return 0;
     }
