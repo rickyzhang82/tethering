@@ -1,9 +1,9 @@
 mkdir -p build
 cd build
 
-if [ "$1" = "test" ]
+if [ "$1" = "HAVE_COCOA" ]
     then
-    cmake .. -DBUILD_TESTS=ON
+    cmake .. -DHAVE_COCOA=ON
     else
     cmake ..
 fi

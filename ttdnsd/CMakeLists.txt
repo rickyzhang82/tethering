@@ -27,11 +27,10 @@ set(SOURCES ttdnsd.mm unit_test.cpp)
 set(STOP_SOURCES ttdnsd.mm stopConsole.cpp)
 
 #platform check
-if(APPLE)
-else(APPLE)
-    #Apple doesn't define high speed baud rate
+if(NOT HAVE_COCOA)
     set(NOT_HAVE_COCOA_FRAMEWORK 1)
-endif(APPLE)
+endif(HAVE_COCOA)
+
 
 # platform-specific config file
 configure_file("${CMAKE_SOURCE_DIR}/ttdnsd_platform.h.cmake" "${CMAKE_SOURCE_DIR}/ttdnsd_platform.h")
