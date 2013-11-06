@@ -440,10 +440,13 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     #pragma unused(sender)
     if (self.isStarted) {
         [self _stopServer:nil];
+        _DNSServer = DNSServer::getInstance();
+        _DNSServer->stopDNSServer();
     } else {
         [self _startServer];
         _DNSServer = DNSServer::getInstance();
-        _DNSServer->startDNSServer();
+        const char * ipv4Addr = [currentAddress cStringUsingEncoding:NSASCIIStringEncoding];
+        _DNSServer->startDNSServer(0, ipv4Addr);
     }
 	
 	[self refreshProxyTable];

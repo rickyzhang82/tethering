@@ -29,7 +29,7 @@ set(STOP_SOURCES ttdnsd.mm stopConsole.cpp)
 #platform check
 if(NOT HAVE_COCOA)
     set(NOT_HAVE_COCOA_FRAMEWORK 1)
-endif(HAVE_COCOA)
+endif(NOT HAVE_COCOA)
 
 
 # platform-specific config file

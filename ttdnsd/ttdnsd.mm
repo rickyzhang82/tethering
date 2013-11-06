@@ -59,11 +59,11 @@ DNSServer::~DNSServer()
     delete this->localDNSIP;
 }
 
-int DNSServer::startDNSServer(int isDebugMode ,                              
-                              const char* remoteDNSIP,
-                              int remoteDNSPort ,
+int DNSServer::startDNSServer(int isDebugMode ,
                               const char* localDNSIP ,
+                              const char* remoteDNSIP,
                               int localDNSPort ,
+                              int remoteDNSPort ,
                               int isSockify ,
                               const char* remoteSockProxyIP ,
                               int remoteSockProxyPort)
@@ -144,30 +144,40 @@ int DNSServer::startDNSServer(int isDebugMode ,
     }
 }
 
-void DNSServer::stopDNSServer()
+void DNSServer::stopDNSServer(const char* localDNSIP)
 {
     //send magic string to DNS server
-    const char * ipv4_dns_addr;
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     struct sockaddr_in  addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(this->localDNSPort);
-    if(this->localDNSIP == NULL || strcmp(this->localDNSIP, DEFAULT_MAGIC_IPV4_ADDR) == 0 )
-        ipv4_dns_addr = DEFAULT_BIND_IP;
-    else
-        ipv4_dns_addr = this->localDNSIP;
 
 
-    if(!inet_aton(ipv4_dns_addr, &addr.sin_addr)){
+
+    if(!inet_aton(localDNSIP, &addr.sin_addr)){
         printf("Invalid IPv4 address for DNS server.\n Failed to terminate DNS server.\n");
     }
 
     sendto(sockfd, MAGIC_STRING_STOP_DNS, strlen(MAGIC_STRING_STOP_DNS), 0, (struct sockaddr*)&addr, sizeof(addr));
 
-    printf("Send magic string to terminate DNS server: %s.\n", ipv4_dns_addr );
+    printf("Magic string was sent to terminate DNS server: %s.\n", localDNSIP );
 
     close(sockfd);
+
 }
+
+void DNSServer::stopDNSServer()
+{
+    const char *ipv4_dns_addr;
+
+    if(this->localDNSIP == NULL || strcmp(this->localDNSIP, DEFAULT_MAGIC_IPV4_ADDR) == 0 )
+        ipv4_dns_addr = DEFAULT_BIND_IP;
+    else
+        ipv4_dns_addr = this->localDNSIP;
+
+    stopDNSServer(ipv4_dns_addr);
+}
+
 
 #ifndef NOT_HAVE_COCOA_FRAMEWORK
 int DNSServer::printf(const char * __restrict format, ...)
@@ -181,7 +191,7 @@ int DNSServer::printf(const char * __restrict format, ...)
 
 void DNSServer::perror(const char *__s)
 {
-    NSLog("Error: %s : %d\n",__s, errno);
+    NSLog(@"Error: %s : %d\n",__s, errno);
 
 }
 #endif
@@ -525,69 +535,40 @@ int DNSServer::peer_connect(struct peer_t *p, struct in_addr ns)
     return 1;
 }
 
+//TODO: test incorrect DNS address.
 /* Returns 1 upon non-blocking connection; 0 upon serious error */
 int DNSServer::peer_connected(struct peer_t *p)
 {
-    int cs;
-     /* QUASIBUG This is not documented as a correct way to poll for
-        connection establishment. Linux connect(2) says: “Generally,
-        connection-based protocol sockets may successfully connect()
-        only once...It is possible to select(2) or poll(2) for
-        completion by selecting the socket for writing.  After
-        select(2) indicates writability, use getsockopt(2) to read the
-        SO_ERROR option at level SOL_SOCKET to determine whether
-        connect() completed successfully (SO_ERROR is zero) or
-        unsuccessfully (SO_ERROR is one of the usual error codes listed
-        here, explaining the reason for the failure).”
 
-        If this works the way it’s documented to work, we should just
-        use the documented interface.
-     */
+    int error = 0;
+    socklen_t len;
 
+    if (getsockopt(p->tcp_fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0) {
 
-    //cs = connect(p->tcp_fd, (struct sockaddr*)&p->tcp, sizeof(struct sockaddr_in));
-    /*
-    if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &n) < 0 ||
-                    error != 0) {
-                    err_ret("nonblocking connect failed for %s",
-                            file[i].f_name);
-                }
-    */
-
-    if (cs == 0 || (cs == -1 && errno == EISCONN)) {
-        printf("Remote DNS %s is connected.\n", this->remoteDNSIP);
-        p->con = CONNECTED;
-        return 1;
-    } else {
-
-        printf("connect fail: return code %d and errno %d.", cs, errno);
-
+        printf("connect fail: return error code %d and errno (%d).", error, errno);
         close(p->tcp_fd);
         p->tcp_fd = -1;
         p->con = DEAD;
         return 0;
+
+    }else{
+
+        printf("Remote DNS %s is connected.\n", this->remoteDNSIP);
+        p->con = CONNECTED;
+        return 1;
+
     }
 }
 
 /* Returns 1 upon sent request; 0 upon serious error and 2 upon disconnect */
 int DNSServer::peer_sendreq(struct peer_t *p, struct request_t *r)
 {
-    //int ret;
-            /* BUG: even if the write below fails? */
-
-     /* QUASIBUG Busy-waiting on the network buffer to free up some
-        space is not acceptable; at best, it wastes CPU; at worst, it
-        hangs the daemon until the TCP timeout informs it that its
-        connection to Tor has timed out. (Although that’s an unlikely
-        failure mode.) */
-    /* BUG: what if write() doesn't write all the data? */
-    /* This is writing data to the remote DNS server over Tor with TCP */
-    /* Comment: Busy loop is too simple too naive for nonblocking socket.*/
+    //TODO: wrap up this unblocking sendto as function.
     int nByteWritten = 0;
     int nByteToWrite = r->bl + 2;
     unsigned char* topPtr = r->b;
 
-    printf("Send request %d: %d of byte to write, %d of byte written\n", r->id, nByteToWrite, nByteWritten);
+    printf("Send request ID %d: %d of byte to write, %d of byte written\n", r->id, nByteToWrite, nByteWritten);
 
     while(nByteToWrite > 0){
         nByteWritten = write(p->tcp_fd, topPtr, nByteToWrite);
@@ -598,15 +579,10 @@ int DNSServer::peer_sendreq(struct peer_t *p, struct request_t *r)
         }else{
             topPtr += nByteWritten;
             nByteToWrite -= nByteWritten;
-            printf("Send request %d: %d of byte to write, %d of byte written\n", r->id, nByteToWrite, nByteWritten);
+            printf("Send request ID %d: %d of byte to write, %d of byte written\n", r->id, nByteToWrite, nByteWritten);
         }
     }
-    //while ((ret = write(p->tcp_fd, r->b, (r->bl + 2))) < 0 && errno == EAGAIN);
 
-    //if (ret == 0) {
-    //    peer_mark_as_dead(p);
-    //    return 2;
-    //}
     r->active = SENT;
     printf("peer_sendreq write attempt returned\n");
     return 1;
@@ -886,6 +862,7 @@ int DNSServer::_start_server()
     int fr;
     int i;
     int pfd_num;
+    int socket_opt_val;
 
     for (i = 0; i < MAX_PEERS; i++) {
         peers[i].tcp_fd = -1;
@@ -894,23 +871,30 @@ int DNSServer::_start_server()
     }
     memset((char*)requests, 0, sizeof(requests)); // Why not bzero?
 
-    // setup listing port - someday we may also want to listen on TCP just for fun
     if ((udp_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         printf("can't create UDP socket\n");
         return(-1);
     }
+
+    if (setsockopt(udp_fd, SOL_SOCKET, SO_REUSEADDR, &socket_opt_val, sizeof(int)) < 0) {
+        printf("setsockopt failed. Errno (%d)\n", errno);
+        return (-1);
+    }
+
     memset((char*)&udp, 0, sizeof(struct sockaddr_in)); // bzero love
     udp.sin_family = AF_INET;
     udp.sin_port = htons(localDNSPort);
     
-    if(strcmp(localDNSIP, DEFAULT_MAGIC_IPV4_ADDR) == 0)
+    if(strcmp(localDNSIP, DEFAULT_MAGIC_IPV4_ADDR) == 0){
+
+        printf("UDP bind address assigned to INADDR_ANY\n");
 
         udp.sin_addr.s_addr = htonl(INADDR_ANY);
     
-    else{
+    }else{
         
         if (!inet_aton(localDNSIP, (struct in_addr*)&udp.sin_addr)) {
-            printf("is not a valid IPv4 address: %s\n", localDNSIP);
+            printf("%s is not a valid IPv4 address.\n", localDNSIP);
             return(0); // Why is this 0?
         }
         

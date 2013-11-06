@@ -131,15 +131,17 @@ public:
     ~DNSServer();
     /*Start DNS server in posix thread*/
     int startDNSServer(int isDebugMode = 1,
-                       const char* remoteDNSIP = DEFAULT_DNS_IP,
-                       int remoteDNSPort = DEFAULT_DNS_PORT,
                        const char* localDNSIP = NULL,
+                       const char* remoteDNSIP = DEFAULT_DNS_IP,                       
                        int localDNSPort = DEFAULT_BIND_PORT,
+                       int remoteDNSPort = DEFAULT_DNS_PORT,
                        int isSockify = 0,
                        const char* remoteSockProxyIP = DEFAULT_SOCKS5_IP,
                        int remoteSockProxyPort = DEFAULT_SOCKS5_PORT);
 
     void stopDNSServer();
+
+    void stopDNSServer(const char* localDNSIP);
 
 protected:
 
