@@ -6,6 +6,6 @@ int main(int argc, char** argv)
     if (argc ==2)
         dns_srv->startDNSServer(1, argv[1]);
     else
-        dns_srv->startDNSServer(1, "192.168.2.13");
+        dns_srv->startDNSServer(1);
     return 0;
 }

@@ -131,7 +131,7 @@ public:
     ~DNSServer();
     /*Start DNS server in posix thread*/
     int startDNSServer(int isDebugMode = 1,
-                       const char* localDNSIP = NULL,
+                       const char* localDNSIP = DEFAULT_MAGIC_IPV4_ADDR,
                        const char* remoteDNSIP = DEFAULT_DNS_IP,                       
                        int localDNSPort = DEFAULT_BIND_PORT,
                        int remoteDNSPort = DEFAULT_DNS_PORT,

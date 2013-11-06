@@ -103,10 +103,7 @@ int DNSServer::startDNSServer(int isDebugMode ,
 
     memset(this->localDNSIP, 0, MAX_IPV4_ADDR_LENGTH);
 
-    if(localDNSIP != NULL)
-        strcpy(this->localDNSIP, localDNSIP);
-    else
-        strcpy(this->localDNSIP, DEFAULT_MAGIC_IPV4_ADDR);
+    strcpy(this->localDNSIP, localDNSIP);
 
     this->localDNSPort = localDNSPort;
 
