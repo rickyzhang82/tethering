@@ -1,3 +1,20 @@
+This project is forked from https://code.google.com/p/iphone-socks-proxy/
+
+Two new features are added so far:
+
+1. On master branch: Naive update on GUI which supports 4 inch iPhone 5s.
+
+2. On dns_server branch: Add modified version of forwarding DNS server from TOR project. This local DNS server connects to remote DNS over TCP. It can also pass through socks5 proxy. This comes in handy for use case where you use portable WI-FI router to share your un-jailbreak iPhone connection with multiple devices.
+
+If you use Mac to create a Ad-hoc wireless network to connect to iPhone, you have to use firefox for web browse or tsocks to socksify network application. The default proxy configuration provided by Mavericks didn't work. I found that it didn't use my DNS server as default one by running scutil in command line. I haven't figure it out why. Please shoot me an email if you have any clues. 
+
+TODO:
+
+1. Add http proxy
+
+2. Improve GUI
+
+------------------------------------------------ 
  #  SOCKS - SOCKS Proxy for iPhone
  #  Copyright (C) 2009 Ehud Ben-Reuven
  #  udi@benreuven.com
