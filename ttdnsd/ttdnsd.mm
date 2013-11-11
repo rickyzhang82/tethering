@@ -371,13 +371,13 @@ int DNSServer::peer_socks5_connected(struct peer_t *p)
 int DNSServer::peer_socks5_snd_auth_neg(struct peer_t *p)
 {
     /*send socks5 non-authentication negotitation*/
-    const char socks5_neg_msg[]={0x5,0x1,0x0};
+    char socks5_neg_msg[]={0x5,0x1,0x0};
 
     int ret;
 
-    //while ((ret = write(p->tcp_fd, socks5_neg_msg, sizeof(socks5_neg_msg))) < 0 && errno == EAGAIN);
-    ret = write(p->tcp_fd, socks5_neg_msg, sizeof(socks5_neg_msg));
-    if (ret == 0) {
+    ret = _nonblocking_send(p->tcp_fd, socks5_neg_msg, sizeof(socks5_neg_msg));
+
+    if (ret == -1) {
         peer_mark_as_dead(p);
         printf("Error in sending authentication ret:%d errno:%d\n", ret, errno);
         return 0;
@@ -460,10 +460,9 @@ int DNSServer::peer_socks5_snd_cmd(struct peer_t *p)
     memcpy(buff + byteLen, &(port), sizeof(port));
     byteLen += sizeof(port);
 
-    //while ((ret = write(p->tcp_fd, buff, byteLen)) < 0 && errno == EAGAIN);
-    ret = write(p->tcp_fd, buff, byteLen);
+    ret = _nonblocking_send(p->tcp_fd, buff, byteLen);
 
-    if (ret == 0) {
+    if (ret == -1) {
         printf("Error in sending connect command ret:%d errno:%d\n", ret, errno);
         peer_mark_as_dead(p);
         return 0;
@@ -573,26 +572,17 @@ int DNSServer::peer_connected(struct peer_t *p)
 /* Returns 1 upon sent request; 0 upon serious error and 2 upon disconnect */
 int DNSServer::peer_sendreq(struct peer_t *p, struct request_t *r)
 {
-    //TODO: wrap up this unblocking sendto as function.
-    int nByteWritten = 0;
-    int nByteToWrite = r->bl + 2;
-    unsigned char* topPtr = r->b;
 
-    printf("Send request ID %d: %d of byte to write, %d of byte written\n", r->id, nByteToWrite, nByteWritten);
+    printf("Sending request ID %d to remote TCP DNS server.\n", r->id);
 
-    while(nByteToWrite > 0){
-        nByteWritten = write(p->tcp_fd, topPtr, nByteToWrite);
-        if(nByteWritten <0 && errno != EWOULDBLOCK){
-            printf("Errno (%d): Failed to send DNS request to remote DNS\n", errno);
-            peer_mark_as_dead(p);
-            return 2;
-        }else{
-            topPtr += nByteWritten;
-            nByteToWrite -= nByteWritten;
-            printf("Send request ID %d: %d of byte to write, %d of byte written\n", r->id, nByteToWrite, nByteWritten);
-        }
+    int rc;
+    if((rc = _nonblocking_send(p->tcp_fd, r->b, r->bl + 2)) == -1){
+        printf("Errno (%d): Failed to send DNS request to remote DNS\n", errno);
+        peer_mark_as_dead(p);
+        return 2;
     }
 
+    printf("DNS request ID %d was sent to remote TCP DNS server.\n", r->id);
     r->active = SENT;
     printf("peer_sendreq write attempt returned\n");
     return 1;
@@ -1030,4 +1020,40 @@ int DNSServer::_start_server()
             }
         }
     }
+}
+
+int DNSServer::_nonblocking_send(int fd, void* buff, int len)
+{
+    int nByteWritten = 0;
+    int nByteToWrite = len;
+    unsigned char* topPtr =(unsigned char*) buff;
+    int retry_count = 0;
+
+    printf("Send: %d of byte to write, %d of byte written\n", nByteToWrite, nByteWritten);
+
+    while(nByteToWrite > 0){
+
+        nByteWritten = write(fd, topPtr, nByteToWrite);
+
+        if(nByteWritten <0){
+
+            if((errno == EINTR || errno == EWOULDBLOCK)
+                    && retry_count < MAX_TCP_WRITE_TIME){
+                retry_count++;
+                nByteWritten = 0;
+            }else
+                return -1;
+
+        }else{
+            retry_count = 0;
+            topPtr += nByteWritten;
+            nByteToWrite -= nByteWritten;
+            printf("Send: %d of byte to write, %d of byte written\n", nByteToWrite, nByteWritten);
+
+        }
+
+    }
+
+    return len;
+
 }

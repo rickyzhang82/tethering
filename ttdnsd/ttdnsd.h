@@ -46,8 +46,10 @@ const int MAX_REQUESTS = 499;
 // 199, 1009
 // max line size for configuration processing
 const int MAX_LINE_SIZE = 1025;
-
+//maximum lenght of IPV4 address
 const int MAX_IPV4_ADDR_LENGTH = 20;
+//maximum TCP fd write retry times
+const int MAX_TCP_WRITE_TIME = 10;
 
 // Magic numbers
 const int RECV_BUF_SIZE = 1502;
@@ -170,7 +172,7 @@ protected:
     int request_add(struct request_t *r);
     int _start_server();
     void _stop_server();
-
+    int _nonblocking_send(int fd, void* buff, int len);
     void process_incoming_request(struct request_t *tmp);
 
     const char *  peer_socks5_display(struct peer_t *p);
