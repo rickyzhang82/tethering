@@ -27,6 +27,10 @@
 
 DNSServer * DNSServer::dns_instance = NULL;
 
+DNS_SERVER_STATE DNSServer::getDNSServerState()
+{
+    return this->dnsState;
+}
 
 DNSServer::DNSServer()
 {
@@ -49,6 +53,8 @@ DNSServer::DNSServer()
     strcpy(this->remoteSocksIP, DEFAULT_SOCKS5_IP);
     this->remoteSocksPort = DEFAULT_SOCKS5_PORT;
 
+    this->dnsState = TERMINATED;
+
 }
 
 DNSServer::~DNSServer()
@@ -68,6 +74,9 @@ int DNSServer::startDNSServer(int isDebugMode ,
                               const char* remoteSockProxyIP ,
                               int remoteSockProxyPort)
 {
+
+    this->dnsState = STARTING;
+
     this->isSockify = isSockify;
 
     this->isDebugMode = isDebugMode;
@@ -134,6 +143,8 @@ int DNSServer::startDNSServer(int isDebugMode ,
 
             printf("Failed to create DNS server thread.\n");
 
+            this->dnsState = TERMINATED;
+
             pthread_attr_destroy(rs_attr);
 
             return -1;
@@ -156,6 +167,8 @@ void DNSServer::stopDNSServer(const char* localDNSIP)
     }
 
     sendto(sockfd, MAGIC_STRING_STOP_DNS, strlen(MAGIC_STRING_STOP_DNS), 0, (struct sockaddr*)&addr, sizeof(addr));
+
+    this->dnsState = TERMINATING;
 
     printf("Magic string was sent to terminate DNS server: %s.\n", localDNSIP );
 
@@ -849,6 +862,9 @@ void DNSServer::_stop_server()
             close(peers[i].tcp_fd);
     }
     printf("DNS server is terminated.\n");
+
+    this->dnsState = TERMINATED;
+
 }
 
 int DNSServer::_start_server()
@@ -860,6 +876,8 @@ int DNSServer::_start_server()
     int i;
     int pfd_num;
     int socket_opt_val;
+
+    this->dnsState = STARTED;
 
     for (i = 0; i < MAX_PEERS; i++) {
         peers[i].tcp_fd = -1;

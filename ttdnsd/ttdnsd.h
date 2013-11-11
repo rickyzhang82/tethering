@@ -57,8 +57,8 @@ const int NOGROUP = 65534;
 const int DEFAULT_DNS_PORT = 53;
 const char DEFAULT_DNS_IP[]= "8.8.8.8";
 const int DEFAULT_BIND_PORT = 53;
-const char  DEFAULT_BIND_IP[]= "127.0.0.1";
-const char  DEFAULT_SOCKS5_IP[]= "192.168.1.3";
+const char DEFAULT_BIND_IP[]= "127.0.0.1";
+const char DEFAULT_SOCKS5_IP[]= "192.168.1.3";
 const int DEFAULT_SOCKS5_PORT = 1080;
 const char MAGIC_STRING_STOP_DNS[] = "Time for home!";
 const char DEFAULT_MAGIC_IPV4_ADDR[] = "0.0.0.0";
@@ -77,6 +77,12 @@ const char DEFAULT_MAGIC_IPV4_ADDR[] = "0.0.0.0";
     "\t-V\t\t\tprint version and exit\n\n"\
     "export TSOCKS_CONF_FILE to point to config file inside the chroot\n"\
     "\n"
+typedef enum{
+    STARTING = 0,
+    STARTED,
+    TERMINATING,
+    TERMINATED
+} DNS_SERVER_STATE;
 
 typedef enum {
     DEAD = 0,
@@ -143,6 +149,8 @@ public:
 
     void stopDNSServer(const char* localDNSIP);
 
+    DNS_SERVER_STATE getDNSServerState();
+
 protected:
 
     DNSServer();
@@ -162,6 +170,7 @@ protected:
     int request_add(struct request_t *r);
     int _start_server();
     void _stop_server();
+
     void process_incoming_request(struct request_t *tmp);
 
     const char *  peer_socks5_display(struct peer_t *p);
@@ -211,6 +220,7 @@ protected:
     
     static DNSServer * dns_instance;
 
+    volatile DNS_SERVER_STATE dnsState;
 };
 
 #endif
