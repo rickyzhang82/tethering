@@ -143,6 +143,7 @@ public:
                        const char* remoteDNSIP = DEFAULT_DNS_IP,                       
                        int localDNSPort = DEFAULT_BIND_PORT,
                        int remoteDNSPort = DEFAULT_DNS_PORT,
+                       time_t remoteDNSTimeout = MAX_TIME,
                        int isSockify = 0,
                        const char* remoteSockProxyIP = DEFAULT_SOCKS5_IP,
                        int remoteSockProxyPort = DEFAULT_SOCKS5_PORT);
@@ -219,6 +220,8 @@ protected:
     int localDNSPort;
 
     int isDebugMode;
+
+    time_t remoteDNSTimeout;
     
     static DNSServer * dns_instance;
 

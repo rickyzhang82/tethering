@@ -55,6 +55,8 @@ DNSServer::DNSServer()
 
     this->dnsState = TERMINATED;
 
+    this->remoteDNSTimeout = MAX_TIME;
+
 }
 
 DNSServer::~DNSServer()
@@ -70,12 +72,15 @@ int DNSServer::startDNSServer(int isDebugMode ,
                               const char* remoteDNSIP,
                               int localDNSPort ,
                               int remoteDNSPort ,
+                              time_t remoteDNSTimeout,
                               int isSockify ,
                               const char* remoteSockProxyIP ,
                               int remoteSockProxyPort)
 {
 
     this->dnsState = STARTING;
+
+    this->remoteDNSTimeout = remoteDNSTimeout;
 
     this->isSockify = isSockify;
 
@@ -614,6 +619,7 @@ int DNSServer::peer_readres(struct peer_t *p)
     while ((ret = read(p->tcp_fd, (p->b + p->bl), (RECV_BUF_SIZE - p->bl))) < 0 && errno == EAGAIN);
 
     if (ret == 0) {
+        printf("Nothing can be read from remote DNS.\n");
         peer_mark_as_dead(p);
         return 3;
     }
@@ -635,10 +641,10 @@ int DNSServer::peer_readres(struct peer_t *p)
                 return 2;
         }
 
-        printf("received answer %d bytes\n", p->bl);
-
         ul = (unsigned short int*)(p->b + 2);
         req_id = ntohs(*ul);
+
+        printf("received answer %d bytes with remote request ID (%d)\n", p->bl, req_id);
 
         if ((req = request_find(req_id)) == -1) {
             memmove(p->b, (p->b + len + 2), (p->bl - len - 2));
@@ -662,7 +668,7 @@ int DNSServer::peer_readres(struct peer_t *p)
         r->a.sin_family = AF_INET;
         while (sendto(udp_fd, (p->b + 2), len, 0, (struct sockaddr*)&r->a, sizeof(struct sockaddr_in)) < 0 && errno == EAGAIN);
 
-        printf("forwarding answer (%d bytes)\n", len);
+        printf("forwarding answer (%d bytes) with DNS request ID (%d)\n", len, *ul);
 
         memmove(p->b, p->b + len +2, p->bl - len - 2);
         p->bl -= len + 2;
@@ -772,7 +778,7 @@ int DNSServer::request_add(struct request_t *r)
                     continue;
                 }
             }
-            else if ((requests[pos].timeout + MAX_TIME) > ct) {
+            else if ((requests[pos].timeout + remoteDNSTimeout) > ct) {
                 // request timed out, take it
                 printf("Taking pos from timed out request.\n");
                 req_in_table = &requests[pos];
@@ -953,7 +959,7 @@ int DNSServer::_start_server()
 
         fr = poll(pfd, pfd_num, -1);
 
-        printf("Number %d file descriptors became ready\n", fr);
+        printf("Total number of (%d) file descriptors became ready\n", fr);
 
         // handle tcp connections
         for (i = 1; i < pfd_num; i++) {
@@ -967,6 +973,7 @@ int DNSServer::_start_server()
                     printf("Something is wrong! poll2peers[%i] is larger than MAX_PEERS: %i\n", i-1, peer);
                 } else switch (p->con) {
                 case CONNECTED:
+                    //read DNS from TCP port only if data is available
                     peer_readres(p);
                     break;
                 case CONNECTING:
