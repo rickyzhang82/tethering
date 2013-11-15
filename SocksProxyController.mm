@@ -306,6 +306,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     int         junk;
     struct sockaddr_in addr;
     int         port;
+    const int   on = 1;
 	
 	self.nConnections = 0;
     // Create a listening socket and use CFSocket to integrate it into our 
@@ -319,6 +320,9 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 	success = (fd != -1);
 
 	if (success) {
+        // set scoket to reuse port and ignore TIME_WAIT state
+        setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+        
 		memset(&addr, 0, sizeof(addr));
 		addr.sin_len    = sizeof(addr);
 		addr.sin_family = AF_INET;
@@ -330,15 +334,21 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 			port=ports[iport];
 			addr.sin_port   = htons(port);
 			err = bind(fd, (const struct sockaddr *) &addr, sizeof(addr));
-			success = (err == 0);
+            success = (err == 0);
 			if (success)
 				break;
+            else{
+                DLog(@"Socks Server failed to bind port (%d), errono (%d)\n", port, errno);
+            }
 		}
 	}
 	if (success) {
 		err = listen(fd, 5);
 		success = (err == 0);
-	}
+	}else{
+        DLog(@"Socks Server failed to bind to address, errno(%d)\n", errno);
+    }
+    
 	if (success) {
 		socklen_t   addrLen;
 
@@ -350,7 +360,10 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 			assert(addrLen == sizeof(addr));
 			port = ntohs(addr.sin_port);
 		}
-	}
+	}else{
+        DLog(@"Socks Server failed to listen, errno(%d)\n", errno);
+    }
+    
     if (success) {
         CFSocketContext context = { 0, self, NULL, NULL, NULL };
         
@@ -386,7 +399,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
         //self.netService = [[[NSNetService alloc] initWithDomain:@"local." type:@"_x-SNSUpload._tcp." name:@"Test" port:port] autorelease];
         self.netService = [[[NSNetService alloc] initWithDomain:@""		
 														   type:@"_socks5._tcp." 
-														   name:@"Test" 
+														   name:@"iPhone"
 														   port:port] autorelease];
         success = (self.netService != nil);
     }
@@ -453,6 +466,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
             [self _updateStatus:@"Please connect to wifi."];
             DLog(@"No local IP can be retrieved. iPhone may not connect to wifi network\n");
         }
+        
     }
 	
 	[self refreshProxyTable];
