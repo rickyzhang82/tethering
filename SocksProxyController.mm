@@ -443,10 +443,16 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
         _DNSServer = DNSServer::getInstance();
         _DNSServer->stopDNSServer();
     } else {
-        [self _startServer];
-        _DNSServer = DNSServer::getInstance();
-        const char * ipv4Addr = [currentAddress cStringUsingEncoding:NSASCIIStringEncoding];
-        _DNSServer->startDNSServer(0, ipv4Addr);
+        
+        if(currentAddress != nil){
+            [self _startServer];
+            _DNSServer = DNSServer::getInstance();
+            const char * ipv4Addr = [currentAddress cStringUsingEncoding:NSASCIIStringEncoding];
+            _DNSServer->startDNSServer(0, ipv4Addr);
+        }else{
+            [self _updateStatus:@"Please connect to wifi."];
+            DLog(@"No local IP can be retrieved. iPhone may not connect to wifi network\n");
+        }
     }
 	
 	[self refreshProxyTable];
