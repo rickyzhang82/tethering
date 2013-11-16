@@ -40,13 +40,6 @@
 }
 
 
-- (void)dealloc {
-	self.normalBackgroundColor = nil;
-	self.highlightedBackgroundColor = nil;
-	self.disabledBackgroundColor = nil;
-
-	[super dealloc];
-}
 
 
 - (void)setBackgroundColor:(UIColor*)aColor forState:(UIControlState)aState {

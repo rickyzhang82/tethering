@@ -28,10 +28,10 @@
 
 // Properties that don't need to be seen by the outside world.
 
-@property (nonatomic, retain)   NSInputStream *     receivenetworkStream;
-@property (nonatomic, retain)   NSOutputStream *    sendnetworkStream;
-@property (nonatomic, retain)   NSOutputStream *    remoteSendNetworkStream;
-@property (nonatomic, retain)   NSInputStream *     remoteReceiveNetworkStream;
+@property (nonatomic, strong)   NSInputStream *     receivenetworkStream;
+@property (nonatomic, strong)   NSOutputStream *    sendnetworkStream;
+@property (nonatomic, strong)   NSOutputStream *    remoteSendNetworkStream;
+@property (nonatomic, strong)   NSInputStream *     remoteReceiveNetworkStream;
 @property (nonatomic, readonly) uint8_t *           sendbuffer;
 @property (nonatomic, assign)   size_t              sendbufferOffset;
 @property (nonatomic, assign)   size_t              sendbufferLimit;
@@ -39,7 +39,7 @@
 @property (nonatomic, assign)   size_t              receivebufferOffset;
 @property (nonatomic, assign)   size_t              receivebufferLimit;
 @property (nonatomic, assign)   NSUInteger			protocolLocation;
-@property (nonatomic, retain)   NSString *			remoteName;
+@property (nonatomic, strong)   NSString *			remoteName;
 
 @end
 
@@ -106,12 +106,9 @@
     if(writeStream == NULL)
 		return NO;
     
-    self.receivenetworkStream = (NSInputStream *) readStream;
-    self.sendnetworkStream = (NSOutputStream *) writeStream;
+    self.receivenetworkStream = (NSInputStream *) CFBridgingRelease(readStream);
+    self.sendnetworkStream = (NSOutputStream *) CFBridgingRelease(writeStream);
     
-    CFRelease(readStream);
-    CFRelease(writeStream);
-
     [self.receivenetworkStream setProperty:(id)kCFBooleanTrue forKey:(NSString *)kCFStreamPropertyShouldCloseNativeSocket];
     [self.sendnetworkStream    setProperty:(id)kCFBooleanTrue forKey:(NSString *)kCFStreamPropertyShouldCloseNativeSocket];
 
@@ -405,7 +402,7 @@
 				if (command == 1) {
 					CFHostRef host;
 					if(!rc){
-						host = CFHostCreateWithName(NULL,(CFStringRef)addr);
+						host = CFHostCreateWithName(NULL,(__bridge CFStringRef)addr);
 						if (host == NULL) {
 							rc=4; //host unreachable								
 						}
@@ -420,14 +417,12 @@
 						CFRelease(host);
 					}
 					if(!rc) {
-						self.remoteReceiveNetworkStream = (NSInputStream *)readStream;
-						CFRelease(readStream);
+						self.remoteReceiveNetworkStream = (NSInputStream *)CFBridgingRelease(readStream);
 						self.remoteReceiveNetworkStream.delegate = self;
 						[self.remoteReceiveNetworkStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 						[self.remoteReceiveNetworkStream open];
 						
-						self.remoteSendNetworkStream = (NSOutputStream *)writeStream;
-						CFRelease(writeStream);
+						self.remoteSendNetworkStream = (NSOutputStream *)CFBridgingRelease(writeStream);
 						self.remoteSendNetworkStream.delegate = self;
 						[self.remoteSendNetworkStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 						[self.remoteSendNetworkStream open];

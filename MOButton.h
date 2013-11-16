@@ -15,9 +15,9 @@
 	UIColor* disabledBackgroundColor;
 }
 
-@property(nonatomic,retain) UIColor* normalBackgroundColor;
-@property(nonatomic,retain) UIColor* highlightedBackgroundColor;
-@property(nonatomic,retain) UIColor* disabledBackgroundColor;
+@property(nonatomic,strong) UIColor* normalBackgroundColor;
+@property(nonatomic,strong) UIColor* highlightedBackgroundColor;
+@property(nonatomic,strong) UIColor* disabledBackgroundColor;
 
 - (void)setBackgroundColor:(UIColor*)aColor forState:(UIControlState)aState;
 

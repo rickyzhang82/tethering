@@ -92,7 +92,6 @@
 																				target:self 
 																				action:@selector(doneButtonPressed:)];
 	self.navigationItem.rightBarButtonItem = doneButton;
-	[doneButton release];
 	
     [self _loadInfoContent];
 }
@@ -117,10 +116,5 @@
     self.webView = nil;
 }
 
-- (void)dealloc
-{
-    [self->_webView release];
-    [super dealloc];
-}
 
 @end

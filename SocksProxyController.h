@@ -46,7 +46,6 @@ enum {
     CFSocketRef                 _listeningSocket;
 	
 	NSInteger				_nConnections;
-	SocksProxy *			_sendreceiveStream[NCONNECTIONS];
 	IBOutlet UITableView * proxyTableView;
 	
 @private
@@ -66,8 +65,8 @@ enum {
 @property (nonatomic, assign) NSInteger currentConnectionCount;
 @property (nonatomic, assign) NSInteger uploadData;
 @property (nonatomic, assign) NSInteger downloadData;
-@property (nonatomic, retain) IBOutlet MOGlassButton *                  gettingStartedButton;
-@property (nonatomic, retain) IBOutlet MOGlassButton *                  startOrStopButton;
+@property (nonatomic, strong) IBOutlet MOGlassButton *                  gettingStartedButton;
+@property (nonatomic, strong) IBOutlet MOGlassButton *                  startOrStopButton;
 
 - (IBAction)startOrStopAction:(id)sender;
 - (IBAction)showGettingStartedAction:(id)sender;

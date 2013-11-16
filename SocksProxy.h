@@ -37,7 +37,7 @@ enum {
     NSOutputStream *             _sendnetworkStream;
     NSOutputStream *            _remoteSendNetworkStream;
     NSInputStream *             _remoteReceiveNetworkStream;
-    id <SocksProxyDelegate> delegate;
+    id <SocksProxyDelegate> __weak delegate;
     uint8_t                     _sendbuffer[kSendBufferSize];
     size_t                      _sendbufferOffset;
     size_t                      _sendbufferLimit;
@@ -48,7 +48,7 @@ enum {
 	NSString *					_remoteName;
 }
 
-@property (nonatomic, assign) id <SocksProxyDelegate> delegate;
+@property (nonatomic, weak) id <SocksProxyDelegate> delegate;
 @property (nonatomic, readonly) BOOL isSendingReceiving;
 
 - (void)stopSendReceiveWithStatus:(NSString *)statusString;

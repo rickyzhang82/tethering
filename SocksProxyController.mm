@@ -38,10 +38,10 @@
 // Properties that don't need to be seen by the outside world.
 
 @property (nonatomic, readonly) BOOL                isStarted;
-@property (nonatomic, retain)   NSNetService *      netService;
+@property (nonatomic, strong)   NSNetService *      netService;
 @property (nonatomic, assign)   CFSocketRef         listeningSocket;
 @property (nonatomic, assign)   NSInteger			nConnections;
-@property (nonatomic, readonly) SocksProxy **       sendreceiveStream;
+@property (nonatomic, strong) NSMutableArray*       sendreceiveStream;
 
 // Forward declarations
 
@@ -55,9 +55,11 @@
 // A synthesised getter doesn't compile.
 
 
-- (SocksProxy **)sendreceiveStream
+- (NSMutableArray*)sendreceiveStream
 {
-    return self->_sendreceiveStream;
+    if(_sendreceiveStream == nil)
+        _sendreceiveStream = [[NSMutableArray alloc]init];
+    return _sendreceiveStream;
 }
 
 
@@ -119,10 +121,9 @@
 - (NSInteger)countOpen
 {
 	int countOpen = 0;
-	int i;
-	for (i = 0 ; i < self.nConnections ; ++i)
+    for(SocksProxy* asocksProxy in self.sendreceiveStream)
 	{
-		if ( ! self.sendreceiveStream[i].isSendingReceiving )
+        if ( ! [asocksProxy isSendingReceiving])
 			++countOpen;
 	}
 	return countOpen;
@@ -220,31 +221,39 @@
 - (void)_acceptConnection:(int)fd
 {
 	SocksProxy *proxy = nil;
-	int i;
-	for (i = 0 ; i < self.nConnections ; ++i)
-	{
-		if (!self.sendreceiveStream[i].isSendingReceiving) 
-		{
-			proxy = self.sendreceiveStream[i];
-			break;
-		}
-	}
+    BOOL isFoundFreeProxy = NO;
+	int totalNumProxy = 0;
+    
+    for(proxy in self.sendreceiveStream)
+    {
+        if(![proxy isSendingReceiving])
+        {
+            isFoundFreeProxy = YES;
+            break;
+        }
+        totalNumProxy++;
+    }
 	
-	if(!proxy) {
-		if(i>NCONNECTIONS) {
+	if(!isFoundFreeProxy) {
+		if(totalNumProxy>NCONNECTIONS) {
 			close(fd);
 			return;
 		}
+        
 		proxy = [SocksProxy new];
-		self.sendreceiveStream[i] = proxy;
-		self.sendreceiveStream[i].delegate = self;
+        proxy.delegate = self;
+        [self.sendreceiveStream addObject:proxy];
+        
 		++self.nConnections;
 		self.currentConnectionCount = self.nConnections;
 	}
+    
+    //recount open connection
 	int countOpen = 0;
-	for (i = 0 ; i < self.nConnections ; ++i)
+    
+	for (SocksProxy* asocksProxy in self.sendreceiveStream)
 	{
-		if (!self.sendreceiveStream[i].isSendingReceiving)
+		if (![asocksProxy isSendingReceiving])
 			++countOpen;
 	}
 
@@ -269,7 +278,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     // assert(address == NULL);
     assert(data != NULL);
     
-    obj = (SocksProxyController *) info;
+    obj = (__bridge SocksProxyController *) info;
     assert(obj != nil);
 
     #pragma unused(s)
@@ -365,7 +374,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     }
     
     if (success) {
-        CFSocketContext context = { 0, self, NULL, NULL, NULL };
+        CFSocketContext context = { 0, (__bridge void*)self, NULL, NULL, NULL };
         
         self.listeningSocket = CFSocketCreateWithNative(
             NULL, 
@@ -397,10 +406,10 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 
     if (success) {
         //self.netService = [[[NSNetService alloc] initWithDomain:@"local." type:@"_x-SNSUpload._tcp." name:@"Test" port:port] autorelease];
-        self.netService = [[[NSNetService alloc] initWithDomain:@""		
+        self.netService = [[NSNetService alloc] initWithDomain:@""		
 														   type:@"_socks5._tcp." 
 														   name:@"iPhone"
-														   port:port] autorelease];
+														   port:port];
         success = (self.netService != nil);
     }
     if (success) {
@@ -428,10 +437,10 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 
 - (void)_stopServer:(NSString *)reason
 {
-	int i = 0;
-	for ( ; i < self.nConnections ; ++i) {
-		if (self.sendreceiveStream[i].isSendingReceiving)
-			[self.sendreceiveStream[i] stopSendReceiveWithStatus:@"Cancelled"];
+	for (SocksProxy* asocksProxy in self.sendreceiveStream)
+	{
+		if (![asocksProxy isSendingReceiving])
+			[asocksProxy stopSendReceiveWithStatus:@"Cancelled"];
     }
 	
     if (self.netService != nil) {
@@ -480,8 +489,6 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 	[[navigationController navigationBar] setBarStyle:UIBarStyleDefault];
 	//[self presentModalViewController:navigationController animated:YES];
 	
-	[navigationController release];
-	[infoViewController release];
 }
 
 
@@ -552,14 +559,9 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 - (void)dealloc
 {
     [self _stopServer:nil];
-	int i = 0;
-	for ( ; i < self.nConnections ; ++i)
-		[self.sendreceiveStream[i] dealloc];
     
-    [self->_statusLabel release];
-    [self->_startOrStopButton release];
-
-    [super dealloc];
+    [self.sendreceiveStream removeAllObjects];
+    
 }
 
 

@@ -164,7 +164,7 @@ typedef enum {
 	// set the cell text
     cell.detailTextLabel.text = detailText;
 	
-	return [cell autorelease];
+	return cell;
 }
 
 @end

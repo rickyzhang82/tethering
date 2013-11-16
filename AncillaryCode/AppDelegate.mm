@@ -157,7 +157,6 @@
 	badge = [UILocalNotification new];
 	[badge setApplicationIconBadgeNumber:(int)timeLeft/60];
 	[[UIApplication sharedApplication] presentLocalNotificationNow:badge];
-	[badge release];
 	if (timeLeft < MINS(1))
 	{
 		[UIApplication sharedApplication].applicationIconBadgeNumber = 0;
@@ -186,7 +185,6 @@
 		
 		// show the alert immediately
 		[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
-		[notif release];
 	}
 }
 @end

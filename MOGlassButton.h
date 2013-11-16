@@ -20,9 +20,9 @@
 	CALayer* outlineLayer;
 }
 
-@property(nonatomic,retain) CAGradientLayer* gradientLayer1;
-@property(nonatomic,retain) CAGradientLayer* gradientLayer2;
-@property(nonatomic,retain) CALayer* outlineLayer;
+@property(nonatomic,strong) CAGradientLayer* gradientLayer1;
+@property(nonatomic,strong) CAGradientLayer* gradientLayer2;
+@property(nonatomic,strong) CALayer* outlineLayer;
 
 - (void)setupAsGreenButton;
 - (void)setupAsRedButton;

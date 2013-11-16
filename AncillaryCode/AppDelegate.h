@@ -66,9 +66,9 @@
 	BOOL _warningTimeAlertShown;
 }
 
-@property (nonatomic, retain) IBOutlet UIWindow *           window;
-@property (nonatomic, retain) IBOutlet UITabBarController * tabs;
-@property (nonatomic, retain) IBOutlet SocksProxyController * viewController;
+@property (nonatomic, strong) IBOutlet UIWindow *           window;
+@property (nonatomic, strong) IBOutlet UITabBarController * tabs;
+@property (nonatomic, strong) IBOutlet SocksProxyController * viewController;
 
 
 + (AppDelegate *)sharedAppDelegate;
