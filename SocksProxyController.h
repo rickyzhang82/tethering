@@ -25,10 +25,8 @@
 #import "InfoController.h"
 
 #include "ttdnsd.h"
-
-enum {
-	NCONNECTIONS=100
-};
+//Max concurrent coonections
+#define MAX_CONNECTIONS 100
 
 @class MOGlassButton;
 

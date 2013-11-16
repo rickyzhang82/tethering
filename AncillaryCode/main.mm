@@ -55,9 +55,7 @@
 
 int main(int argc, char **argv)
 {
-    int                 retVal;
-    
-    retVal = UIApplicationMain(argc, argv, nil, nil);
-
-    return retVal;
+    @autoreleasepool {
+        return UIApplicationMain(argc, argv, nil, nil);
+    }
 }

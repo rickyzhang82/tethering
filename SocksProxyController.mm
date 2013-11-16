@@ -235,7 +235,7 @@
     }
 	
 	if(!isFoundFreeProxy) {
-		if(totalNumProxy>NCONNECTIONS) {
+		if(totalNumProxy>MAX_CONNECTIONS) {
 			close(fd);
 			return;
 		}
@@ -439,10 +439,12 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 {
 	for (SocksProxy* asocksProxy in self.sendreceiveStream)
 	{
-		if (![asocksProxy isSendingReceiving])
+		if ([asocksProxy isSendingReceiving])
 			[asocksProxy stopSendReceiveWithStatus:@"Cancelled"];
     }
 	
+    [self.sendreceiveStream removeAllObjects];
+    
     if (self.netService != nil) {
         [self.netService stop];
         self.netService = nil;
@@ -559,9 +561,6 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 - (void)dealloc
 {
     [self _stopServer:nil];
-    
-    [self.sendreceiveStream removeAllObjects];
-    
 }
 
 
