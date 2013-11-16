@@ -31,9 +31,9 @@ SCNetworkConnectionFlags connectionFlags;
 			// the second test keeps from picking up the loopback address
 			if (cursor->ifa_addr->sa_family == AF_INET && (cursor->ifa_flags & IFF_LOOPBACK) == 0) 
 			{
-				NSString *name = [NSString stringWithUTF8String:cursor->ifa_name];
+				NSString *name = @(cursor->ifa_name);
 				if ([name isEqualToString:@"en0"])  // Wi-Fi adapter
-					return [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)cursor->ifa_addr)->sin_addr)];
+					return @(inet_ntoa(((struct sockaddr_in *)cursor->ifa_addr)->sin_addr));
 			}
 			cursor = cursor->ifa_next;
 		}

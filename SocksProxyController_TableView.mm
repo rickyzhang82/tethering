@@ -109,7 +109,7 @@ typedef enum {
 				{
 					text = @"port";
 					if (self.currentPort)
-						detailText = [[NSNumber numberWithInt:self.currentPort] stringValue];
+						detailText = [@(self.currentPort) stringValue];
 					else
 						detailText = @"n/a";
 				}
@@ -123,28 +123,28 @@ typedef enum {
 				case (SocksProxyTableRowConnectionsOpen):
 				{
 					text = @"open";
-					detailText = [[NSNumber numberWithInt:self.currentOpenConnections] stringValue];
+					detailText = [@(self.currentOpenConnections) stringValue];
 				}
 				break;
 					
 				case (SocksProxyTableRowConnections):
 				{
 					text = @"count";
-					detailText = [[NSNumber numberWithInt:self.currentConnectionCount] stringValue];
+					detailText = [@(self.currentConnectionCount) stringValue];
 				}
 				break;
 					
 				case (SocksProxyTableRowDownload):
 				{
 					text = @"down";
-					detailText = [[NSNumber numberWithInt:self.downloadData] stringValue];
+					detailText = [@(self.downloadData) stringValue];
 				}
 				break;
 
 				case (SocksProxyTableRowUpload):
 				{
 					text = @"up";
-					detailText = [[NSNumber numberWithInt:self.uploadData] stringValue];
+					detailText = [@(self.uploadData) stringValue];
 				}
 				break;
 					

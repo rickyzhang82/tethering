@@ -27,12 +27,12 @@
 
 	self.gradientLayer1 = [[CAGradientLayer alloc] init];
 	gradientLayer1.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height/2);
-	gradientLayer1.colors = [NSArray arrayWithObjects:(id)[[UIColor colorFromRGBIntegers:255 green:255 blue:255 alpha:0.45f] CGColor], (id)[[UIColor colorFromRGBIntegers:255 green:235 blue:255 alpha:0.1f] CGColor], nil];
+	gradientLayer1.colors = @[(id)[[UIColor colorFromRGBIntegers:255 green:255 blue:255 alpha:0.45f] CGColor], (id)[[UIColor colorFromRGBIntegers:255 green:235 blue:255 alpha:0.1f] CGColor]];
 	[self.layer insertSublayer:gradientLayer1 atIndex:0];
 
 	self.gradientLayer2 = [[CAGradientLayer alloc] init];
 	gradientLayer2.frame = CGRectMake(0, self.frame.size.height/2, self.frame.size.width, self.frame.size.height/2);
-	gradientLayer2.colors = [NSArray arrayWithObjects:(id)[[UIColor colorFromRGBIntegers:205 green:205 blue:205 alpha:0.0f] CGColor], (id)[[UIColor colorFromRGBIntegers:235 green:215 blue:215 alpha:0.2f] CGColor], nil];
+	gradientLayer2.colors = @[(id)[[UIColor colorFromRGBIntegers:205 green:205 blue:205 alpha:0.0f] CGColor], (id)[[UIColor colorFromRGBIntegers:235 green:215 blue:215 alpha:0.2f] CGColor]];
 
 	self.outlineLayer = [[CALayer alloc] init];
 	outlineLayer.frame = CGRectMake(0, 1, self.frame.size.width, self.frame.size.height);
