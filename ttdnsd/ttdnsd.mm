@@ -16,6 +16,7 @@
  */
 
 #include "ttdnsd.h"
+#include "LoggerClient.h"
 
 /*
  *  Binary is linked with libtsocks therefore all TCP connections will
@@ -26,6 +27,23 @@
  */
 
 DNSServer * DNSServer::dns_instance = NULL;
+
+
+#ifndef NOT_HAVE_COCOA_FRAMEWORK
+int DNSServer::printf(const char * __restrict format, ...)
+{
+    va_list args;
+    va_start(args,format);
+    LogMessage_va(@"Network:DNS", 0, @(format), args);
+    va_end(args);
+    return 1;
+}
+
+void DNSServer::perror(const char *__s)
+{
+    LogMessage(@"Network:DNS", 0, @"Error: %s : %d\n",__s, errno);
+}
+#endif
 
 DNS_SERVER_STATE DNSServer::getDNSServerState()
 {
@@ -67,44 +85,44 @@ DNSServer::~DNSServer()
     delete this->localDNSIP;
 }
 
-int DNSServer::startDNSServer(int isDebugMode ,
-                              const char* localDNSIP ,
-                              const char* remoteDNSIP,
-                              int localDNSPort ,
-                              int remoteDNSPort ,
-                              time_t remoteDNSTimeout,
-                              int isSockify ,
-                              const char* remoteSockProxyIP ,
-                              int remoteSockProxyPort)
+int DNSServer::startDNSServer(int _isDebugMode,
+                              const char* _localDNSIP,
+                              const char* _remoteDNSIP,
+                              int _localDNSPort,
+                              int _remoteDNSPort,
+                              time_t _remoteDNSTimeout,
+                              int _isSockify,
+                              const char* _remoteSockProxyIP,
+                              int _remoteSockProxyPort)
 {
 
     this->dnsState = STARTING;
 
-    this->remoteDNSTimeout = remoteDNSTimeout;
+    this->remoteDNSTimeout = _remoteDNSTimeout;
 
-    this->isSockify = isSockify;
+    this->isSockify = _isSockify;
 
-    this->isDebugMode = isDebugMode;
+    this->isDebugMode = _isDebugMode;
 
-    if(isSockify){
+    if(_isSockify){
 
-        this->remoteSocksPort = remoteSockProxyPort;
+        this->remoteSocksPort = _remoteSockProxyPort;
 
         memset(this->remoteSocksIP, 0,MAX_IPV4_ADDR_LENGTH);
 
-        strcpy(this->remoteSocksIP,remoteSockProxyIP);
+        strcpy(this->remoteSocksIP,_remoteSockProxyIP);
 
     }
 
     in_addr_t ns;
 
-    if(inet_pton(AF_INET, remoteDNSIP, &ns)){
+    if(inet_pton(AF_INET, _remoteDNSIP, &ns)){
 
         nameservers.s_addr = ns;
 
         memset(this->remoteDNSIP, 0, MAX_IPV4_ADDR_LENGTH);
 
-        strcpy(this->remoteDNSIP, remoteDNSIP);
+        strcpy(this->remoteDNSIP, _remoteDNSIP);
 
     }else{
 
@@ -113,17 +131,17 @@ int DNSServer::startDNSServer(int isDebugMode ,
         return -1;
     }
 
-    this->remoteDNSPort = remoteDNSPort;
+    this->remoteDNSPort = _remoteDNSPort;
 
     memset(this->localDNSIP, 0, MAX_IPV4_ADDR_LENGTH);
 
-    strcpy(this->localDNSIP, localDNSIP);
+    strcpy(this->localDNSIP, _localDNSIP);
 
-    this->localDNSPort = localDNSPort;
+    this->localDNSPort = _localDNSPort;
 
     printf("Starting DNS server...\n");
 
-    if(this->isDebugMode){
+    if(_isDebugMode){
 
         return _start_server();
 
@@ -157,7 +175,7 @@ int DNSServer::startDNSServer(int isDebugMode ,
     }
 }
 
-void DNSServer::stopDNSServer(const char* localDNSIP)
+void DNSServer::stopDNSServer(const char* _localDNSIP)
 {
     //send magic string to DNS server
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -167,7 +185,7 @@ void DNSServer::stopDNSServer(const char* localDNSIP)
 
 
 
-    if(!inet_aton(localDNSIP, &addr.sin_addr)){
+    if(!inet_aton(_localDNSIP, &addr.sin_addr)){
         printf("Invalid IPv4 address for DNS server.\n Failed to terminate DNS server.\n");
     }
 
@@ -175,7 +193,7 @@ void DNSServer::stopDNSServer(const char* localDNSIP)
 
     this->dnsState = TERMINATING;
 
-    printf("Magic string was sent to terminate DNS server: %s.\n", localDNSIP );
+    printf("Magic string was sent to terminate DNS server: %s.\n", _localDNSIP );
 
     close(sockfd);
 
@@ -192,24 +210,6 @@ void DNSServer::stopDNSServer()
 
     stopDNSServer(ipv4_dns_addr);
 }
-
-
-#ifndef NOT_HAVE_COCOA_FRAMEWORK
-int DNSServer::printf(const char * __restrict format, ...)
-{
-    va_list args;
-    va_start(args,format);
-    NSLogv(@(format), args) ;
-    va_end(args);
-    return 1;
-}
-
-void DNSServer::perror(const char *__s)
-{
-    NSLog(@"Error: %s : %d\n",__s, errno);
-
-}
-#endif
 
 /* Returns a display name for the peer; currently inet_ntoa, so
    statically allocated */
@@ -400,7 +400,7 @@ int DNSServer::peer_socks5_rcv_auth_process(struct peer_t *p)
     int ret;
     char buff[100];
     memset(buff,0,100);
-    while ((ret = read(p->tcp_fd, buff, 100)) < 0 && errno == EAGAIN);
+    while ((ret = read(p->tcp_fd, buff, sizeof(buff))) < 0 && errno == EAGAIN);
 
     if(ret == 0){
         peer_mark_as_dead(p);
@@ -485,7 +485,7 @@ int DNSServer::peer_socks5_rcv_cmd_process(struct peer_t *p)
     int ret;
     char buff[1024];
     memset(buff,0,1024);
-    while ((ret = read(p->tcp_fd, buff, 1024)) < 0 && errno == EAGAIN);
+    while ((ret = read(p->tcp_fd, buff, sizeof(buff))) < 0 && errno == EAGAIN);
 
     if(ret == 0){
         peer_mark_as_dead(p);

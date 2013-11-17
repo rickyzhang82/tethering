@@ -468,12 +468,16 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
         _DNSServer->stopDNSServer();
     } else {
         
+        if(self.currentAddress == nil)
+            self.currentAddress = [UIDevice localWiFiIPAddress];
+        
         if(currentAddress != nil){
             [self _startServer];
             _DNSServer = DNSServer::getInstance();
             const char * ipv4Addr = [currentAddress cStringUsingEncoding:NSASCIIStringEncoding];
             _DNSServer->startDNSServer(0, ipv4Addr);
         }else{
+            
             [self _updateStatus:@"Please connect to wifi."];
             DLog(@"No local IP can be retrieved. iPhone may not connect to wifi network\n");
         }

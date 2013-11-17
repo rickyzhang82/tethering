@@ -138,15 +138,15 @@ public:
     
     ~DNSServer();
     /*Start DNS server in posix thread*/
-    int startDNSServer(int isDebugMode = 1,
-                       const char* localDNSIP = DEFAULT_MAGIC_IPV4_ADDR,
-                       const char* remoteDNSIP = DEFAULT_DNS_IP,                       
-                       int localDNSPort = DEFAULT_BIND_PORT,
-                       int remoteDNSPort = DEFAULT_DNS_PORT,
-                       time_t remoteDNSTimeout = MAX_TIME,
-                       int isSockify = 0,
-                       const char* remoteSockProxyIP = DEFAULT_SOCKS5_IP,
-                       int remoteSockProxyPort = DEFAULT_SOCKS5_PORT);
+    int startDNSServer(int _isDebugMode = 1,
+                       const char* _localDNSIP = DEFAULT_MAGIC_IPV4_ADDR,
+                       const char* _remoteDNSIP = DEFAULT_DNS_IP,
+                       int _localDNSPort = DEFAULT_BIND_PORT,
+                       int _remoteDNSPort = DEFAULT_DNS_PORT,
+                       time_t _remoteDNSTimeout = MAX_TIME,
+                       int _isSockify = 0,
+                       const char* _remoteSockProxyIP = DEFAULT_SOCKS5_IP,
+                       int _remoteSockProxyPort = DEFAULT_SOCKS5_PORT);
 
     void stopDNSServer();
 
