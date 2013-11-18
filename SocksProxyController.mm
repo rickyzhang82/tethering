@@ -88,7 +88,7 @@
 	
 	[self refreshProxyTable];
 	
-	DLog(@"Server Started");
+	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_INFO, @"Server Started");
 }
 
 - (void)_serverDidStopWithReason:(NSString *)reason
@@ -114,7 +114,7 @@
 
 	[self refreshProxyTable];
 
-	DLog(@"Server Stopped: %@", reason);
+	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_INFO, @"Server Stopped: %@", reason);
 }
 
 
@@ -151,7 +151,7 @@
 
 	self.currentStatusText = statusString;
 
-	DLog(@"Status: %@", statusString);
+	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Status: %@", statusString);
 
 }
 
@@ -170,7 +170,7 @@
 
 	[self refreshProxyTable];
 	
-	DLog(@"Connection ended %d %d: %@", countOpen, self.nConnections, statusString);
+	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_INFO, @"Connection ended %ld %ld: %@", (long)countOpen, (long)self.nConnections, statusString);
 }
 
 
@@ -236,6 +236,7 @@
 	
 	if(!isFoundFreeProxy) {
 		if(totalNumProxy>MAX_CONNECTIONS) {
+            LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_WARNNING, @"Reach maximum number of concurrent SOCKS connectionss.");
 			close(fd);
 			return;
 		}
@@ -257,7 +258,7 @@
 			++countOpen;
 	}
 
-	DLog(@"Accept connection %d %d", countOpen, self.nConnections);
+	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_INFO, @"Accept connection %d %ld", countOpen, (long)self.nConnections);
 
 	if (![proxy startSendReceive:fd])
 		close(fd);
@@ -347,7 +348,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 			if (success)
 				break;
             else{
-                DLog(@"Socks Server failed to bind port (%d), errono (%d)\n", port, errno);
+                LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_ERROR, @"Socks Server failed to bind port (%d), errono (%d)", port, errno);
             }
 		}
 	}
@@ -355,7 +356,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 		err = listen(fd, 5);
 		success = (err == 0);
 	}else{
-        DLog(@"Socks Server failed to bind to address, errno(%d)\n", errno);
+        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_ERROR, @"Socks Server failed to bind to address, errno(%d)", errno);
     }
     
 	if (success) {
@@ -370,7 +371,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 			port = ntohs(addr.sin_port);
 		}
 	}else{
-        DLog(@"Socks Server failed to listen, errno(%d)\n", errno);
+        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_ERROR, @"Socks Server failed to listen, errno(%d)", errno);
     }
     
     if (success) {
@@ -405,11 +406,10 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     // for more info about this simplifying assumption.
 
     if (success) {
-        //self.netService = [[[NSNetService alloc] initWithDomain:@"local." type:@"_x-SNSUpload._tcp." name:@"Test" port:port] autorelease];
-        self.netService = [[NSNetService alloc] initWithDomain:@""		
-														   type:@"_socks5._tcp." 
-														   name:@"iPhone"
-														   port:port];
+        self.netService = [[NSNetService alloc] initWithDomain:@""
+                                                          type:@"_socks5._tcp."
+                                                          name:@"iPhone"
+                                                          port:port];
         success = (self.netService != nil);
     }
     if (success) {
@@ -479,7 +479,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
         }else{
             
             [self _updateStatus:@"Please connect to wifi."];
-            DLog(@"No local IP can be retrieved. iPhone may not connect to wifi network\n");
+            LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_WARNNING, @"No local IP can be retrieved. iPhone may not connect to wifi network\n");
         }
         
     }
@@ -518,7 +518,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 
 - (void)applicationDidEnterForeground:(NSNotification *)n
 {
-	DLog(@"refreshing ip address");
+	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"refreshing ip address");
 	
 	// refresh the IP address, just in case
 	self.currentAddress = [UIDevice localWiFiIPAddress];

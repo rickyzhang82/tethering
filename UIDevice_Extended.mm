@@ -60,7 +60,7 @@ SCNetworkConnectionFlags connectionFlags;
 	
 	if (!didRetrieveFlags) 
 	{
-        DLog(@"Error. Could not recover network reachability flags");
+        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_ERROR, @"Error. Could not recover network reachability flags");
 	}
 }
 

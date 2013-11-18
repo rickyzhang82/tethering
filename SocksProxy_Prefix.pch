@@ -11,10 +11,57 @@
 #import "UIDevice_Extended.h"
 #endif
 
-#define DEBUG 1
+#define USE_NSLOGGER_LIB 1
+
 
 #ifdef DEBUG
-#define DLog NSLog
+
+
+    #ifdef USE_NSLOGGER_LIB
+
+        #include "LoggerClient.h"
+
+        #define LOG_NETWORK_DNS(level, ...)    LogMessageF(__FILE__,__LINE__,__FUNCTION__,@"network:dns",level,__VA_ARGS__)
+
+        #define LOG_NETWORK_DNS_VA(level, format, va_args) LogMessageF_va(__FILE__,__LINE__,__FUNCTION__,@"network:dns",level, format, va_args)
+
+        #define LOG_NETWORK_SOCKS(level, ...)    LogMessageF(__FILE__,__LINE__,__FUNCTION__,@"network:socks",level,__VA_ARGS__)
+
+        #define LOG_GENERAL(level, ...)    LogMessageF(__FILE__,__LINE__,__FUNCTION__,@"general",level,__VA_ARGS__)
+
+        #define LOG_GRAPHICS(level, ...)   LogMessageF(__FILE__,__LINE__,__FUNCTION__,@"graphics",level,__VA_ARGS__)
+
+    #else
+
+        #define LOG_NETWORK_DNS(level, ...)    NSLog(__VA_ARGS__)
+
+        #define LOG_NETWORK_DNS_VA(level, format, va_args) NSLogv(format, va_args)
+
+        #define LOG_NETWORK_SOCKS(level, ...) NSLog(__VA_ARGS__)
+
+        #define LOG_GENERAL(level, ...)    NSLog(__VA_ARGS__)
+
+        #define LOG_GRAPHICS(level, ...)   NSLog(__VA_ARGS__)
+
+    #endif
+
 #else
-#define DLog(X, ...) ;;;
+        #define LOG_NETWORK_DNS(...)    do{}while(0)
+        #define LOG_NETWORK_DNS_VA(level, format, va_args) do{}while(0)
+        #define LOG_NETWORK_SOCKS(...)    do{}while(0)
+        #define LOG_GENERAL(...)    do{}while(0)
+        #define LOG_GRAPHICS(...)   do{}while(0)
 #endif
+
+#if defined(DEBUG) && !defined(NDEBUG) && defined(USE_NSLOGGER_LIB)
+    #undef assert
+    #if __DARWIN_UNIX03
+    #define assert(e) \
+        (__builtin_expect(!(e), 0) ? (CFShow(CFSTR("assert going to fail, connect NSLogger NOW\n")), LoggerFlush(NULL,YES), __assert_rtn(__func__, __FILE__, __LINE__, #e)) : (void)0)
+    #else
+        #define assert(e)  \
+        (__builtin_expect(!(e), 0) ? (CFShow(CFSTR("assert going to fail, connect NSLogger NOW\n")), LoggerFlush(NULL,YES), __assert(#e, __FILE__, __LINE__)) : (void)0)
+    #endif
+#endif
+
+

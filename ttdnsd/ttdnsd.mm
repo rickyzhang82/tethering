@@ -16,7 +16,6 @@
  */
 
 #include "ttdnsd.h"
-#include "LoggerClient.h"
 
 /*
  *  Binary is linked with libtsocks therefore all TCP connections will
@@ -28,20 +27,19 @@
 
 DNSServer * DNSServer::dns_instance = NULL;
 
-
 #ifndef NOT_HAVE_COCOA_FRAMEWORK
 int DNSServer::printf(const char * __restrict format, ...)
 {
     va_list args;
     va_start(args,format);
-    LogMessage_va(@"Network:DNS", 0, @(format), args);
+    LOG_NETWORK_DNS_VA(NSLOGGER_LEVEL_TRACE, @(format), args);
     va_end(args);
     return 1;
 }
 
 void DNSServer::perror(const char *__s)
 {
-    LogMessage(@"Network:DNS", 0, @"Error: %s : %d\n",__s, errno);
+    LOG_NETWORK_DNS(NSLOGGER_LEVEL_ERROR, @"Error: %s : %d\n",__s, errno);
 }
 #endif
 

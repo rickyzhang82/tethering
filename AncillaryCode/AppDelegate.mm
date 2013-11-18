@@ -103,7 +103,7 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    DLog(@"%s", __func__);
+    LOG_GENERAL(NSLOGGER_LEVEL_TRACE, @"Entered into backgrond mode.");
 
 	// if no networking, then ignore the bg operations
 
@@ -116,7 +116,7 @@
     __block UIBackgroundTaskIdentifier ident;
 	
     ident = [application beginBackgroundTaskWithExpirationHandler: ^{
-        DLog(@"Background task expiring!");
+        LOG_GENERAL(NSLOGGER_LEVEL_TRACE, @"Background task expiring!");
 		
         [application endBackgroundTask: ident];
     }];
@@ -151,7 +151,7 @@
 	
 	NSTimeInterval timeLeft = [UIApplication sharedApplication].backgroundTimeRemaining;
 	
-	DLog(@"Background time remaining: %.0f seconds (~%d mins)", timeLeft, (int)timeLeft / 60);
+	LOG_GENERAL(NSLOGGER_LEVEL_TRACE, @"Background time remaining: %.0f seconds (~%d mins)", timeLeft, (int)timeLeft / 60);
 
 	UILocalNotification *badge = nil;
 	badge = [UILocalNotification new];
@@ -169,7 +169,8 @@
 		&& !_warningTimeAlertShown)
 	{
 		NSString *msg = NSLocalizedString(@"Your connection will be closed immediately", nil);
-		DLog(msg,nil);
+        
+        LOG_GENERAL(NSLOGGER_LEVEL_TRACE, msg);
 		
 		// build the UIAlert to be displayed
 		notif = [UILocalNotification new];
