@@ -52,7 +52,6 @@
 */
 
 #import "AppDelegate.h"
-#import "InfoController.h"
 #import "SocksProxyController.h"
 
 /// background timer task constants

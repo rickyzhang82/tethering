@@ -25,7 +25,6 @@
 #import "AppDelegate.h"
 #import "UIDevice_Extended.h"
 #import "MOGlassButton.h"
-#import "InfoController.h"
 
 #include <CFNetwork/CFNetwork.h>
 
@@ -488,16 +487,6 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 }
 
 
-- (IBAction)showGettingStartedAction:(id)sender
-{
-	InfoController *infoViewController = [[InfoController alloc] init];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:infoViewController];
-	[[navigationController navigationBar] setBarStyle:UIBarStyleDefault];
-	//[self presentModalViewController:navigationController animated:YES];
-	
-}
-
-
 #pragma mark * View controller boilerplate
 
 @synthesize currentPort;
@@ -507,7 +496,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 @synthesize downloadData, uploadData;
 @synthesize currentStatusText;//       = _statusLabel;
 @synthesize startOrStopButton = _startOrStopButton;
-@synthesize gettingStartedButton = _gettingStartedButton;
+
 
 
 - (void)refreshProxyTable
@@ -529,7 +518,9 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
 	[UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+    
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(applicationDidEnterForeground:)
 												 name:UIApplicationWillEnterForegroundNotification
@@ -537,21 +528,10 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     assert(self.startOrStopButton != nil);
     
 	self.currentStatusText = NSLocalizedString(@"Tap Start to start the server", nil);
+    
 	[self.startOrStopButton setupAsGreenButton];
-/*	
-	UIGraphicsBeginImageContext(self.startOrStopButton.frame.size);
-	
-	CGContextRef theContext = UIGraphicsGetCurrentContext();
-	[self.startOrStopButton.layer renderInContext:theContext];
-	UIImage *theImage = UIGraphicsGetImageFromCurrentImageContext();
-	NSData *theData = UIImagePNGRepresentation(theImage);
-	[theData writeToFile:@"/Users/danielsachse/Desktop/setupAsGreenButton.png" atomically:NO];
-	
-	UIGraphicsEndImageContext();
-*/	
-	[self.gettingStartedButton setupAsWhiteButton];
-	
-	self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    
+    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
 }
 
 

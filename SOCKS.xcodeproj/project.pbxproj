@@ -14,7 +14,6 @@
 		49847DDD12664F03001645B5 /* MOButton.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49847DDA12664F03001645B5 /* MOButton.mm */; };
 		49847DDE12664F03001645B5 /* MOGlassButton.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49847DDC12664F03001645B5 /* MOGlassButton.mm */; };
 		49847E0012665213001645B5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49847DFF12665213001645B5 /* QuartzCore.framework */; };
-		49847E5D126659F6001645B5 /* SocksProxyController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 49847E5C126659F6001645B5 /* SocksProxyController.xib */; };
 		49B6F91D12394DEC005D89AC /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 49B6F91A12394DEC005D89AC /* icon.png */; };
 		49B6F91E12394DEC005D89AC /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 49B6F91B12394DEC005D89AC /* icon@2x.png */; };
 		49B6F91F12394DEC005D89AC /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 49B6F91C12394DEC005D89AC /* iTunesArtwork */; };
@@ -23,17 +22,15 @@
 		542A644F1241261A003497CD /* UIDevice_Extended.mm in Sources */ = {isa = PBXBuildFile; fileRef = 542A644D1241261A003497CD /* UIDevice_Extended.mm */; };
 		546335FE10DAB3BE00D3A3AE /* README in Resources */ = {isa = PBXBuildFile; fileRef = 546335FD10DAB3BE00D3A3AE /* README */; };
 		5463365810DABA8E00D3A3AE /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5463365410DABA8E00D3A3AE /* AppDelegate.mm */; };
-		5463365910DABA8E00D3A3AE /* InfoController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5463365610DABA8E00D3A3AE /* InfoController.mm */; };
 		5463365A10DABA8E00D3A3AE /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5463365710DABA8E00D3A3AE /* main.mm */; };
 		54A0F9C6124127CC008878EF /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54A0F9C5124127CC008878EF /* SystemConfiguration.framework */; };
 		9C310C061826EF0000299F00 /* ttdnsd.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9C310C051826EF0000299F00 /* ttdnsd.mm */; };
+		9C3FB27A183FEB97001B81FA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C3FB279183FEB97001B81FA /* Main.storyboard */; };
 		9C5C8AB91825468200ED829D /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C5C8AB81825468200ED829D /* Default-568h@2x.png */; };
 		9C95E98618393629004559EB /* LoggerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C95E98418393629004559EB /* LoggerClient.m */; };
 		E40F66010FB1E38600D92710 /* SocksProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = E40F65FF0FB1E38600D92710 /* SocksProxy.mm */; };
 		E40F66BA0FB3029A00D92710 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E40F66B90FB3029A00D92710 /* CFNetwork.framework */; };
-		E4D544090FAB45DC00630176 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E4D544020FAB45DC00630176 /* MainWindow.xib */; };
 		E4D5443B0FAB4B1600630176 /* Info.html in Resources */ = {isa = PBXBuildFile; fileRef = E4D5443A0FAB4B1600630176 /* Info.html */; };
-		E4D544680FAB4F1A00630176 /* InfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E4D544670FAB4F1A00630176 /* InfoView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,7 +45,6 @@
 		49847DDB12664F03001645B5 /* MOGlassButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MOGlassButton.h; sourceTree = "<group>"; };
 		49847DDC12664F03001645B5 /* MOGlassButton.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MOGlassButton.mm; sourceTree = "<group>"; };
 		49847DFF12665213001645B5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		49847E5C126659F6001645B5 /* SocksProxyController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SocksProxyController.xib; sourceTree = "<group>"; };
 		49B6F91A12394DEC005D89AC /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		49B6F91B12394DEC005D89AC /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon@2x.png"; sourceTree = "<group>"; };
 		49B6F91C12394DEC005D89AC /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
@@ -62,13 +58,12 @@
 		546335FD10DAB3BE00D3A3AE /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		5463365310DABA8E00D3A3AE /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = AncillaryCode/AppDelegate.h; sourceTree = "<group>"; };
 		5463365410DABA8E00D3A3AE /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = AncillaryCode/AppDelegate.mm; sourceTree = "<group>"; };
-		5463365510DABA8E00D3A3AE /* InfoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InfoController.h; path = AncillaryCode/InfoController.h; sourceTree = "<group>"; };
-		5463365610DABA8E00D3A3AE /* InfoController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = InfoController.mm; path = AncillaryCode/InfoController.mm; sourceTree = "<group>"; };
 		5463365710DABA8E00D3A3AE /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = AncillaryCode/main.mm; sourceTree = "<group>"; };
 		54A0F9C5124127CC008878EF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		9C182A351828295F00F3F950 /* ttdnsd_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ttdnsd_platform.h; path = ttdnsd/ttdnsd_platform.h; sourceTree = "<group>"; };
 		9C310C041826EF0000299F00 /* ttdnsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ttdnsd.h; path = ttdnsd/ttdnsd.h; sourceTree = "<group>"; };
 		9C310C051826EF0000299F00 /* ttdnsd.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ttdnsd.mm; path = ttdnsd/ttdnsd.mm; sourceTree = "<group>"; };
+		9C3FB279183FEB97001B81FA /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		9C5C8AB81825468200ED829D /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		9C95E98318393629004559EB /* LoggerClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoggerClient.h; path = NSLogger/LoggerClient.h; sourceTree = "<group>"; };
 		9C95E98418393629004559EB /* LoggerClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LoggerClient.m; path = NSLogger/LoggerClient.m; sourceTree = "<group>"; };
@@ -77,9 +72,7 @@
 		E40F66000FB1E38600D92710 /* SocksProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxy.h; sourceTree = "<group>"; };
 		E40F66B90FB3029A00D92710 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		E4D544010FAB45DC00630176 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E4D544020FAB45DC00630176 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		E4D5443A0FAB4B1600630176 /* Info.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Info.html; sourceTree = "<group>"; wrapsLines = 1; };
-		E4D544670FAB4F1A00630176 /* InfoView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InfoView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,7 +110,6 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				546335FD10DAB3BE00D3A3AE /* README */,
-				49847E5C126659F6001645B5 /* SocksProxyController.xib */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -142,8 +134,6 @@
 				54122F1A10D88D4900836166 /* SocksProxyController.mm */,
 				542A644A1241261A003497CD /* SocksProxyController_TableView.h */,
 				542A644B1241261A003497CD /* SocksProxyController_TableView.mm */,
-				5463365510DABA8E00D3A3AE /* InfoController.h */,
-				5463365610DABA8E00D3A3AE /* InfoController.mm */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -165,6 +155,7 @@
 				5463365310DABA8E00D3A3AE /* AppDelegate.h */,
 				5463365410DABA8E00D3A3AE /* AppDelegate.mm */,
 				5463365710DABA8E00D3A3AE /* main.mm */,
+				9C3FB279183FEB97001B81FA /* Main.storyboard */,
 				49720A89127C1B37001873A0 /* ColorC.h */,
 				49720A8A127C1B37001873A0 /* ColorC.mm */,
 			);
@@ -184,8 +175,6 @@
 		54074CF4124127690036116E /* xibs */ = {
 			isa = PBXGroup;
 			children = (
-				E4D544020FAB45DC00630176 /* MainWindow.xib */,
-				E4D544670FAB4F1A00630176 /* InfoView.xib */,
 			);
 			name = xibs;
 			sourceTree = "<group>";
@@ -278,15 +267,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4D544090FAB45DC00630176 /* MainWindow.xib in Resources */,
+				9C3FB27A183FEB97001B81FA /* Main.storyboard in Resources */,
 				E4D5443B0FAB4B1600630176 /* Info.html in Resources */,
 				9C5C8AB91825468200ED829D /* Default-568h@2x.png in Resources */,
-				E4D544680FAB4F1A00630176 /* InfoView.xib in Resources */,
 				546335FE10DAB3BE00D3A3AE /* README in Resources */,
 				49B6F91D12394DEC005D89AC /* icon.png in Resources */,
 				49B6F91E12394DEC005D89AC /* icon@2x.png in Resources */,
 				49B6F91F12394DEC005D89AC /* iTunesArtwork in Resources */,
-				49847E5D126659F6001645B5 /* SocksProxyController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -302,7 +289,6 @@
 				E40F66010FB1E38600D92710 /* SocksProxy.mm in Sources */,
 				54122F1B10D88D4900836166 /* SocksProxyController.mm in Sources */,
 				5463365810DABA8E00D3A3AE /* AppDelegate.mm in Sources */,
-				5463365910DABA8E00D3A3AE /* InfoController.mm in Sources */,
 				5463365A10DABA8E00D3A3AE /* main.mm in Sources */,
 				542A644E1241261A003497CD /* SocksProxyController_TableView.mm in Sources */,
 				542A644F1241261A003497CD /* UIDevice_Extended.mm in Sources */,

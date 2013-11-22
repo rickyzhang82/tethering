@@ -22,7 +22,6 @@
 
 #import <UIKit/UIKit.h>
 #import "SocksProxy.h"
-#import "InfoController.h"
 
 #include "ttdnsd.h"
 //Max concurrent coonections
@@ -38,7 +37,6 @@
 	UILabel *					_countOpenLabel;
 	UILabel *					_nConnectionsLabel;
     MOGlassButton *                  _startOrStopButton;
-	MOGlassButton *                  _gettingStartedButton;
     
     NSNetService *              _netService;
     CFSocketRef                 _listeningSocket;
@@ -63,11 +61,9 @@
 @property (nonatomic, assign) NSInteger currentConnectionCount;
 @property (nonatomic, assign) NSInteger uploadData;
 @property (nonatomic, assign) NSInteger downloadData;
-@property (nonatomic, strong) IBOutlet MOGlassButton *                  gettingStartedButton;
 @property (nonatomic, strong) IBOutlet MOGlassButton *                  startOrStopButton;
 
 - (IBAction)startOrStopAction:(id)sender;
-- (IBAction)showGettingStartedAction:(id)sender;
 
 - (void)refreshProxyTable;
 @end
