@@ -1,7 +1,7 @@
 /*
  * LoggerClient.m
  *
- * version 1.5-beta 01-JUL-2013
+ * version 1.5-RC2 22-NOV-2013
  *
  * Main implementation of the NSLogger client side code
  * Part of NSLogger (client side)
@@ -77,7 +77,7 @@
  * optionally connect to a remote logger identified by an IP address / port
  * or a Host Name / port.
  *
- * The logger can optionally output its log to the console, like NSLog().
+ * The logger can optionally output its logs to the console, like NSLog().
  *
  * The logger can optionally buffer its logs to a file for which you specify the
  * full path. Upon connection to the desktop viewer, the file contents are
@@ -86,7 +86,12 @@
  *
  * Multiple loggers can coexist at the same time. You can perfectly use a
  * logger for your debug traces, and another that connects remotely to help
- * diagnostic issues while the application runs on your user's device.
+ * diagnose issues while the application runs on your user's device.
+ *
+ * The logger can optionally capture stdout and stderr. When running an
+ * application from the IDE, this will automatically capture everything that
+ * goes into the debugger console log, and insert it in the stream of logs
+ * sent to the viewer.
  *
  * Using the logger's flexible packet format, you can customize logging by
  * creating your own log types, and customize the desktop viewer to display
@@ -127,8 +132,6 @@
         #define CAST_TO_NSSTRING			__bridge NSString *
 		#define CAST_TO_CFDATA				__bridge CFDataRef
 		#define RELEASE(obj)				do{}while(0)
-		#define AUTORELEASE_POOL_BEGIN		@autoreleasepool{
-		#define AUTORELEASE_POOL_END		}
 		#define LOGGER_ARC_MACROS_DEFINED
 	#endif
 #endif
@@ -137,8 +140,6 @@
     #define CAST_TO_NSSTRING			NSString *
 	#define CAST_TO_CFDATA				CFDataRef
 	#define RELEASE(obj)				[obj release]
-	#define AUTORELEASE_POOL_BEGIN		NSAutoreleasePool *__pool=[[NSAutoreleasePool alloc] init];
-	#define AUTORELEASE_POOL_END		[__pool drain];
 #endif
 #undef LOGGER_ARC_MACROS_DEFINED
 
@@ -230,6 +231,11 @@ Logger *LoggerGetDefaultLogger(void)
 		pthread_mutex_unlock(&sDefaultLoggerMutex);
 	}
 	return l;
+}
+
+Logger *LoggerCheckDefaultLogger(void)
+{
+	return sDefaultLogger;
 }
 
 // -----------------------------------------------------------------------------
@@ -418,9 +424,12 @@ void LoggerStop(Logger *logger)
 		logger = sDefaultLogger;
 		sDefaultLogger = NULL;
 	}
-	CFIndex where = CFArrayGetFirstIndexOfValue(sLoggersList, CFRangeMake(0, CFArrayGetCount(sLoggersList)), (void const *)logger);
-	if (where != -1)
-		CFArrayRemoveValueAtIndex(sLoggersList, where);
+	if (sLoggersList != NULL && logger != NULL)
+	{
+		CFIndex where = CFArrayGetFirstIndexOfValue(sLoggersList, CFRangeMake(0, CFArrayGetCount(sLoggersList)), (void const *) logger);
+		if (where != -1)
+			CFArrayRemoveValueAtIndex(sLoggersList, where);
+	}
 	pthread_mutex_unlock(&sLoggersListMutex);
 
 	if (logger != NULL)
@@ -483,24 +492,25 @@ void LoggerFlush(Logger *logger, BOOL waitForConnection)
 	}
 }
 
-#if LOGGER_DEBUG
+#if LOGGER_DEBUG||1
 static void LoggerDbg(CFStringRef format, ...)
 {
 	// Internal debugging function
 	// (what do you think, that we use the Logger to debug itself ??)
 	if (format != NULL)
 	{
-		AUTORELEASE_POOL_BEGIN
-		va_list	args;	
-		va_start(args, format);
-		CFStringRef s = CFStringCreateWithFormatAndArguments(NULL, NULL, (CFStringRef)format, args);
-		va_end(args);
-		if (s != NULL)
+		@autoreleasepool
 		{
-			CFShow(s);
-			CFRelease(s);
+			va_list args;
+			va_start(args, format);
+			CFStringRef s = CFStringCreateWithFormatAndArguments(NULL, NULL, format, args);
+			va_end(args);
+			if (s != NULL)
+			{
+				CFShow(s);
+				CFRelease(s);
+			}
 		}
-		AUTORELEASE_POOL_END
 	}
 }
 #endif
@@ -1530,6 +1540,32 @@ static void LoggerServiceBrowserCallBack (CFNetServiceBrowserRef browser,
 						return;
 					}
 				}
+				else
+				{
+					// If the desktop viewer we found requested that only clients looking for its name can connect,
+					// honor the request and do not connect. This helps with teams having multiple devices and multiple
+					// desktops with NSLogger installed to avoid unwanted logs coming to a specific viewer
+					// To indicate that the desktop only wants clients that are looking for its specific name,
+					// the desktop sets the TXT record to be a dictionary containing the @"filterClients" key with value @"1"
+					CFDataRef txtData = CFNetServiceGetTXTData(service);
+					if (txtData != NULL)
+					{
+						CFDictionaryRef txtDict = CFNetServiceCreateDictionaryWithTXTData(NULL, txtData);
+						if (txtDict != NULL)
+						{
+							const void *value = CFDictionaryGetValue(txtDict, CFSTR("filterClients"));
+							Boolean mismatch = (value != NULL &&
+												CFGetTypeID((CFTypeRef)value) == CFStringGetTypeID() &&
+												CFStringCompare((CFStringRef)value, CFSTR("1"), 0) != kCFCompareEqualTo);
+							CFRelease(txtDict);
+							if (mismatch)
+							{
+								LOGGERDBG(CFSTR("-> service %@ requested that only clients looking for it do connect."), name, logger->bonjourServiceName);
+								return;
+							}
+						}
+					}
+				}
 				CFArrayAppendValue(logger->bonjourServices, service);
 				LoggerTryConnect(logger);
 			}
@@ -1757,11 +1793,11 @@ static BOOL LoggerConfigureAndOpenStream(Logger *logger)
 			// see http://developer.apple.com/library/ios/#technotes/tn2287/_index.html#//apple_ref/doc/uid/DTS40011309
 			// if we are running iOS 5 or later, use a special mode that allows the stack to downgrade gracefully
 	#if ALLOW_COCOA_USE
-            AUTORELEASE_POOL_BEGIN
-			NSString *versionString = [[UIDevice currentDevice] systemVersion];
-			if ([versionString compare:@"5.0" options:NSNumericSearch] != NSOrderedAscending)
-				SSLValues[0] = CFSTR("kCFStreamSocketSecurityLevelTLSv1_0SSLv3");
-            AUTORELEASE_POOL_END
+			@autoreleasepool {
+				NSString *versionString = [[UIDevice currentDevice] systemVersion];
+				if ([versionString compare:@"5.0" options:NSNumericSearch] != NSOrderedAscending)
+					SSLValues[0] = CFSTR("kCFStreamSocketSecurityLevelTLSv1_0SSLv3");
+			}
 	#else
 			// we can't find out, assume we _may_ be on iOS 5 but can't be certain
 			// go for SSLv3 which works without the TLS 1.2 / 1.1 / 1.0 downgrade issue
@@ -2047,19 +2083,19 @@ static void LoggerMessageAddTimestampAndThreadID(CFMutableDataRef encoder)
 			name = [threadDict objectForKey:@"__$NSLoggerThreadName$__"];
 			if (name == nil)
 			{
-				AUTORELEASE_POOL_BEGIN
-				// optimize CPU use by computing the thread name once and storing it back
-				// in the thread dictionary
-				name = [thread description];
-				NSRange range = [name rangeOfString:@"num = "];
-				if (range.location != NSNotFound)
-				{
-					name = [NSString stringWithFormat:@"Thread %@",
-							[name substringWithRange:NSMakeRange(range.location + range.length,
-																 [name length] - range.location - range.length - 1)]];
-					[threadDict setObject:name forKey:@"__$NSLoggerThreadName$__"];
+				@autoreleasepool {
+					// optimize CPU use by computing the thread name once and storing it back
+					// in the thread dictionary
+					name = [thread description];
+					NSRange range = [name rangeOfString:@"num = "];
+					if (range.location != NSNotFound)
+					{
+						name = [NSString stringWithFormat:@"Thread %@",
+														  [name substringWithRange:NSMakeRange(range.location + range.length,
+																							   [name length] - range.location - range.length - 1)]];
+						[threadDict setObject:name forKey:@"__$NSLoggerThreadName$__"];
+					}
 				}
-				AUTORELEASE_POOL_END
 			}
 		}
 		if (name != nil)
@@ -2279,32 +2315,34 @@ static void	LoggerPushClientInfoToFrontOfQueue(Logger *logger)
 #if TARGET_OS_IPHONE && ALLOW_COCOA_USE
 		if ([NSThread isMultiThreaded] || [NSThread isMainThread])
 		{
-			AUTORELEASE_POOL_BEGIN
-			UIDevice *device = [UIDevice currentDevice];
-			LoggerMessageAddString(encoder, (CAST_TO_CFSTRING)device.name, PART_KEY_UNIQUEID);
-			LoggerMessageAddString(encoder, (CAST_TO_CFSTRING)device.systemVersion, PART_KEY_OS_VERSION);
-			LoggerMessageAddString(encoder, (CAST_TO_CFSTRING)device.systemName, PART_KEY_OS_NAME);
-			LoggerMessageAddString(encoder, (CAST_TO_CFSTRING)device.model, PART_KEY_CLIENT_MODEL);
-			AUTORELEASE_POOL_END
+			@autoreleasepool
+			{
+				UIDevice *device = [UIDevice currentDevice];
+				LoggerMessageAddString(encoder, (CAST_TO_CFSTRING)device.name, PART_KEY_UNIQUEID);
+				LoggerMessageAddString(encoder, (CAST_TO_CFSTRING)device.systemVersion, PART_KEY_OS_VERSION);
+				LoggerMessageAddString(encoder, (CAST_TO_CFSTRING)device.systemName, PART_KEY_OS_NAME);
+				LoggerMessageAddString(encoder, (CAST_TO_CFSTRING)device.model, PART_KEY_CLIENT_MODEL);
+			}
 		}
 #elif TARGET_OS_MAC
 		CFStringRef osName = NULL, osVersion = NULL;
 	#if ALLOW_COCOA_USE
 		// Read the OS version without using deprecated Gestalt calls
-		AUTORELEASE_POOL_BEGIN
-		@try
+		@autoreleasepool
 		{
-			NSString* versionString = [[NSDictionary dictionaryWithContentsOfFile: @"/System/Library/CoreServices/SystemVersion.plist"] objectForKey: @"ProductVersion"];
-			if ([versionString length])
+			@try
 			{
-				osName = CFSTR("Mac OS X");
-				osVersion = CFRetain((CFStringRef)versionString);
+				NSString* versionString = [[NSDictionary dictionaryWithContentsOfFile: @"/System/Library/CoreServices/SystemVersion.plist"] objectForKey: @"ProductVersion"];
+				if ([versionString length])
+				{
+					osName = CFSTR("Mac OS X");
+					osVersion = CFRetain((CAST_TO_CFSTRING)versionString);
+				}
+			}
+			@catch (NSException *exc)
+			{
 			}
 		}
-		@catch (NSException *exc)
-		{
-		}
-		AUTORELEASE_POOL_END
 	#endif
 		if (osVersion == NULL)
 		{
