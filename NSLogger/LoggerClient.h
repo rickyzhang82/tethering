@@ -1,7 +1,7 @@
 /*
  * LoggerClient.h
  *
- * version 1.5-RC2 22-NOV-2013
+ * version 1.5 09-SEP-2014
  *
  * Part of NSLogger (client side)
  * https://github.com/fpillet/NSLogger
@@ -170,7 +170,6 @@ extern void LoggerSetupBonjour(Logger *logger, CFStringRef bonjourServiceType, C
 // Directly set the viewer host (hostname or IP address) and port we want to connect to. If set, LoggerStart() will
 // try to connect there first before trying Bonjour
 extern void LoggerSetViewerHost(Logger *logger, CFStringRef hostName, UInt32 port);
-
 
 // Configure the logger to use a local file for buffering, instead of memory.
 // - If you initially set a buffer file after logging started but while a logger connection
