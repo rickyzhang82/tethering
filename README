@@ -10,6 +10,9 @@ Ricky
 
 Change log
 ------------------------------------------------ 
+Release V1.3
+* Update NSLogger API compatible with iOS 8
+
 Release V1.2
 * Convert xib to storyboard
 * Fix Failed to compile: ttdnsd_platform.h not found error
