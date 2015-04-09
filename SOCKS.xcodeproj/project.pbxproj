@@ -104,8 +104,8 @@
 			isa = PBXGroup;
 			children = (
 				9C5C8AB81825468200ED829D /* Default-568h@2x.png */,
+				9C1900741AD729A00022F53D /* Classes */,
 				54074CF1124126F10036116E /* Other Sources */,
-				54074CEF124126A70036116E /* View Controllers */,
 				E4D543FE0FAB45DC00630176 /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -141,23 +141,11 @@
 		54074CF1124126F10036116E /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
-				9C95E9821839353D004559EB /* NSLogger */,
-				9C310C031826EEE900299F00 /* ttdnsd */,
-				49847DD912664F03001645B5 /* MOButton.h */,
-				49847DDA12664F03001645B5 /* MOButton.mm */,
-				49847DDB12664F03001645B5 /* MOGlassButton.h */,
-				49847DDC12664F03001645B5 /* MOGlassButton.mm */,
 				54074CF2124127320036116E /* SocksProxy_Prefix.pch */,
-				E40F66000FB1E38600D92710 /* SocksProxy.h */,
-				E40F65FF0FB1E38600D92710 /* SocksProxy.mm */,
-				542A644C1241261A003497CD /* UIDevice_Extended.h */,
-				542A644D1241261A003497CD /* UIDevice_Extended.mm */,
 				5463365310DABA8E00D3A3AE /* AppDelegate.h */,
 				5463365410DABA8E00D3A3AE /* AppDelegate.mm */,
 				5463365710DABA8E00D3A3AE /* main.mm */,
 				9C3FB279183FEB97001B81FA /* Main.storyboard */,
-				49720A89127C1B37001873A0 /* ColorC.h */,
-				49720A8A127C1B37001873A0 /* ColorC.mm */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -177,6 +165,50 @@
 			children = (
 			);
 			name = xibs;
+			sourceTree = "<group>";
+		};
+		9C1900741AD729A00022F53D /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				9C1900771AD737BD0022F53D /* Utility */,
+				9C1900761AD737220022F53D /* Network */,
+				9C1900751AD729D10022F53D /* UI */,
+				54074CEF124126A70036116E /* View Controllers */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		9C1900751AD729D10022F53D /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				49847DD912664F03001645B5 /* MOButton.h */,
+				49847DDA12664F03001645B5 /* MOButton.mm */,
+				49847DDB12664F03001645B5 /* MOGlassButton.h */,
+				49847DDC12664F03001645B5 /* MOGlassButton.mm */,
+				49720A89127C1B37001873A0 /* ColorC.h */,
+				49720A8A127C1B37001873A0 /* ColorC.mm */,
+			);
+			name = UI;
+			sourceTree = "<group>";
+		};
+		9C1900761AD737220022F53D /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				E40F66000FB1E38600D92710 /* SocksProxy.h */,
+				E40F65FF0FB1E38600D92710 /* SocksProxy.mm */,
+				542A644C1241261A003497CD /* UIDevice_Extended.h */,
+				542A644D1241261A003497CD /* UIDevice_Extended.mm */,
+				9C310C031826EEE900299F00 /* ttdnsd */,
+			);
+			name = Network;
+			sourceTree = "<group>";
+		};
+		9C1900771AD737BD0022F53D /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				9C95E9821839353D004559EB /* NSLogger */,
+			);
+			name = Utility;
 			sourceTree = "<group>";
 		};
 		9C310C031826EEE900299F00 /* ttdnsd */ = {
