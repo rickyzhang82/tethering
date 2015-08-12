@@ -12,6 +12,8 @@
 //  appreciated but not required.
 //
 
+//  08-11-2015 Remove ARC singleton template
+//
 #import "HTTPServer.h"
 #import "SynthesizeSingleton.h"
 #import <sys/socket.h>
@@ -37,7 +39,19 @@ NSString * const HTTPServerNotificationStateChanged = @"ServerNotificationStateC
 @synthesize lastError;
 @synthesize state;
 
-SYNTHESIZE_SINGLETON_FOR_CLASS(HTTPServer);
++(HTTPServer* )sharedHTTPServer
+{
+    static HTTPServer* sharedHTTPServer = nil;
+    @synchronized(self)
+    {
+        if (sharedHTTPServer == nil)
+        {
+            sharedHTTPServer = [[HTTPServer alloc] init];
+        }
+    }
+    
+    return sharedHTTPServer;
+}
 
 //
 // init
@@ -54,12 +68,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(HTTPServer);
 	{
 		self.state = SERVER_STATE_IDLE;
 		responseHandlers = [[NSMutableSet alloc] init];
-		incomingRequests =
-			CFDictionaryCreateMutable(
-				kCFAllocatorDefault,
-				0,
-				&kCFTypeDictionaryKeyCallBacks,
-				&kCFTypeDictionaryValueCallBacks);
+        incomingRequests =[NSMutableDictionary dictionary];
 	}
 	return self;
 }
@@ -74,7 +83,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(HTTPServer);
 -(void)stopBonjourServices
 {
     [netService stop];
-    [netService release];
     netService = nil;
 }
 
@@ -88,8 +96,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(HTTPServer);
 //
 - (void)setLastError:(NSError *)anError
 {
-	[anError retain];
-	[lastError release];
 	lastError = anError;
 	
 	if (lastError == nil)
@@ -183,7 +189,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(HTTPServer);
 	address.sin_port = htons(self.httpServerPort);
 	CFDataRef addressData =
 		CFDataCreate(NULL, (const UInt8 *)&address, sizeof(address));
-	[(id)addressData autorelease];
 	
 	if (CFSocketSetAddress(socket, addressData) != kCFSocketSuccess)
 	{
@@ -230,7 +235,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(HTTPServer);
 		removeObserver:self
 		name:NSFileHandleDataAvailableNotification
 		object:incomingFileHandle];
-	CFDictionaryRemoveValue(incomingRequests, incomingFileHandle);
+	[incomingRequests removeObjectForKey:incomingFileHandle];
 }
 
 //
@@ -250,11 +255,10 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(HTTPServer);
 	[responseHandlers removeAllObjects];
 
 	[listeningHandle closeFile];
-	[listeningHandle release];
 	listeningHandle = nil;
 	
 	for (NSFileHandle *incomingFileHandle in
-		[[(NSDictionary *)incomingRequests copy] autorelease])
+		[(NSDictionary *)incomingRequests copy])
 	{
 		[self stopReceivingForFileHandle:incomingFileHandle close:YES];
 	}
@@ -288,10 +292,8 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(HTTPServer);
 
     if(incomingFileHandle)
 	{
-		CFDictionaryAddValue(
-			incomingRequests,
-			incomingFileHandle,
-			[(id)CFHTTPMessageCreateEmpty(kCFAllocatorDefault, TRUE) autorelease]);
+        [incomingRequests setObject:(__bridge id)CFHTTPMessageCreateEmpty(kCFAllocatorDefault, TRUE)
+                             forKey:incomingFileHandle];
 		
 		[[NSNotificationCenter defaultCenter]
 			addObserver:self
@@ -328,7 +330,8 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(HTTPServer);
 	}
 
 	CFHTTPMessageRef incomingRequest =
-		(CFHTTPMessageRef)CFDictionaryGetValue(incomingRequests, incomingFileHandle);
+		(__bridge CFHTTPMessageRef)[incomingRequests objectForKey: incomingFileHandle];
+    
 	if (!incomingRequest)
 	{
 		[self stopReceivingForFileHandle:incomingFileHandle close:YES];

@@ -26,6 +26,8 @@ typedef enum
 	SERVER_STATE_STOPPING
 } HTTPServerState;
 
+static const int HTTP_SERVER_PORT = 8080;
+
 @class HTTPResponseHandler;
 
 @interface HTTPServer : NSObject <NSNetServiceDelegate>
@@ -34,7 +36,7 @@ typedef enum
 	NSFileHandle *listeningHandle;
 	CFSocketRef socket;
 	HTTPServerState state;
-	CFMutableDictionaryRef incomingRequests;
+	NSMutableDictionary *incomingRequests;
 	NSMutableSet *responseHandlers;
     NSNetService *netService;
 }

@@ -160,13 +160,11 @@ static NSMutableArray *registeredHandlers = nil;
 	server:(HTTPServer *)aServer
 {
 	NSDictionary *requestHeaderFields =
-		[(NSDictionary *)CFHTTPMessageCopyAllHeaderFields(aRequest)
-			autorelease];
+		(__bridge NSDictionary *)CFHTTPMessageCopyAllHeaderFields(aRequest);
 	NSURL *requestURL =
-		[(NSURL *)CFHTTPMessageCopyRequestURL(aRequest) autorelease];
+		(__bridge NSURL *)CFHTTPMessageCopyRequestURL(aRequest);
 	NSString *method =
-		[(NSString *)CFHTTPMessageCopyRequestMethod(aRequest)
-			autorelease];
+		(__bridge NSString *)CFHTTPMessageCopyRequestMethod(aRequest);
 
 	Class classForRequest =
 		[self handlerClassForRequest:aRequest
@@ -175,14 +173,13 @@ static NSMutableArray *registeredHandlers = nil;
 			headerFields:requestHeaderFields];
 	
 	HTTPResponseHandler *handler =
-		[[[classForRequest alloc]
+		[[classForRequest alloc]
 			initWithRequest:aRequest
 			method:method
 			url:requestURL
 			headerFields:requestHeaderFields
 			fileHandle:requestFileHandle
-			server:aServer]
-		autorelease];
+			server:aServer];
 	
 	return handler;
 }
@@ -214,12 +211,12 @@ static NSMutableArray *registeredHandlers = nil;
 	self = [super init];
 	if (self != nil)
 	{
-		request = (CFHTTPMessageRef)[(id)aRequest retain];
-		requestMethod = [method retain];
-		url = [requestURL retain];
-		headerFields = [requestHeaderFields retain];
-		fileHandle = [requestFileHandle retain];
-		server = [aServer retain];
+		request = aRequest;
+		requestMethod = method;
+		url = requestURL;
+		headerFields = requestHeaderFields;
+		fileHandle = requestFileHandle;
+		server = aServer;
 
 		[[NSNotificationCenter defaultCenter]
 			addObserver:self
@@ -258,7 +255,7 @@ static NSMutableArray *registeredHandlers = nil;
 		response, (CFStringRef)@"Connection", (CFStringRef)@"close");
 	CFHTTPMessageSetBody(
 		response,
-		(CFDataRef)[[NSString stringWithFormat:
+		(__bridge CFDataRef)[[NSString stringWithFormat:
 				@"<html><head><title>501 - Not Implemented</title></head>"
 				@"<body><h1>501 - Not Implemented</h1>"
 				@"<p>No handler exists to handle %@.</p></body></html>",
@@ -267,7 +264,7 @@ static NSMutableArray *registeredHandlers = nil;
 	CFDataRef headerData = CFHTTPMessageCopySerializedMessage(response);
 	@try
 	{
-		[fileHandle writeData:(NSData *)headerData];
+		[fileHandle writeData:(__bridge NSData *)headerData];
 	}
 	@catch (NSException *exception)
 	{
@@ -321,11 +318,9 @@ static NSMutableArray *registeredHandlers = nil;
 			name:NSFileHandleDataAvailableNotification
 			object:fileHandle];
 		[fileHandle closeFile];
-		[fileHandle release];
 		fileHandle = nil;
 	}
 	
-	[server release];
 	server = nil;
 }
 
@@ -385,19 +380,14 @@ static NSMutableArray *registeredHandlers = nil;
 		[self endResponse];
 	}
 	
-	[(id)request release];
 	request = nil;
 
-	[requestMethod release];
 	requestMethod = nil;
 
-	[url release];
 	url = nil;
 
-	[headerFields release];
 	headerFields = nil;
 
-	[super dealloc];
 }
 
 @end
