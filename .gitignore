@@ -16,6 +16,7 @@ profile
 *.moved-aside
 DerivedData
 .idea/
+xarchive/
 
 #Qt unit test
 ttdnsd.config
