@@ -21,25 +21,32 @@ SCNetworkConnectionFlags connectionFlags;
 + (NSString *) localWiFiIPAddress
 {
 	BOOL success;
-	struct ifaddrs * addrs;
+    NSString * wifiIPAddress = nil;
+	struct ifaddrs * addrList = NULL;
 	const struct ifaddrs * cursor;
 	
-	success = getifaddrs(&addrs) == 0;
-	if (success) {
-		cursor = addrs;
-		while (cursor != NULL) {
+	success = getifaddrs(&addrList) == 0;
+	if (success)
+    {
+        for (cursor = addrList; cursor != NULL; cursor = cursor->ifa_next)
+        {
 			// the second test keeps from picking up the loopback address
 			if (cursor->ifa_addr->sa_family == AF_INET && (cursor->ifa_flags & IFF_LOOPBACK) == 0) 
 			{
 				NSString *name = @(cursor->ifa_name);
 				if ([name isEqualToString:@"en0"])  // Wi-Fi adapter
-					return @(inet_ntoa(((struct sockaddr_in *)cursor->ifa_addr)->sin_addr));
+                {
+					wifiIPAddress = [NSString stringWithUTF8String:
+                                     (inet_ntoa(((struct sockaddr_in *)cursor->ifa_addr)->sin_addr))];
+                    break;
+                }
 			}
-			cursor = cursor->ifa_next;
 		}
-		freeifaddrs(addrs);
+        
+		freeifaddrs(addrList);
 	}
-	return nil;
+    
+    return wifiIPAddress;
 }
 
 #pragma mark Checking Connections
