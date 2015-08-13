@@ -465,16 +465,26 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
         [self _stopServer:nil];
         _DNSServer = DNSServer::getInstance();
         _DNSServer->stopDNSServer();
+        _HTTPServer = [HTTPServer sharedHTTPServerWithSocksProxyPort:currentPort];
+        [_HTTPServer stop];
     } else {
         
         if(self.currentAddress == nil)
             self.currentAddress = [UIDevice localWiFiIPAddress];
         
         if(currentAddress != nil){
+            //start socks proxy server
             [self _startServer];
+            //start DNS server
             _DNSServer = DNSServer::getInstance();
             const char * ipv4Addr = [currentAddress cStringUsingEncoding:NSASCIIStringEncoding];
             _DNSServer->startDNSServer(0, ipv4Addr);
+            //start HTTP server that advertise socks.pac
+            _HTTPServer = [HTTPServer sharedHTTPServerWithSocksProxyPort:currentPort];
+            HTTPServerState currentHTTPServerState = [_HTTPServer state] ;
+            if (currentHTTPServerState == SERVER_STATE_IDLE ||
+                currentHTTPServerState == SERVER_STATE_STOPPING)
+                [_HTTPServer start];
         }else{
             
             [self _updateStatus:@"Please connect to wifi."];

@@ -160,11 +160,11 @@ static NSMutableArray *registeredHandlers = nil;
 	server:(HTTPServer *)aServer
 {
 	NSDictionary *requestHeaderFields =
-		(__bridge NSDictionary *)CFHTTPMessageCopyAllHeaderFields(aRequest);
+		(__bridge_transfer NSDictionary *)CFHTTPMessageCopyAllHeaderFields(aRequest);
 	NSURL *requestURL =
-		(__bridge NSURL *)CFHTTPMessageCopyRequestURL(aRequest);
+		(__bridge_transfer NSURL *)CFHTTPMessageCopyRequestURL(aRequest);
 	NSString *method =
-		(__bridge NSString *)CFHTTPMessageCopyRequestMethod(aRequest);
+		(__bridge_transfer NSString *)CFHTTPMessageCopyRequestMethod(aRequest);
 
 	Class classForRequest =
 		[self handlerClassForRequest:aRequest
@@ -211,7 +211,7 @@ static NSMutableArray *registeredHandlers = nil;
 	self = [super init];
 	if (self != nil)
 	{
-		request = aRequest;
+        request = (CFHTTPMessageRef)CFRetain(aRequest);
 		requestMethod = method;
 		url = requestURL;
 		headerFields = requestHeaderFields;
@@ -281,16 +281,7 @@ static NSMutableArray *registeredHandlers = nil;
 
 - (NSString *)serverIPForRequest
 {
-	int socket = [fileHandle fileDescriptor];
-    struct sockaddr_in address;
-    socklen_t address_len;
-	NSString *result = nil;
-	
-    address_len = sizeof(address);
-    if (getsockname(socket, (struct sockaddr *)&address, &address_len) == 0) {
-        result = [NSString stringWithFormat:@"%s", inet_ntoa(address.sin_addr)];
-    }
-	return result;
+	return [UIDevice localWiFiIPAddress];
 }
 
 //
@@ -320,7 +311,6 @@ static NSMutableArray *registeredHandlers = nil;
 		[fileHandle closeFile];
 		fileHandle = nil;
 	}
-	
 	server = nil;
 }
 
@@ -379,7 +369,8 @@ static NSMutableArray *registeredHandlers = nil;
 	{
 		[self endResponse];
 	}
-	
+    
+    CFRelease(request);
 	request = nil;
 
 	requestMethod = nil;

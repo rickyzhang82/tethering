@@ -64,16 +64,10 @@
     
     NSString *requestPath = [url path];
     
-    if ([@"/http.pac" isEqualToString:requestPath] && currentIP) {
-        fileData = [[NSString stringWithFormat:
-            @"function FindProxyForURL(url, host) { return \"PROXY %@:%d\"; }",
-            currentIP, HTTP_PROXY_PORT] dataUsingEncoding:NSUTF8StringEncoding];
-    }
-    
     if ([@"/socks.pac" isEqualToString:requestPath] && currentIP) {
         fileData = [[NSString stringWithFormat:
-            @"function FindProxyForURL(url, host) { return \"SOCKS %@:%d\"; }",
-            currentIP, SOCKS_PROXY_PORT] dataUsingEncoding:NSUTF8StringEncoding];
+            @"function FindProxyForURL(url, host) { return \"SOCKS %@:%ld\"; }",
+            currentIP, (long)server.socksProxyPort] dataUsingEncoding:NSUTF8StringEncoding];
     }
     
     if (fileData) {
@@ -90,13 +84,13 @@
                                          (CFStringRef)@"close");
         CFHTTPMessageSetHeaderFieldValue(response,
                                          (CFStringRef)@"Content-Length",
-                                         (CFStringRef)[NSString stringWithFormat:@"%ld", [fileData length]]);
+                                         (__bridge CFStringRef)[NSString stringWithFormat:@"%ld", (unsigned long)[fileData length]]);
 
         CFDataRef headerData = CFHTTPMessageCopySerializedMessage(response);
         
         @try
         {
-            [fileHandle writeData:(NSData *)headerData];
+            [fileHandle writeData:(__bridge NSData *)headerData];
             [fileHandle writeData:fileData];
         }
         @catch (NSException *exception)
@@ -119,7 +113,7 @@
         
         @try
         {
-            [fileHandle writeData:(NSData *)headerData];
+            [fileHandle writeData:(__bridge NSData *)headerData];
         }
         @catch (NSException *exception)
         {

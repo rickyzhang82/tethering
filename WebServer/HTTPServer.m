@@ -12,10 +12,9 @@
 //  appreciated but not required.
 //
 
-//  08-11-2015 Remove ARC singleton template
+//  08-11-2015 Add ARC support and remove singleton template
 //
 #import "HTTPServer.h"
-#import "SynthesizeSingleton.h"
 #import <sys/socket.h>
 #import <netinet/in.h>
 #if TARGET_OS_IPHONE
@@ -53,6 +52,20 @@ NSString * const HTTPServerNotificationStateChanged = @"ServerNotificationStateC
     return sharedHTTPServer;
 }
 
++ (HTTPServer *)sharedHTTPServerWithSocksProxyPort: (NSInteger) socksProxyPort
+{
+    static HTTPServer* sharedHTTPServerWithSocksProxyPort = nil;
+    @synchronized(self)
+    {
+        if (sharedHTTPServerWithSocksProxyPort == nil)
+        {
+            sharedHTTPServerWithSocksProxyPort = [[HTTPServer alloc] initWithSocksProxyPort:socksProxyPort];
+        }
+    }
+    
+    return sharedHTTPServerWithSocksProxyPort;
+}
+
 //
 // init
 //
@@ -73,9 +86,22 @@ NSString * const HTTPServerNotificationStateChanged = @"ServerNotificationStateC
 	return self;
 }
 
+- (id)initWithSocksProxyPort: (NSInteger)socksProxyPort
+{
+    self = [super init];
+    if (self != nil)
+    {
+        self.state = SERVER_STATE_IDLE;
+        self.socksProxyPort = socksProxyPort;
+        responseHandlers = [[NSMutableSet alloc] init];
+        incomingRequests =[NSMutableDictionary dictionary];
+    }
+    return self;
+}
+
 -(void)startBonjourServices
 {
-    netService = [[NSNetService alloc] initWithDomain:@"" type:@"_iproxyhttpserver._tcp." name:@"" port:self.httpServerPort];
+    netService = [[NSNetService alloc] initWithDomain:@"" type:@"_tetheringhttpserver._tcp." name:@"" port:self.httpServerPort];
     netService.delegate = self;
     [netService publish];
 }
@@ -178,6 +204,7 @@ NSString * const HTTPServerNotificationStateChanged = @"ServerNotificationStateC
 		(void *)&reuse, sizeof(int)) != 0)
 	{
 		[self errorWithName:@"Unable to set socket options."];
+        //TODO: log error with NSLogger
 		return;
 	}
 	
@@ -193,6 +220,8 @@ NSString * const HTTPServerNotificationStateChanged = @"ServerNotificationStateC
 	if (CFSocketSetAddress(socket, addressData) != kCFSocketSuccess)
 	{
 		[self errorWithName:@"Unable to bind socket to address."];
+        CFRelease(addressData);
+        //TODO: log error with NSLogger
 		return;
 	}
 
@@ -209,6 +238,8 @@ NSString * const HTTPServerNotificationStateChanged = @"ServerNotificationStateC
 	
 	self.state = SERVER_STATE_RUNNING;
     [self startBonjourServices];
+    
+    CFRelease(addressData);
 }
 
 //
@@ -271,7 +302,9 @@ NSString * const HTTPServerNotificationStateChanged = @"ServerNotificationStateC
 	}
 
 	self.state = SERVER_STATE_IDLE;
+    
     [self stopBonjourServices];
+    
 }
 
 //
@@ -292,8 +325,8 @@ NSString * const HTTPServerNotificationStateChanged = @"ServerNotificationStateC
 
     if(incomingFileHandle)
 	{
-        [incomingRequests setObject:(__bridge id)CFHTTPMessageCreateEmpty(kCFAllocatorDefault, TRUE)
-                             forKey:incomingFileHandle];
+        [incomingRequests setObject:(__bridge_transfer id)CFHTTPMessageCreateEmpty(kCFAllocatorDefault, TRUE)
+                             forKey:(id)incomingFileHandle];
 		
 		[[NSNotificationCenter defaultCenter]
 			addObserver:self

@@ -43,9 +43,11 @@ static const int HTTP_SERVER_PORT = 8080;
 
 @property (nonatomic, readonly, retain) NSError *lastError;
 @property (readonly, assign) HTTPServerState state;
-@property (readonly) UInt32 httpServerPort;
+@property (nonatomic, readonly) UInt32 httpServerPort;
+@property (nonatomic) NSInteger socksProxyPort;
 
 + (HTTPServer *)sharedHTTPServer;
++ (HTTPServer *)sharedHTTPServerWithSocksProxyPort: (NSInteger) socksProxyPort;
 
 - (void)start;
 - (void)stop;
