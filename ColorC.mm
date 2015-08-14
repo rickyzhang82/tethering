@@ -29,8 +29,9 @@
 	CGFloat alphaF    = alpha/1.0f;
 	
 	CGColorRef    color = [UIColor createRGBValue:redF green:greenF blue:blueF alpha:alphaF];
-	
-	return [UIColor colorWithCGColor:color];
+    UIColor * uicolor = [UIColor colorWithCGColor:color];
+    CFRelease(color);
+	return uicolor;
 }
 
 @end
