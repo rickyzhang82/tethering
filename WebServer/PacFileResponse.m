@@ -101,6 +101,7 @@
         @finally
         {
             CFRelease(headerData);
+            CFRelease(response);
             [server closeHandler:self];
         }
     } else {
