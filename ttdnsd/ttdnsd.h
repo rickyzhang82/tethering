@@ -227,7 +227,6 @@ protected:
 
     volatile DNS_SERVER_STATE dnsState;
     
-    pthread_t rs_thread;
 };
 
 #endif

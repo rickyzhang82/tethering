@@ -478,8 +478,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
             //start DNS server
             _DNSServer = DNSServer::getInstance();
             const char * ipv4Addr = [currentAddress cStringUsingEncoding:NSASCIIStringEncoding];
-            if(_DNSServer->getDNSServerState() == DNS_SERVER_TERMINATED)
-                _DNSServer->startDNSServer(0, ipv4Addr);
+            _DNSServer->startDNSServer(0, ipv4Addr);
             //start HTTP server that advertise socks.pac
             _HTTPServer = [HTTPServer sharedHTTPServerWithSocksProxyPort:currentPort];
             HTTPServerState currentHTTPServerState = [_HTTPServer state] ;

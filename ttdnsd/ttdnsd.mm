@@ -145,13 +145,15 @@ int DNSServer::startDNSServer(int _isDebugMode,
 
     }else{
         //create a new thread.
+        pthread_t * rs_thread = new pthread_t;
+        
         pthread_attr_t rs_attr;
 
         pthread_attr_init(&rs_attr);
 
         pthread_attr_setdetachstate(&rs_attr, PTHREAD_CREATE_DETACHED);
 
-        if(pthread_create(&rs_thread, &rs_attr, _dns_srv_thread_wrapper, NULL) == 0){
+        if(pthread_create(rs_thread, &rs_attr, _dns_srv_thread_wrapper, NULL) == 0){
 
             printf("DNS server thread is created.\n");
 
