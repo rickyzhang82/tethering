@@ -80,10 +80,10 @@ const char DEFAULT_MAGIC_IPV4_ADDR[] = "0.0.0.0";
     "export TSOCKS_CONF_FILE to point to config file inside the chroot\n"\
     "\n"
 typedef enum{
-    STARTING = 0,
-    STARTED,
-    TERMINATING,
-    TERMINATED
+    DNS_SERVER_STARTING = 0,
+    DNS_SERVER_STARTED,
+    DNS_SERVER_TERMINATING,
+    DNS_SERVER_TERMINATED
 } DNS_SERVER_STATE;
 
 typedef enum {
@@ -226,6 +226,8 @@ protected:
     static DNSServer * dns_instance;
 
     volatile DNS_SERVER_STATE dnsState;
+    
+    pthread_t rs_thread;
 };
 
 #endif

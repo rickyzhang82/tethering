@@ -69,7 +69,7 @@ DNSServer::DNSServer()
     strcpy(this->remoteSocksIP, DEFAULT_SOCKS5_IP);
     this->remoteSocksPort = DEFAULT_SOCKS5_PORT;
 
-    this->dnsState = TERMINATED;
+    this->dnsState = DNS_SERVER_TERMINATED;
 
     this->remoteDNSTimeout = MAX_TIME;
 
@@ -94,7 +94,7 @@ int DNSServer::startDNSServer(int _isDebugMode,
                               int _remoteSockProxyPort)
 {
 
-    this->dnsState = STARTING;
+    this->dnsState = DNS_SERVER_STARTING;
 
     this->remoteDNSTimeout = _remoteDNSTimeout;
 
@@ -145,28 +145,26 @@ int DNSServer::startDNSServer(int _isDebugMode,
 
     }else{
         //create a new thread.
-        pthread_t *rs_thread = new pthread_t;
+        pthread_attr_t rs_attr;
 
-        pthread_attr_t *rs_attr = new pthread_attr_t;
+        pthread_attr_init(&rs_attr);
 
-        pthread_attr_init(rs_attr);
+        pthread_attr_setdetachstate(&rs_attr, PTHREAD_CREATE_DETACHED);
 
-        pthread_attr_setdetachstate(rs_attr, PTHREAD_CREATE_DETACHED);
-
-        if(pthread_create(rs_thread, rs_attr, _dns_srv_thread_wrapper, NULL) == 0){
+        if(pthread_create(&rs_thread, &rs_attr, _dns_srv_thread_wrapper, NULL) == 0){
 
             printf("DNS server thread is created.\n");
 
-            pthread_attr_destroy(rs_attr);
+            pthread_attr_destroy(&rs_attr);
 
             return 0;
         }else{
 
             printf("Failed to create DNS server thread.\n");
 
-            this->dnsState = TERMINATED;
+            this->dnsState = DNS_SERVER_TERMINATED;
 
-            pthread_attr_destroy(rs_attr);
+            pthread_attr_destroy(&rs_attr);
 
             return -1;
         }
@@ -189,7 +187,7 @@ void DNSServer::stopDNSServer(const char* _localDNSIP)
 
     sendto(sockfd, MAGIC_STRING_STOP_DNS, strlen(MAGIC_STRING_STOP_DNS), 0, (struct sockaddr*)&addr, sizeof(addr));
 
-    this->dnsState = TERMINATING;
+    this->dnsState = DNS_SERVER_TERMINATING;
 
     printf("Magic string was sent to terminate DNS server: %s.\n", _localDNSIP );
 
@@ -857,7 +855,7 @@ void DNSServer::_stop_server()
     }
     printf("DNS server is terminated.\n");
 
-    this->dnsState = TERMINATED;
+    this->dnsState = DNS_SERVER_TERMINATED;
 
 }
 
@@ -871,7 +869,7 @@ int DNSServer::_start_server()
     int pfd_num;
     int socket_opt_val;
 
-    this->dnsState = STARTED;
+    this->dnsState = DNS_SERVER_STARTED;
 
     for (i = 0; i < MAX_PEERS; i++) {
         peers[i].tcp_fd = -1;
