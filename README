@@ -12,6 +12,10 @@ Ricky
 
 Change log
 ------------------------------------------------ 
+Release V1.4
+* Support iPad tethering. Add http server to host socks.pac file
+* Fix several memory leak issues.
+
 Release V1.3
 * Update NSLogger API compatible with iOS 8
 
