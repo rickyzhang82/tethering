@@ -23,9 +23,9 @@
 // create and return the new UIColor
 +(UIColor *)colorFromRGBIntegers:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha
 {
-	CGFloat redF    = red/255;
-	CGFloat greenF    = green/255;
-	CGFloat blueF    = blue/255;
+	CGFloat redF    = red/255.0f;
+	CGFloat greenF    = green/255.0f;
+	CGFloat blueF    = blue/255.0f;
 	CGFloat alphaF    = alpha/1.0f;
 	
 	CGColorRef    color = [UIColor createRGBValue:redF green:greenF blue:blueF alpha:alphaF];
