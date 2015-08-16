@@ -70,6 +70,12 @@
             currentIP, (long)server.socksProxyPort] dataUsingEncoding:NSUTF8StringEncoding];
     }
     
+    if ([@"/socks5.pac" isEqualToString:requestPath] && currentIP) {
+        fileData = [[NSString stringWithFormat:
+                     @"function FindProxyForURL(url, host) { return \"SOCKS5 %@:%ld\"; }",
+                     currentIP, (long)server.socksProxyPort] dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    
     if (fileData) {
         CFHTTPMessageRef response = CFHTTPMessageCreateResponse(kCFAllocatorDefault, 
                                     200, 
