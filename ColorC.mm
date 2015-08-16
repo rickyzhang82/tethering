@@ -10,16 +10,6 @@
 
 @implementation UIColor(ColorC)
 
-// helper function
-+(CGColorRef)createRGBValue:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha
-{
-	CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
-	CGFloat components[4] = {red, green, blue, alpha};
-	CGColorRef color = CGColorCreate(colorspace, components);
-	CGColorSpaceRelease(colorspace);
-	return color;
-}
-
 // create and return the new UIColor
 +(UIColor *)colorFromRGBIntegers:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha
 {
@@ -28,10 +18,7 @@
 	CGFloat blueF    = blue/255.0f;
 	CGFloat alphaF    = alpha/1.0f;
 	
-	CGColorRef    color = [UIColor createRGBValue:redF green:greenF blue:blueF alpha:alphaF];
-    UIColor * uicolor = [UIColor colorWithCGColor:color];
-    CFRelease(color);
-	return uicolor;
+	return [UIColor colorWithRed:redF green:greenF blue:blueF alpha:alphaF];
 }
 
 @end
