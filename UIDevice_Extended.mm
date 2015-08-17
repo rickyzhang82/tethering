@@ -34,7 +34,10 @@ SCNetworkConnectionFlags connectionFlags;
 			if (cursor->ifa_addr->sa_family == AF_INET && (cursor->ifa_flags & IFF_LOOPBACK) == 0) 
 			{
 				NSString *name = @(cursor->ifa_name);
-				if ([name isEqualToString:@"en0"])  // Wi-Fi adapter
+                
+                NSPredicate * isMatchWIFIInterfaceName = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @"en\\d+"];
+
+				if ([isMatchWIFIInterfaceName evaluateWithObject:name])  // Wi-Fi adapter
                 {
 					wifiIPAddress = [NSString stringWithUTF8String:
                                      (inet_ntoa(((struct sockaddr_in *)cursor->ifa_addr)->sin_addr))];
