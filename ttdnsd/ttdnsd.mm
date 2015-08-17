@@ -158,6 +158,8 @@ int DNSServer::startDNSServer(int _isDebugMode,
             printf("DNS server thread is created.\n");
 
             pthread_attr_destroy(&rs_attr);
+            
+            delete rs_thread;
 
             return 0;
         }else{
@@ -167,6 +169,8 @@ int DNSServer::startDNSServer(int _isDebugMode,
             this->dnsState = DNS_SERVER_TERMINATED;
 
             pthread_attr_destroy(&rs_attr);
+            
+            delete rs_thread;
 
             return -1;
         }
