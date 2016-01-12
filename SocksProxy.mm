@@ -17,61 +17,29 @@
  # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,USA.
  */
 #import "SocksProxy.h"
+#import "SocksProxy_protected.h"
 
 #include <CFNetwork/CFNetwork.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-@interface SocksProxy ()
-- (void)socksProtocol;
-
-// Properties that don't need to be seen by the outside world.
-
-@property (nonatomic, strong)   NSInputStream *     receivenetworkStream;
-@property (nonatomic, strong)   NSOutputStream *    sendnetworkStream;
-@property (nonatomic, strong)   NSOutputStream *    remoteSendNetworkStream;
-@property (nonatomic, strong)   NSInputStream *     remoteReceiveNetworkStream;
-@property (nonatomic, readonly) uint8_t *           sendbuffer;
-@property (nonatomic, assign)   size_t              sendbufferOffset;
-@property (nonatomic, assign)   size_t              sendbufferLimit;
-@property (nonatomic, readonly) uint8_t *           receivebuffer;
-@property (nonatomic, assign)   size_t              receivebufferOffset;
-@property (nonatomic, assign)   size_t              receivebufferLimit;
-@property (nonatomic, assign)   NSUInteger			protocolLocation;
-@property (nonatomic, strong)   NSString *			remoteName;
-
-@end
-
 @implementation SocksProxy
+
 
 #pragma mark * Core transfer code
 
-// This is the code that actually does the networking.
-
-@synthesize receivenetworkStream   = _receivenetworkStream;
-@synthesize sendnetworkStream   = _sendnetworkStream;
-@synthesize remoteSendNetworkStream      = _remoteSendNetworkStream;
-@synthesize remoteReceiveNetworkStream      = _remoteReceiveNetworkStream;
-@synthesize sendbufferOffset    = _sendbufferOffset;
-@synthesize sendbufferLimit     = _sendbufferLimit;
-@synthesize receivebufferOffset    = _receivebufferOffset;
-@synthesize receivebufferLimit     = _receivebufferLimit;
-@synthesize protocolLocation  = _protocolLocation;
-@synthesize delegate;
-@synthesize remoteName			= _remoteName;
 // Because buffer is declared as an array, you have to use a custom getter.  
 // A synthesised getter doesn't compile.
-
 - (uint8_t *)sendbuffer
 {
     return self->_sendbuffer;
 }
+
 - (uint8_t *)receivebuffer
 {
     return self->_receivebuffer;
 }
-
 
 - (BOOL)isSendingReceiving
 {
@@ -90,8 +58,8 @@
     self.receivebufferLimit  = 0;
 	self.sendbufferOffset = 0;
     self.sendbufferLimit  = 0;
-	self.remoteName=nil;
-	self.protocolLocation=0;
+	self.remoteName = nil;
+	self.protocolLocation = 0;
 	self.receivenetworkStream = nil;
 	self.sendnetworkStream = nil;
 	self.remoteSendNetworkStream = nil;
@@ -115,7 +83,7 @@
     self.receivenetworkStream.delegate = self;
     self.sendnetworkStream.delegate = self;
     [self.receivenetworkStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    [self.sendnetworkStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    [self.sendnetworkStream    scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     
     [self.receivenetworkStream open];
     [self.sendnetworkStream open];
@@ -281,7 +249,7 @@
 		uint8_t *s = self.receivebuffer + self.receivebufferOffset;
 		uint8_t *e = self.receivebuffer + self.receivebufferLimit;
 		
-		LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"protocol %lu %d", (unsigned long)self.protocolLocation, e - s);
+		LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"protocol %lu %ld", (unsigned long)self.protocolLocation, e - s);
 
 		// if the protocol did not advance then it is an indication that we dont
 		// have enough data in self.receivebuffer
@@ -328,7 +296,7 @@
 				
 				if ([self sendData:buf size:2] != 2) {
 					[self stopSendReceiveWithStatus:@"Cant send reply"];
-					break;								
+					break;
 				}
 				[self sendBuffer];
 				
@@ -342,7 +310,7 @@
 			} break;
 			case 1: { // client's connection request
 				uint8_t rc=0;
-				// SOCKS protocl version
+				// SOCKS protocol version
 				if(e-s<3) break;
 				uint8_t socks_version = *s++;
 				if (socks_version!=5) {
@@ -510,6 +478,12 @@
 				// data is coming from the remote site
 				NSInteger       bytesRead=kSendBufferSize-self.sendbufferLimit;
                 LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"S>P going to read %ld",(long)bytesRead);
+                
+                // Do not attempt the read until we have space to write into
+                while (bytesRead == 0) {
+                    [self sendBuffer];
+                    bytesRead=kSendBufferSize-self.sendbufferLimit;
+                }
 				bytesRead = [self.remoteReceiveNetworkStream read:&self.sendbuffer[self.sendbufferLimit]
 												  maxLength:bytesRead];
                 LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Actually read %ld",(long)bytesRead);
