@@ -24,6 +24,8 @@
 		5463365810DABA8E00D3A3AE /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5463365410DABA8E00D3A3AE /* AppDelegate.mm */; };
 		5463365A10DABA8E00D3A3AE /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5463365710DABA8E00D3A3AE /* main.mm */; };
 		54A0F9C6124127CC008878EF /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54A0F9C5124127CC008878EF /* SystemConfiguration.framework */; };
+		905DD2691C896C69000EA271 /* silence.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 905DD2681C896C69000EA271 /* silence.mp3 */; };
+		90F2B7121C5B3F5000CFB28B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90F2B7111C5B3F5000CFB28B /* AVFoundation.framework */; };
 		9C310C061826EF0000299F00 /* ttdnsd.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9C310C051826EF0000299F00 /* ttdnsd.mm */; };
 		9C3FB27A183FEB97001B81FA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C3FB279183FEB97001B81FA /* Main.storyboard */; };
 		9C4CAB051AD73ABB0025CFE1 /* PacFileResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C4CAB001AD73ABB0025CFE1 /* PacFileResponse.m */; };
@@ -63,6 +65,8 @@
 		5463365410DABA8E00D3A3AE /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = AncillaryCode/AppDelegate.mm; sourceTree = "<group>"; };
 		5463365710DABA8E00D3A3AE /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = AncillaryCode/main.mm; sourceTree = "<group>"; };
 		54A0F9C5124127CC008878EF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		905DD2681C896C69000EA271 /* silence.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = silence.mp3; sourceTree = "<group>"; };
+		90F2B7111C5B3F5000CFB28B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		9C182A351828295F00F3F950 /* ttdnsd_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ttdnsd_platform.h; path = ttdnsd/ttdnsd_platform.h; sourceTree = "<group>"; };
 		9C310C041826EF0000299F00 /* ttdnsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ttdnsd.h; path = ttdnsd/ttdnsd.h; sourceTree = "<group>"; };
 		9C310C051826EF0000299F00 /* ttdnsd.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ttdnsd.mm; path = ttdnsd/ttdnsd.mm; sourceTree = "<group>"; };
@@ -90,6 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90F2B7121C5B3F5000CFB28B /* AVFoundation.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				1D3623EC0D0F72F000981E51 /* CoreGraphics.framework in Frameworks */,
@@ -127,6 +132,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				90F2B7111C5B3F5000CFB28B /* AVFoundation.framework */,
 				49847DFF12665213001645B5 /* QuartzCore.framework */,
 				E40F66B90FB3029A00D92710 /* CFNetwork.framework */,
 				1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */,
@@ -259,6 +265,7 @@
 		E4D543FE0FAB45DC00630176 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				905DD2681C896C69000EA271 /* silence.mp3 */,
 				54074CF4124127690036116E /* xibs */,
 				54074CF3124127510036116E /* images */,
 				E4D544010FAB45DC00630176 /* Info.plist */,
@@ -297,6 +304,11 @@
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
 						DevelopmentTeam = L527N68YVE;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -328,6 +340,7 @@
 				E4D5443B0FAB4B1600630176 /* Info.html in Resources */,
 				9C5C8AB91825468200ED829D /* Default-568h@2x.png in Resources */,
 				546335FE10DAB3BE00D3A3AE /* README in Resources */,
+				905DD2691C896C69000EA271 /* silence.mp3 in Resources */,
 				49B6F91D12394DEC005D89AC /* icon.png in Resources */,
 				49B6F91E12394DEC005D89AC /* icon@2x.png in Resources */,
 				49B6F91F12394DEC005D89AC /* iTunesArtwork in Resources */,
@@ -366,7 +379,6 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_ENTITLEMENTS = entitlements.plist;
 				"CODE_SIGN_ENTITLEMENTS[sdk=*]" = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -387,7 +399,6 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
