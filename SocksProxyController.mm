@@ -20,6 +20,7 @@
 //  Copyright 2010 coffeecoding. All rights reserved.
 //
 
+#import <AVFoundation/AVFoundation.h>
 #import "SocksProxyController.h"
 #import "SocksProxyController_TableView.h"
 #import "AppDelegate.h"
@@ -41,6 +42,7 @@
 @property (nonatomic, assign)   CFSocketRef         listeningSocket;
 @property (nonatomic, assign)   NSInteger			nConnections;
 @property (nonatomic, strong) NSMutableArray*       sendreceiveStream;
+@property (nonatomic, strong) AVPlayer*             bgPlayer;
 
 // Forward declarations
 
@@ -50,8 +52,9 @@
 
 @implementation SocksProxyController
 @synthesize nConnections  = _nConnections;
-// Because sendreceiveStream is declared as an array, you have to use a custom getter.  
+// Because sendreceiveStream is declared as an array, you have to use a custom getter.
 // A synthesised getter doesn't compile.
+@synthesize bgPlayer;
 
 
 - (NSMutableArray*)sendreceiveStream
@@ -70,24 +73,39 @@
 {
     assert( (port > 0) && (port < 65536) );
 
-	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-	
-	// Disable device sleep mode
-	[UIApplication sharedApplication].idleTimerDisabled = YES;
-	
-	// Enable proximity sensor (public as of 3.0)
-	[UIDevice currentDevice].proximityMonitoringEnabled = YES;
-	
-	self.currentAddress = [UIDevice localWiFiIPAddress];
-	self.currentPort = port;
-	self.currentStatusText = NSLocalizedString(@"Started", nil);	
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
+    // Disable device sleep mode
+    [UIApplication sharedApplication].idleTimerDisabled = YES;
+
+    // Enable proximity sensor (public as of 3.0)
+    [UIDevice currentDevice].proximityMonitoringEnabled = YES;
+
+    // Enable backgrounding
+    // Set AVAudioSession
+    NSError *sessionError = nil;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionMixWithOthers error:&sessionError];
+#else
+    NSLog(@"Warning: iOS 6 is required for background audio hiding.");
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&sessionError];
+#endif
+    AVPlayerItem *item = [AVPlayerItem playerItemWithURL:[[NSBundle mainBundle] URLForResource:@"silence" withExtension:@"mp3"]];
+
+    [self setBgPlayer:[[AVPlayer alloc] initWithPlayerItem:item]];
+    [[self bgPlayer] setActionAtItemEnd:AVPlayerActionAtItemEndNone];
+    [[self bgPlayer] play];
+
+    self.currentAddress = [UIDevice localWiFiIPAddress];
+    self.currentPort = port;
+    self.currentStatusText = NSLocalizedString(@"Started", nil);
     [self.startOrStopButton setTitle:NSLocalizedString(@"Stop", nil)
-							forState:UIControlStateNormal];
-	[self.startOrStopButton setupAsRedButton];
-	
-	[self refreshProxyTable];
-	
-	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_INFO, @"Server Started");
+                            forState:UIControlStateNormal];
+    [self.startOrStopButton setupAsRedButton];
+
+    [self refreshProxyTable];
+
+    LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_INFO, @"Server Started");
 }
 
 - (void)_serverDidStopWithReason:(NSString *)reason
@@ -95,52 +113,55 @@
     if (reason == nil) {
         reason = NSLocalizedString(@"Stopped", nil);
     }
-	
-	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-	
-	// Enable device sleep mode
-	[UIApplication sharedApplication].idleTimerDisabled = NO;
-	
-	// Disable proximity sensor (public as of 3.0)
-	[UIDevice currentDevice].proximityMonitoringEnabled = NO;
-	
-	self.currentAddress = @"";
-	self.currentPort = 0;
-	self.currentStatusText = reason;
+
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
+    // Enable device sleep mode
+    [UIApplication sharedApplication].idleTimerDisabled = NO;
+
+    // Disable proximity sensor (public as of 3.0)
+    [UIDevice currentDevice].proximityMonitoringEnabled = NO;
+
+    // Disable backgrounding
+    [self setBgPlayer:nil];
+
+    self.currentAddress = @"";
+    self.currentPort = 0;
+    self.currentStatusText = reason;
     [self.startOrStopButton setTitle:NSLocalizedString(@"Start" , nil)
-							forState:UIControlStateNormal];
-	[self.startOrStopButton setupAsGreenButton];
+                            forState:UIControlStateNormal];
+    [self.startOrStopButton setupAsGreenButton];
 
-	[self refreshProxyTable];
+    [self refreshProxyTable];
 
-	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_INFO, @"Server Stopped: %@", reason);
+    LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_INFO, @"Server Stopped: %@", reason);
 }
 
 
 - (NSInteger)countOpen
 {
-	int countOpen = 0;
+    int countOpen = 0;
     for(SocksProxy* asocksProxy in self.sendreceiveStream)
-	{
+    {
         if ( ! [asocksProxy isSendingReceiving])
-			++countOpen;
-	}
-	return countOpen;
+            ++countOpen;
+    }
+    return countOpen;
 }
 
 
 - (void)_sendreceiveDidStart
 {
     self.currentStatusText = NSLocalizedString(@"Receiving", nil);
-	
-	NSInteger countOpen = [self countOpen];
-	self.currentOpenConnections = countOpen;
-	
-	if (!countOpen) {
-		[[AppDelegate sharedAppDelegate] didStartNetworking];
-	}
-	
-	[self refreshProxyTable];
+
+    NSInteger countOpen = [self countOpen];
+    self.currentOpenConnections = countOpen;
+
+    if (!countOpen) {
+        [[AppDelegate sharedAppDelegate] didStartNetworking];
+    }
+
+    [self refreshProxyTable];
 }
 
 
@@ -148,9 +169,9 @@
 {
     assert(statusString != nil);
 
-	self.currentStatusText = statusString;
+    self.currentStatusText = statusString;
 
-	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Status: %@", statusString);
+    LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Status: %@", statusString);
 
 }
 
@@ -160,32 +181,32 @@
     if (statusString == nil) {
         statusString = NSLocalizedString(@"Receive succeeded", nil);
     }
-	self.currentStatusText = statusString;
-	NSInteger countOpen = [self countOpen];
-	self.currentOpenConnections = countOpen;
-	if (!countOpen) {
-		[[AppDelegate sharedAppDelegate] didStopNetworking];		
-	}
+    self.currentStatusText = statusString;
+    NSInteger countOpen = [self countOpen];
+    self.currentOpenConnections = countOpen;
+    if (!countOpen) {
+        [[AppDelegate sharedAppDelegate] didStopNetworking];
+    }
 
-	[self refreshProxyTable];
-	
-	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_INFO, @"Connection ended %ld %ld: %@", (long)countOpen, (long)self.nConnections, statusString);
+    [self refreshProxyTable];
+
+    LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_INFO, @"Connection ended %ld %ld: %@", (long)countOpen, (long)self.nConnections, statusString);
 }
 
 
 - (void)_downloadData:(NSInteger)bytes
 {
     self.downloadData += bytes/1024;
-	
-	[self refreshProxyTable];
+
+    [self refreshProxyTable];
 }
 
 
 - (void)_uploadData:(NSInteger)bytes
 {
     self.uploadData += bytes/1024;
-	
-	[self refreshProxyTable];
+
+    [self refreshProxyTable];
 }
 #pragma mark * Core transfer code
 
@@ -200,7 +221,7 @@
     return (self.netService != nil);
 }
 
-// Have to write our own setter for listeningSocket because CF gets grumpy 
+// Have to write our own setter for listeningSocket because CF gets grumpy
 // if you message NULL.
 
 - (void)setListeningSocket:(CFSocketRef)newValue
@@ -219,10 +240,10 @@
 
 - (void)_acceptConnection:(int)fd
 {
-	SocksProxy *proxy = nil;
+    SocksProxy *proxy = nil;
     BOOL isFoundFreeProxy = NO;
-	int totalNumProxy = 0;
-    
+    int totalNumProxy = 0;
+
     for(proxy in self.sendreceiveStream)
     {
         if(![proxy isSendingReceiving])
@@ -232,77 +253,77 @@
         }
         totalNumProxy++;
     }
-	
-	if(!isFoundFreeProxy) {
-		if(totalNumProxy>MAX_CONNECTIONS) {
+
+    if(!isFoundFreeProxy) {
+        if(totalNumProxy>MAX_CONNECTIONS) {
             LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_WARNNING, @"Reach maximum number of concurrent SOCKS connectionss.");
-			close(fd);
-			return;
-		}
-        
-		proxy = [SocksProxy new];
+            close(fd);
+            return;
+        }
+
+        proxy = [SocksProxy new];
         proxy.delegate = self;
         [self.sendreceiveStream addObject:proxy];
-        
-		++self.nConnections;
-		self.currentConnectionCount = self.nConnections;
-	}
-    
+
+        ++self.nConnections;
+        self.currentConnectionCount = self.nConnections;
+    }
+
     //recount open connection
-	int countOpen = 0;
-    
-	for (SocksProxy* asocksProxy in self.sendreceiveStream)
-	{
-		if (![asocksProxy isSendingReceiving])
-			++countOpen;
-	}
+    int countOpen = 0;
 
-	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_INFO, @"Accept connection %d %ld", countOpen, (long)self.nConnections);
+    for (SocksProxy* asocksProxy in self.sendreceiveStream)
+    {
+        if (![asocksProxy isSendingReceiving])
+            ++countOpen;
+    }
 
-	if (![proxy startSendReceive:fd])
-		close(fd);
-	
-	[self refreshProxyTable];
+    LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_INFO, @"Accept connection %d %ld", countOpen, (long)self.nConnections);
+
+    if (![proxy startSendReceive:fd])
+        close(fd);
+
+    [self refreshProxyTable];
 }
 
 
 static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef address, const void *data, void *info)
-    // Called by CFSocket when someone connects to our listening socket.  
+    // Called by CFSocket when someone connects to our listening socket.
     // This implementation just bounces the request up to Objective-C.
 {
     SocksProxyController *  obj;
-    
+
     #pragma unused(type)
     assert(type == kCFSocketAcceptCallBack);
     #pragma unused(address)
     // assert(address == NULL);
     assert(data != NULL);
-    
+
     obj = (__bridge SocksProxyController *) info;
     assert(obj != nil);
 
     #pragma unused(s)
     assert(s == obj->_listeningSocket);
-    
+
     [obj _acceptConnection:*(int *)data];
 }
 
 
 - (void)netService:(NSNetService *)sender didNotPublish:(NSDictionary *)errorDict
-    // A NSNetService delegate callback that's called if our Bonjour registration 
+    // A NSNetService delegate callback that's called if our Bonjour registration
     // fails.  We respond by shutting down the server.
     //
-    // This is another of the big simplifying assumptions in this sample. 
-    // A real server would use the real name of the device for registrations, 
-    // and handle automatically renaming the service on conflicts.  A real 
-    // client would allow the user to browse for services.  To simplify things 
-    // we just hard-wire the service name in the client and, in the server, fail 
+    // This is another of the big simplifying assumptions in this sample.
+    // A real server would use the real name of the device for registrations,
+    // and handle automatically renaming the service on conflicts.  A real
+    // client would allow the user to browse for services.  To simplify things
+    // we just hard-wire the service name in the client and, in the server, fail
     // if there's a service name conflict.
 {
     #pragma unused(sender)
     assert(sender == self.netService);
     #pragma unused(errorDict)
-    
+
     [self _stopServer:@"Registration failed"];
 }
 
@@ -316,92 +337,92 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     struct sockaddr_in addr;
     int         port;
     const int   on = 1;
-	
-	self.nConnections = 0;
-    // Create a listening socket and use CFSocket to integrate it into our 
-    // runloop.  We bind to port 0, which causes the kernel to give us 
-    // any free port, then use getsockname to find out what port number we 
+
+    self.nConnections = 0;
+    // Create a listening socket and use CFSocket to integrate it into our
+    // runloop.  We bind to port 0, which causes the kernel to give us
+    // any free port, then use getsockname to find out what port number we
     // actually got.
 
     port = 0;
-    
-	fd = socket(AF_INET, SOCK_STREAM, 0);
-	success = (fd != -1);
 
-	if (success) {
+    fd = socket(AF_INET, SOCK_STREAM, 0);
+    success = (fd != -1);
+
+    if (success) {
         // set scoket to reuse port and ignore TIME_WAIT state
         setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
-        
-		memset(&addr, 0, sizeof(addr));
-		addr.sin_len    = sizeof(addr);
-		addr.sin_family = AF_INET;
-		addr.sin_addr.s_addr = INADDR_ANY;
-		
-		int iport;
-		int ports[] = {1080,3128,-1};
-		for (iport = 0 ; ports[iport] >= 0 ; ++iport) {
-			port=ports[iport];
-			addr.sin_port   = htons(port);
-			err = bind(fd, (const struct sockaddr *) &addr, sizeof(addr));
+
+        memset(&addr, 0, sizeof(addr));
+        addr.sin_len    = sizeof(addr);
+        addr.sin_family = AF_INET;
+        addr.sin_addr.s_addr = INADDR_ANY;
+
+        int iport;
+        int ports[] = {1080,3128,-1};
+        for (iport = 0 ; ports[iport] >= 0 ; ++iport) {
+            port=ports[iport];
+            addr.sin_port   = htons(port);
+            err = bind(fd, (const struct sockaddr *) &addr, sizeof(addr));
             success = (err == 0);
-			if (success)
-				break;
+            if (success)
+                break;
             else{
                 LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_ERROR, @"Socks Server failed to bind port (%d), errono (%d)", port, errno);
             }
-		}
-	}
-	if (success) {
-		err = listen(fd, 5);
-		success = (err == 0);
-	}else{
+        }
+    }
+    if (success) {
+        err = listen(fd, 5);
+        success = (err == 0);
+    }else{
         LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_ERROR, @"Socks Server failed to bind to address, errno(%d)", errno);
     }
-    
-	if (success) {
-		socklen_t   addrLen;
 
-		addrLen = sizeof(addr);
-		err = getsockname(fd, (struct sockaddr *) &addr, &addrLen);
-		success = (err == 0);
-		
-		if (success) {
-			assert(addrLen == sizeof(addr));
-			port = ntohs(addr.sin_port);
-		}
-	}else{
+    if (success) {
+        socklen_t   addrLen;
+
+        addrLen = sizeof(addr);
+        err = getsockname(fd, (struct sockaddr *) &addr, &addrLen);
+        success = (err == 0);
+
+        if (success) {
+            assert(addrLen == sizeof(addr));
+            port = ntohs(addr.sin_port);
+        }
+    }else{
         LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_ERROR, @"Socks Server failed to listen, errno(%d)", errno);
     }
-    
+
     if (success) {
         CFSocketContext context = { 0, (__bridge void*)self, NULL, NULL, NULL };
-        
+
         self.listeningSocket = CFSocketCreateWithNative(
-            NULL, 
-            fd, 
-            kCFSocketAcceptCallBack, 
-            AcceptCallback, 
+            NULL,
+            fd,
+            kCFSocketAcceptCallBack,
+            AcceptCallback,
             &context
         );
         success = (self.listeningSocket != NULL);
-        
+
         if (success) {
             CFRunLoopSourceRef  rls;
-            
+
             CFRelease(self.listeningSocket);        // to balance the create
 
             fd = -1;        // listeningSocket is now responsible for closing fd
 
             rls = CFSocketCreateRunLoopSource(NULL, self.listeningSocket, 0);
             assert(rls != NULL);
-            
+
             CFRunLoopAddSource(CFRunLoopGetCurrent(), rls, kCFRunLoopDefaultMode);
-            
+
             CFRelease(rls);
         }
     }
 
-    // Now register our service with Bonjour.  See the comments in -netService:didNotPublish: 
+    // Now register our service with Bonjour.  See the comments in -netService:didNotPublish:
     // for more info about this simplifying assumption.
 
     if (success) {
@@ -413,14 +434,14 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     }
     if (success) {
         self.netService.delegate = self;
-        
+
         [self.netService publishWithOptions:NSNetServiceNoAutoRename];
-        
+
         // continues in -netServiceDidPublish: or -netService:didNotPublish: ...
     }
-    
+
     // Clean up after failure.
-    
+
     if ( success ) {
         assert(port != 0);
         [self _serverDidStartOnPort:port];
@@ -436,14 +457,14 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 
 - (void)_stopServer:(NSString *)reason
 {
-	for (SocksProxy* asocksProxy in self.sendreceiveStream)
-	{
-		if ([asocksProxy isSendingReceiving])
-			[asocksProxy stopSendReceiveWithStatus:@"Cancelled"];
+    for (SocksProxy* asocksProxy in self.sendreceiveStream)
+    {
+        if ([asocksProxy isSendingReceiving])
+            [asocksProxy stopSendReceiveWithStatus:@"Cancelled"];
     }
-	
+
     [self.sendreceiveStream removeAllObjects];
-    
+
     if (self.netService != nil) {
         [self.netService stop];
         self.netService = nil;
@@ -468,10 +489,10 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
         _HTTPServer = [HTTPServer sharedHTTPServerWithSocksProxyPort:currentPort];
         [_HTTPServer stop];
     } else {
-        
+
         if(self.currentAddress == nil)
             self.currentAddress = [UIDevice localWiFiIPAddress];
-        
+
         if(currentAddress != nil){
             //start socks proxy server
             [self _startServer];
@@ -486,14 +507,14 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
                 currentHTTPServerState == SERVER_STATE_STOPPING)
                 [_HTTPServer start];
         }else{
-            
+
             [self _updateStatus:@"Please connect to wifi."];
             LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_WARNNING, @"No local IP can be retrieved. iPhone may not connect to wifi network\n");
         }
-        
+
     }
-	
-	[self refreshProxyTable];
+
+    [self refreshProxyTable];
 }
 
 
@@ -511,36 +532,36 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 
 - (void)refreshProxyTable
 {
-	[proxyTableView reloadData];
+    [proxyTableView reloadData];
 }
 
 
 - (void)applicationDidEnterForeground:(NSNotification *)n
 {
-	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"refreshing ip address");
-	
-	// refresh the IP address, just in case
-	self.currentAddress = [UIDevice localWiFiIPAddress];
-	[self refreshProxyTable];
+    LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"refreshing ip address");
+
+    // refresh the IP address, just in case
+    self.currentAddress = [UIDevice localWiFiIPAddress];
+    [self refreshProxyTable];
 }
 
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-	[UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
-    
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(applicationDidEnterForeground:)
-												 name:UIApplicationWillEnterForegroundNotification
-											   object:nil];
+
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidEnterForeground:)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
     assert(self.startOrStopButton != nil);
-    
-	self.currentStatusText = NSLocalizedString(@"Tap Start to start the server", nil);
-    
-	[self.startOrStopButton setupAsGreenButton];
-    
+
+    self.currentStatusText = NSLocalizedString(@"Tap Start to start the server", nil);
+
+    [self.startOrStopButton setupAsGreenButton];
+
     self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
 }
 
