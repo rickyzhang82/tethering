@@ -34,25 +34,25 @@
     UILabel *                   _portLabel;
     UILabel *                   _addressLabel;
     UILabel *                   _statusLabel;
-	UILabel *					_countOpenLabel;
-	UILabel *					_nConnectionsLabel;
+    UILabel *					_countOpenLabel;
+    UILabel *					_nConnectionsLabel;
     MOGlassButton *                  _startOrStopButton;
-    
+
     NSNetService *              _netService;
     CFSocketRef                 _listeningSocket;
-	
-	NSInteger				_nConnections;
-	IBOutlet UITableView * proxyTableView;
-	
+
+    NSInteger				_nConnections;
+    IBOutlet UITableView * proxyTableView;
+
 @private
-	NSString *currentStatusText;
+    NSString *currentStatusText;
     NSInteger currentPort;
     NSString *currentAddress;
     NSInteger currentOpenConnections;
     NSInteger currentConnectionCount;
     DNSServer * _DNSServer;
     HTTPServer * _HTTPServer;
-    
+
 }
 
 @property (nonatomic, copy) NSString *currentStatusText;

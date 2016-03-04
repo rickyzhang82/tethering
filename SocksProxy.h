@@ -44,8 +44,8 @@ enum {
     uint8_t                     _receivebuffer[kReceiveBufferSize];
     size_t                      _receivebufferOffset;
     size_t                      _receivebufferLimit;
-	NSUInteger					_protocolLocation;
-	NSString *					_remoteName;
+    NSUInteger					_protocolLocation;
+    NSString *					_remoteName;
     bool                        _canReceiveRemote;
 }
 
