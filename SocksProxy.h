@@ -46,6 +46,7 @@ enum {
     size_t                      _receivebufferLimit;
 	NSUInteger					_protocolLocation;
 	NSString *					_remoteName;
+    bool                        _canReceiveRemote;
 }
 
 @property (nonatomic, weak) id <SocksProxyDelegate> delegate;
