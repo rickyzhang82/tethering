@@ -78,6 +78,7 @@
 		9C95E98318393629004559EB /* LoggerClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoggerClient.h; path = NSLogger/LoggerClient.h; sourceTree = "<group>"; };
 		9C95E98418393629004559EB /* LoggerClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LoggerClient.m; path = NSLogger/LoggerClient.m; sourceTree = "<group>"; };
 		9C95E98518393629004559EB /* LoggerCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoggerCommon.h; path = NSLogger/LoggerCommon.h; sourceTree = "<group>"; };
+		9CBABD221D3FEA9E00A8A382 /* LogLevel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LogLevel.h; path = NSLogger/LogLevel.h; sourceTree = "<group>"; };
 		E40F65FF0FB1E38600D92710 /* SocksProxy.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SocksProxy.mm; sourceTree = "<group>"; };
 		E40F66000FB1E38600D92710 /* SocksProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxy.h; sourceTree = "<group>"; };
 		E40F66B90FB3029A00D92710 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -252,6 +253,7 @@
 				9C95E98318393629004559EB /* LoggerClient.h */,
 				9C95E98418393629004559EB /* LoggerClient.m */,
 				9C95E98518393629004559EB /* LoggerCommon.h */,
+				9CBABD221D3FEA9E00A8A382 /* LogLevel.h */,
 			);
 			name = NSLogger;
 			sourceTree = "<group>";

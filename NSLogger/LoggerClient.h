@@ -44,13 +44,6 @@
 #import <CoreServices/CoreServices.h>
 #endif
 
-//define NSLogger level
-#define NSLOGGER_LEVEL_ERROR        0
-#define NSLOGGER_LEVEL_WARNNING     1
-#define NSLOGGER_LEVEL_INFO         2
-#define NSLOGGER_LEVEL_DEBUG        3
-#define NSLOGGER_LEVEL_TRACE        4
-
 // This define is here so that user application can test whether NSLogger Client is
 // being included in the project, and potentially configure their macros accordingly
 #define NSLOGGER_WAS_HERE		1

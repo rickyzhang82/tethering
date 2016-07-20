@@ -30,6 +30,11 @@
 #include <pthread.h>
 #include "ttdnsd_platform.h"
 
+#ifdef NOT_HAVE_COCOA_FRAMEWORK
+#include <stdarg.h>
+#include "../NSLogger/LogLevel.h"
+#endif
+
 
 const char TTDNSD_VERSION[]= "v1.0";
 
@@ -186,8 +191,7 @@ protected:
     struct in_addr socks5_proxy_select(void);
 
     #ifndef NOT_HAVE_COCOA_FRAMEWORK
-    int printf(const char * __restrict format, ...);
-    void perror(const char *__s);
+    int print_level(int level, const char * __restrict format, ...);
     #endif
     
     static void * _dns_srv_thread_wrapper(void*){

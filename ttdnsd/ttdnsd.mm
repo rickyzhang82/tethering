@@ -27,21 +27,31 @@
 
 DNSServer * DNSServer::dns_instance = NULL;
 
-#ifndef NOT_HAVE_COCOA_FRAMEWORK
-int DNSServer::printf(const char * __restrict format, ...)
+#ifdef NOT_HAVE_COCOA_FRAMEWORK
+// for testing in *nix
+int print_level(int level, const char * format, ...)
 {
     va_list args;
     va_start(args,format);
-    LOG_NETWORK_DNS_VA(NSLOGGER_LEVEL_TRACE, @(format), args);
+    if (level == NSLOGGER_LEVEL_ERROR)
+        return vfprintf(stderr, format, args);
+    else
+        return vprintf(format, args);
+}
+
+#else
+// for iOS
+int DNSServer::print_level(int level, const char * __restrict format, ...)
+{
+    va_list args;
+    va_start(args,format);
+    LOG_NETWORK_DNS_VA(level, @(format), args);
     va_end(args);
     return 1;
 }
 
-void DNSServer::perror(const char *__s)
-{
-    LOG_NETWORK_DNS(NSLOGGER_LEVEL_ERROR, @"Error: %s : %d\n",__s, errno);
-}
 #endif
+
 
 DNS_SERVER_STATE DNSServer::getDNSServerState()
 {
@@ -124,7 +134,7 @@ int DNSServer::startDNSServer(int _isDebugMode,
 
     }else{
 
-        printf("%s: is not a valid IPv4 address for DNS server.\n", remoteSocksIP);
+        print_level(NSLOGGER_LEVEL_ERROR, "%s: is not a valid IPv4 address for DNS server.\n", remoteSocksIP);
 
         return -1;
     }
@@ -137,7 +147,7 @@ int DNSServer::startDNSServer(int _isDebugMode,
 
     this->localDNSPort = _localDNSPort;
 
-    printf("Starting DNS server...\n");
+    print_level(NSLOGGER_LEVEL_INFO, "Starting DNS server...\n");
 
     if(_isDebugMode){
 
@@ -155,7 +165,7 @@ int DNSServer::startDNSServer(int _isDebugMode,
 
         if(pthread_create(rs_thread, &rs_attr, _dns_srv_thread_wrapper, NULL) == 0){
 
-            printf("DNS server thread is created.\n");
+            print_level(NSLOGGER_LEVEL_INFO, "DNS server thread is created.\n");
 
             pthread_attr_destroy(&rs_attr);
             
@@ -164,7 +174,7 @@ int DNSServer::startDNSServer(int _isDebugMode,
             return 0;
         }else{
 
-            printf("Failed to create DNS server thread.\n");
+            print_level(NSLOGGER_LEVEL_ERROR, "Failed to create DNS server thread.\n");
 
             this->dnsState = DNS_SERVER_TERMINATED;
 
@@ -188,14 +198,14 @@ void DNSServer::stopDNSServer(const char* _localDNSIP)
 
 
     if(!inet_aton(_localDNSIP, &addr.sin_addr)){
-        printf("Invalid IPv4 address for DNS server.\n Failed to terminate DNS server.\n");
+        print_level(NSLOGGER_LEVEL_ERROR, "Invalid IPv4 address for DNS server.\n Failed to terminate DNS server.\n");
     }
 
     sendto(sockfd, MAGIC_STRING_STOP_DNS, strlen(MAGIC_STRING_STOP_DNS), 0, (struct sockaddr*)&addr, sizeof(addr));
 
     this->dnsState = DNS_SERVER_TERMINATING;
 
-    printf("Magic string was sent to terminate DNS server: %s.\n", _localDNSIP );
+    print_level(NSLOGGER_LEVEL_INFO, "Magic string was sent to terminate DNS server: %s.\n", _localDNSIP );
 
     close(sockfd);
 
@@ -226,7 +236,7 @@ void DNSServer::peer_mark_as_dead(struct peer_t *p)
     close(p->tcp_fd);
     p->tcp_fd = -1;
     p->con = DEAD;
-    printf("peer %s got disconnected\n", peer_display(p));
+    print_level(NSLOGGER_LEVEL_DEBUG, "peer %s got disconnected\n", peer_display(p));
 }
 
 /* Return a positive positional number or -1 for unfound entries. */
@@ -236,14 +246,14 @@ int DNSServer::request_find(uint id)
 
     for (;;) {
         if (requests[pos].id == id) {
-            printf("found id=%d at pos=%d\n", id, pos);
+            print_level(NSLOGGER_LEVEL_DEBUG, "found id=%d at pos=%d\n", id, pos);
             return pos;
         }
         else {
             pos++;
             pos %= MAX_REQUESTS;
             if (pos == (id % MAX_REQUESTS)) {
-                printf("can't find id=%d\n", id);
+                print_level(NSLOGGER_LEVEL_DEBUG, "can't find id=%d\n", id);
                 return -1;
             }
         }
@@ -278,22 +288,22 @@ int DNSServer::peer_socks5_connect(struct peer_t *p, struct in_addr socks5_addr,
     int cs;
 
     if (p->con == SOCKS5_CONNECTING) {
-        printf("It appears that peer %s is already CONNECTING to sock5 server.\n",
+        print_level(NSLOGGER_LEVEL_INFO, "It appears that peer %s is already CONNECTING to sock5 server.\n",
                peer_display(p));
         return 1;
     }
 
 
     if ((p->tcp_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        printf("Can't create TCP socket\n");
+        print_level(NSLOGGER_LEVEL_ERROR, "Can't create TCP socket\n");
         return 0;
     }
 
     if (setsockopt(p->tcp_fd, SOL_SOCKET, SO_REUSEADDR, &socket_opt_val, sizeof(int)))
-        printf("Setting SO_REUSEADDR failed\n");
+        print_level(NSLOGGER_LEVEL_ERROR, "Setting SO_REUSEADDR failed\n");
 
     if (fcntl(p->tcp_fd, F_SETFL, O_NONBLOCK))
-        printf("Setting O_NONBLOCK failed\n");
+        print_level(NSLOGGER_LEVEL_ERROR, "Setting O_NONBLOCK failed\n");
 
     p->tcp.sin_family = AF_INET;
 
@@ -308,12 +318,12 @@ int DNSServer::peer_socks5_connect(struct peer_t *p, struct in_addr socks5_addr,
 
     p->socks5_tcp.sin_port = htons(remoteSocksPort);
 
-    printf("connecting to Socks5 proxy %s on port %i\n", peer_socks5_display(p), ntohs(p->socks5_tcp.sin_port));
+    print_level(NSLOGGER_LEVEL_INFO, "connecting to Socks5 proxy %s on port %i\n", peer_socks5_display(p), ntohs(p->socks5_tcp.sin_port));
 
     cs = connect(p->tcp_fd, (struct sockaddr*)&p->socks5_tcp, sizeof(struct sockaddr_in));
 
     if (cs != 0 && errno != EINPROGRESS) {
-        printf("connect status: return code %d and errno %d.", cs, errno);
+        print_level(NSLOGGER_LEVEL_ERROR, "connect status: return code %d and errno %d.", cs, errno);
         return 0;
     }
 
@@ -364,7 +374,7 @@ int DNSServer::peer_socks5_connected(struct peer_t *p)
         return 1;
     } else {
 
-        printf("connect fail: return code %d and errno %d.", cs, errno);
+        print_level(NSLOGGER_LEVEL_ERROR, "connect fail: return code %d and errno %d.", cs, errno);
 
         close(p->tcp_fd);
         p->tcp_fd = -1;
@@ -386,11 +396,11 @@ int DNSServer::peer_socks5_snd_auth_neg(struct peer_t *p)
 
     if (ret == -1) {
         peer_mark_as_dead(p);
-        printf("Error in sending authentication ret:%d errno:%d\n", ret, errno);
+        print_level(NSLOGGER_LEVEL_ERROR, "Error in sending authentication ret:%d errno:%d\n", ret, errno);
         return 0;
     }
     p->con = SOCKS5_AUTH_WAIT;
-    printf("Send authentication to socks5 server%d\n", ret);
+    print_level(NSLOGGER_LEVEL_INFO, "Send authentication to socks5 server%d\n", ret);
     return 1;
 
 }
@@ -410,12 +420,12 @@ int DNSServer::peer_socks5_rcv_auth_process(struct peer_t *p)
     }
 
     if(buff[0] != 0x5 || buff[1] != 0x0){
-        printf("Socks server return error authentication message: %s\n", buff);
+        print_level(NSLOGGER_LEVEL_ERROR, "Socks server return error authentication message: %s\n", buff);
         peer_mark_as_dead(p);
         return 0;
     }
 
-    printf("Socks server authentication successfully.\n");
+    print_level(NSLOGGER_LEVEL_INFO, "Socks server authentication successfully.\n");
 
     return 1;
 }
@@ -470,13 +480,13 @@ int DNSServer::peer_socks5_snd_cmd(struct peer_t *p)
     ret = _nonblocking_send(p->tcp_fd, buff, byteLen);
 
     if (ret == -1) {
-        printf("Error in sending connect command ret:%d errno:%d\n", ret, errno);
+        print_level(NSLOGGER_LEVEL_ERROR, "Error in sending connect command ret:%d errno:%d\n", ret, errno);
         peer_mark_as_dead(p);
         return 0;
     }
 
     p->con = SOCKS5_CMD_WAIT;
-    printf("Send connect command to socks5 server%d\n", ret);
+    print_level(NSLOGGER_LEVEL_INFO, "Send connect command to socks5 server%d\n", ret);
     return 1;
 
 }
@@ -495,12 +505,12 @@ int DNSServer::peer_socks5_rcv_cmd_process(struct peer_t *p)
     }
 
     if(buff[0] != 0x5 || buff[1] != 0x0){
-        printf("Socks server connect error : %d\n", buff[1]);
+        print_level(NSLOGGER_LEVEL_ERROR, "Socks server connect error : %d\n", buff[1]);
         peer_mark_as_dead(p);
         return 0;
     }
 
-    printf("Socks server connect successfully.\n");
+    print_level(NSLOGGER_LEVEL_INFO, "Socks server connect successfully.\n");
 
     return 1;
 }
@@ -512,22 +522,22 @@ int DNSServer::peer_connect(struct peer_t *p, struct in_addr ns)
     int cs;
 
     if (p->con == CONNECTING || p->con == CONNECTING2) {
-        printf("It appears that peer %s is already CONNECTING\n",
+        print_level(NSLOGGER_LEVEL_INFO, "It appears that peer %s is already CONNECTING\n",
                peer_display(p));
         return 1;
     }
 
 
     if ((p->tcp_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        printf("Can't create TCP socket\n");
+        print_level(NSLOGGER_LEVEL_ERROR, "Can't create TCP socket\n");
         return 0;
     }
 
     if (setsockopt(p->tcp_fd, SOL_SOCKET, SO_REUSEADDR, &socket_opt_val, sizeof(int)))
-        printf("Setting SO_REUSEADDR failed\n");
+        print_level(NSLOGGER_LEVEL_ERROR, "Setting SO_REUSEADDR failed\n");
 
     if (fcntl(p->tcp_fd, F_SETFL, O_NONBLOCK))
-        printf("Setting O_NONBLOCK failed\n");
+        print_level(NSLOGGER_LEVEL_ERROR, "Setting O_NONBLOCK failed\n");
 
     p->tcp.sin_family = AF_INET;
 
@@ -536,11 +546,11 @@ int DNSServer::peer_connect(struct peer_t *p, struct in_addr ns)
 
     p->tcp.sin_addr = ns;
 
-    printf("connecting to %s on port %i\n", peer_display(p), ntohs(p->tcp.sin_port));
+    print_level(NSLOGGER_LEVEL_INFO, "connecting to %s on port %i\n", peer_display(p), ntohs(p->tcp.sin_port));
     cs = connect(p->tcp_fd, (struct sockaddr*)&p->tcp, sizeof(struct sockaddr_in));
 
     if (cs != 0 && errno != EINPROGRESS) {
-        printf("connect status: return code %d and errno %d.", cs, errno);
+        print_level(NSLOGGER_LEVEL_ERROR, "connect status: return code %d and errno %d.", cs, errno);
         return 0;
     }
 
@@ -561,7 +571,7 @@ int DNSServer::peer_connected(struct peer_t *p)
 
     if (getsockopt(p->tcp_fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0) {
 
-        printf("connect fail: return error code %d and errno (%d).", error, errno);
+        print_level(NSLOGGER_LEVEL_ERROR, "connect fail: return error code %d and errno (%d).", error, errno);
         close(p->tcp_fd);
         p->tcp_fd = -1;
         p->con = DEAD;
@@ -569,7 +579,7 @@ int DNSServer::peer_connected(struct peer_t *p)
 
     }else{
 
-        printf("Remote DNS %s is connected.\n", this->remoteDNSIP);
+        print_level(NSLOGGER_LEVEL_INFO, "Remote DNS %s is connected.\n", this->remoteDNSIP);
         p->con = CONNECTED;
         return 1;
 
@@ -580,18 +590,18 @@ int DNSServer::peer_connected(struct peer_t *p)
 int DNSServer::peer_sendreq(struct peer_t *p, struct request_t *r)
 {
 
-    printf("Sending request ID %d to remote TCP DNS server.\n", r->id);
+    print_level(NSLOGGER_LEVEL_DEBUG, "Sending request ID %d to remote TCP DNS server.\n", r->id);
 
     int rc;
     if((rc = _nonblocking_send(p->tcp_fd, r->b, r->bl + 2)) == -1){
-        printf("Errno (%d): Failed to send DNS request to remote DNS\n", errno);
+        print_level(NSLOGGER_LEVEL_ERROR, "Errno (%d): Failed to send DNS request to remote DNS\n", errno);
         peer_mark_as_dead(p);
         return 2;
     }
 
-    printf("DNS request ID %d was sent to remote TCP DNS server.\n", r->id);
+    print_level(NSLOGGER_LEVEL_DEBUG, "DNS request ID %d was sent to remote TCP DNS server.\n", r->id);
     r->active = SENT;
-    printf("peer_sendreq write attempt returned\n");
+    print_level(NSLOGGER_LEVEL_DEBUG, "peer_sendreq write attempt returned\n");
     return 1;
 }
 
@@ -621,7 +631,7 @@ int DNSServer::peer_readres(struct peer_t *p)
     while ((ret = read(p->tcp_fd, (p->b + p->bl), (RECV_BUF_SIZE - p->bl))) < 0 && errno == EAGAIN);
 
     if (ret == 0) {
-        printf("Nothing can be read from remote DNS.\n");
+        print_level(NSLOGGER_LEVEL_INFO, "Nothing can be read from remote DNS.\n");
         peer_mark_as_dead(p);
         return 3;
     }
@@ -637,7 +647,7 @@ int DNSServer::peer_readres(struct peer_t *p)
         else {
             len = ntohs(*l);
 
-            printf("r l=%d r=%d\n", len, p->bl-2);
+            print_level(NSLOGGER_LEVEL_DEBUG, "r l=%d r=%d\n", len, p->bl-2);
 
             if ((len + 2) > p->bl)
                 return 2;
@@ -646,7 +656,7 @@ int DNSServer::peer_readres(struct peer_t *p)
         ul = (unsigned short int*)(p->b + 2);
         req_id = ntohs(*ul);
 
-        printf("received answer %d bytes with remote request ID (%d)\n", p->bl, req_id);
+        print_level(NSLOGGER_LEVEL_DEBUG, "received answer %d bytes with remote request ID (%d)\n", p->bl, req_id);
 
         if ((req = request_find(req_id)) == -1) {
             memmove(p->b, (p->b + len + 2), (p->bl - len - 2));
@@ -670,7 +680,7 @@ int DNSServer::peer_readres(struct peer_t *p)
         r->a.sin_family = AF_INET;
         while (sendto(udp_fd, (p->b + 2), len, 0, (struct sockaddr*)&r->a, sizeof(struct sockaddr_in)) < 0 && errno == EAGAIN);
 
-        printf("forwarding answer (%d bytes) with DNS request ID (%d)\n", len, *ul);
+        print_level(NSLOGGER_LEVEL_DEBUG, "forwarding answer (%d bytes) with DNS request ID (%d)\n", len, *ul);
 
         memmove(p->b, p->b + len +2, p->bl - len - 2);
         p->bl -= len + 2;
@@ -699,7 +709,7 @@ void DNSServer::peer_handleoutstanding(struct peer_t *p)
         struct request_t *r = &requests[i];
         if (r->id != 0 && r->active == WAITING) {
             ret = peer_sendreq(p, r);
-            printf("peer_sendreq returned %d\n", ret);
+            print_level(NSLOGGER_LEVEL_DEBUG, "peer_sendreq returned %d\n", ret);
         }
     }
 }
@@ -726,7 +736,7 @@ struct in_addr DNSServer::socks5_proxy_select(void)
         return socks5_proxy;
     }else{
 
-        printf("%s: is not a valid IPv4 address\n", remoteSocksIP);
+        print_level(NSLOGGER_LEVEL_ERROR, "%s: is not a valid IPv4 address\n", remoteSocksIP);
 
         socks5_proxy.s_addr = 0;
 
@@ -751,23 +761,23 @@ int DNSServer::request_add(struct request_t *r)
     time_t ct = time(NULL);
     struct request_t *req_in_table = 0;
 
-    printf("adding new request (id=%d)\n", r->id);
+    print_level(NSLOGGER_LEVEL_DEBUG, "adding new request (id=%d)\n", r->id);
     for (;;) {
         if (requests[pos].id == 0) {
             // this one is unused, take it
-            printf("new request added at pos: %d\n", pos);
+            print_level(NSLOGGER_LEVEL_DEBUG, "new request added at pos: %d\n", pos);
             req_in_table = &requests[pos];
             break;
         }
         else {
             if (requests[pos].id == r->id) {
                 if (memcmp((char*)&r->a, (char*)&requests[pos].a, sizeof(r->a)) == 0) {
-                    printf("For DNS request with ID %d, hash position %d is already taken by request with the same ID. Drop this request.\n", r->id, pos);
+                    print_level(NSLOGGER_LEVEL_DEBUG, "For DNS request with ID %d, hash position %d is already taken by request with the same ID. Drop this request.\n", r->id, pos);
                     delete r;
                     return 0;
                 }
                 else {
-                    printf("Hash position %d selected\n", pos);
+                    print_level(NSLOGGER_LEVEL_DEBUG, "Hash position %d selected\n", pos);
                      /* REFACTOR If it’s okay to do this, it would be
                         simpler to always do it, instead of only on
                         collisions. Then, if it’s buggy, it’ll show up
@@ -776,13 +786,13 @@ int DNSServer::request_add(struct request_t *r)
                         r->id = ((rand()>>16) % 0xffff);
                     } while (r->id < 1);
                     pos = r->id % MAX_REQUESTS;
-                    printf("NATing id (id was %d now is %d)\n", r->rid, r->id);
+                    print_level(NSLOGGER_LEVEL_DEBUG, "NATing id (id was %d now is %d)\n", r->rid, r->id);
                     continue;
                 }
             }
             else if ((requests[pos].timeout + remoteDNSTimeout) > ct) {
                 // request timed out, take it
-                printf("Taking pos from timed out request.\n");
+                print_level(NSLOGGER_LEVEL_DEBUG, "Taking pos from timed out request.\n");
                 req_in_table = &requests[pos];
                 break;
             }
@@ -790,21 +800,21 @@ int DNSServer::request_add(struct request_t *r)
                 pos++;
                 pos %= MAX_REQUESTS;
                 if (pos == (r->id % MAX_REQUESTS)) {
-                    printf("no more free request slots, wow this is a busy node. dropping request!\n");
+                    print_level(NSLOGGER_LEVEL_ERROR, "no more free request slots, wow this is a busy node. dropping request!\n");
                     delete r;
                     return 0;
                 }
             }
         }
     }
-    printf("using request slot %d\n", pos); /* REFACTOR: move into loop */
+    print_level(NSLOGGER_LEVEL_DEBUG, "using request slot %d\n", pos); /* REFACTOR: move into loop */
 
     r->timeout = time(NULL); /* REFACTOR not ct? sloppy */
 
     // update id
     ul = (unsigned short int*)(r->b + 2);
     *ul = htons(r->id);
-    printf("updating id: %d\n", htons(r->id));
+    print_level(NSLOGGER_LEVEL_DEBUG, "updating id: %d\n", htons(r->id));
 
     if ( req_in_table == NULL ) {
         return -1;
@@ -814,9 +824,9 @@ int DNSServer::request_add(struct request_t *r)
     }
 
     // XXX: nice feature to have: send request to multiple peers for speedup and reliability
-    printf("selecting peer\n");
+    print_level(NSLOGGER_LEVEL_DEBUG, "selecting peer\n");
     dst_peer = peer_select();
-    printf("peer selected: %d\n", dst_peer->tcp_fd);
+    print_level(NSLOGGER_LEVEL_DEBUG, "peer selected: %d\n", dst_peer->tcp_fd);
 
     if (dst_peer->con == CONNECTED) {
 
@@ -845,7 +855,7 @@ void DNSServer::process_incoming_request(struct request_t *tmp)
     ul = (unsigned short int*)tmp->b;
     *ul = htons(tmp->bl);
 
-    printf("received request of %d bytes, id = %d\n", tmp->bl, tmp->id);
+    print_level(NSLOGGER_LEVEL_DEBUG, "received request of %d bytes, id = %d\n", tmp->bl, tmp->id);
 
     request_add(tmp); // This should be checked; we're currently ignoring important returns.
 }
@@ -859,7 +869,7 @@ void DNSServer::_stop_server()
         if(peers[i].tcp_fd > 0 && peers[i].con != DEAD )
             close(peers[i].tcp_fd);
     }
-    printf("DNS server is terminated.\n");
+    print_level(NSLOGGER_LEVEL_INFO, "DNS server is terminated.\n");
 
     this->dnsState = DNS_SERVER_TERMINATED;
 
@@ -885,12 +895,12 @@ int DNSServer::_start_server()
     memset((char*)requests, 0, sizeof(requests)); // Why not bzero?
 
     if ((udp_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-        printf("can't create UDP socket\n");
+        print_level(NSLOGGER_LEVEL_ERROR, "can't create UDP socket\n");
         return(-1);
     }
 
     if (setsockopt(udp_fd, SOL_SOCKET, SO_REUSEADDR, &socket_opt_val, sizeof(int)) < 0) {
-        printf("setsockopt failed. Errno (%d)\n", errno);
+        print_level(NSLOGGER_LEVEL_ERROR, "setsockopt failed. Errno (%d)\n", errno);
         return (-1);
     }
 
@@ -900,21 +910,21 @@ int DNSServer::_start_server()
     
     if(strcmp(localDNSIP, DEFAULT_MAGIC_IPV4_ADDR) == 0){
 
-        printf("UDP bind address assigned to INADDR_ANY\n");
+        print_level(NSLOGGER_LEVEL_DEBUG, "UDP bind address assigned to INADDR_ANY\n");
 
         udp.sin_addr.s_addr = htonl(INADDR_ANY);
     
     }else{
         
         if (!inet_aton(localDNSIP, (struct in_addr*)&udp.sin_addr)) {
-            printf("%s is not a valid IPv4 address.\n", localDNSIP);
+            print_level(NSLOGGER_LEVEL_ERROR, "%s is not a valid IPv4 address.\n", localDNSIP);
             return(0); // Why is this 0?
         }
         
     }
 
     if (bind(udp_fd, (struct sockaddr*)&udp, sizeof(struct sockaddr_in)) < 0) {
-        printf("Errno (%d). Failed to bind to %s:%d\n", errno, localDNSIP, localDNSPort);
+        print_level(NSLOGGER_LEVEL_ERROR, "Errno (%d). Failed to bind to %s:%d\n", errno, localDNSIP, localDNSPort);
         close(udp_fd);
         return(-1); // Perhaps this should be more useful?
     }
@@ -957,22 +967,25 @@ int DNSServer::_start_server()
         pfd[0].fd = udp_fd;
         pfd[0].events = POLLIN|POLLPRI;
 
-        printf("Watching %d file descriptors\n", pfd_num);
+        print_level(NSLOGGER_LEVEL_DEBUG, "Watching %d file descriptors\n", pfd_num);
 
         fr = poll(pfd, pfd_num, -1);
 
-        printf("Total number of (%d) file descriptors became ready\n", fr);
+        print_level(NSLOGGER_LEVEL_DEBUG, "Total number of (%d) file descriptors became ready\n", fr);
 
         // handle tcp connections
         for (i = 1; i < pfd_num; i++) {
             if (pfd[i].fd != -1 && ((pfd[i].revents & POLLIN) == POLLIN ||
                     (pfd[i].revents & POLLPRI) == POLLPRI || (pfd[i].revents & POLLOUT)
                     == POLLOUT || (pfd[i].revents & POLLERR) == POLLERR)) {
+                
+                print_level(NSLOGGER_LEVEL_DEBUG, "TCP connection poll event.\n");
+                
                 uint peer = poll2peers[i-1];
                 struct peer_t *p = &peers[peer];
 
                 if (peer > MAX_PEERS) {
-                    printf("Something is wrong! poll2peers[%i] is larger than MAX_PEERS: %i\n", i-1, peer);
+                    print_level(NSLOGGER_LEVEL_ERROR, "Something is wrong! poll2peers[%i] is larger than MAX_PEERS: %i\n", i-1, peer);
                 } else switch (p->con) {
                 case CONNECTED:
                     //read DNS from TCP port only if data is available
@@ -1001,7 +1014,7 @@ int DNSServer::_start_server()
                     }
                 case DEAD:
                 default:
-                    printf("peer %s in bad state %i\n", peer_display(p), p->con);
+                    print_level(NSLOGGER_LEVEL_ERROR, "peer %s in bad state %i\n", peer_display(p), p->con);
                     break;
                 }
             }
@@ -1015,20 +1028,23 @@ int DNSServer::_start_server()
 
             dns_request->bl = recvfrom(udp_fd, dns_request->b+2, RECV_BUF_SIZE-2, 0,
                               (struct sockaddr*)&(dns_request->a), &(dns_request->al));
+            
+            print_level(NSLOGGER_LEVEL_DEBUG, "DNS UDP connection poll event.\n");
+            
             if (dns_request->bl < 0) {
-                perror("recvfrom on UDP fd");
+                print_level(NSLOGGER_LEVEL_ERROR, "recvfrom on UDP fd with negative size");
             } else {
                 if(memcmp((char*)dns_request->b+2, (char*)MAGIC_STRING_STOP_DNS,strlen(MAGIC_STRING_STOP_DNS)) == 0){
                     _stop_server();
                     delete dns_request;
                     return 0;
                 }else{
-                    printf("Receive DNS request from UDP port.\n");
+                    print_level(NSLOGGER_LEVEL_INFO, "Receive DNS request from UDP port.\n");
                     process_incoming_request(dns_request);
                 }
             }
         }
-    }
+    }//end for(;;)
 }
 
 int DNSServer::_nonblocking_send(int fd, void* buff, int len)
@@ -1038,7 +1054,7 @@ int DNSServer::_nonblocking_send(int fd, void* buff, int len)
     unsigned char* topPtr =(unsigned char*) buff;
     int retry_count = 0;
 
-    printf("Send: %d of byte to write, %d of byte written\n", nByteToWrite, nByteWritten);
+    print_level(NSLOGGER_LEVEL_DEBUG, "Send: %d of byte to write, %d of byte written\n", nByteToWrite, nByteWritten);
 
     while(nByteToWrite > 0){
 
@@ -1057,7 +1073,7 @@ int DNSServer::_nonblocking_send(int fd, void* buff, int len)
             retry_count = 0;
             topPtr += nByteWritten;
             nByteToWrite -= nByteWritten;
-            printf("Send: %d of byte to write, %d of byte written\n", nByteToWrite, nByteWritten);
+            print_level(NSLOGGER_LEVEL_DEBUG, "Send: %d of byte to write, %d of byte written\n", nByteToWrite, nByteWritten);
 
         }
 

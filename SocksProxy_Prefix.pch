@@ -11,6 +11,8 @@
 #import "UIDevice_Extended.h"
 #endif
 
+#include "LogLevel.h"
+
 #define USE_NSLOGGER_LIB 1
 
 
