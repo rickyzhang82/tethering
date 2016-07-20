@@ -967,11 +967,11 @@ int DNSServer::_start_server()
         pfd[0].fd = udp_fd;
         pfd[0].events = POLLIN|POLLPRI;
 
-        print_level(NSLOGGER_LEVEL_DEBUG, "Watching %d file descriptors\n", pfd_num);
+        //print_level(NSLOGGER_LEVEL_DEBUG, "Watching %d file descriptors\n", pfd_num);
 
         fr = poll(pfd, pfd_num, -1);
 
-        print_level(NSLOGGER_LEVEL_DEBUG, "Total number of (%d) file descriptors became ready\n", fr);
+        //print_level(NSLOGGER_LEVEL_DEBUG, "Total number of (%d) file descriptors became ready\n", fr);
 
         // handle tcp connections
         for (i = 1; i < pfd_num; i++) {
