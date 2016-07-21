@@ -474,7 +474,7 @@
     // network stream.
 {
 	if (aStream==nil) {
-		NSLog(@"nil stream");
+		LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_ERROR, @"nil stream from hadleEvent.");
 		return;
 	}
 	NSString *streamName;
@@ -488,7 +488,7 @@
 	} else if (aStream == self.remoteSendNetworkStream) {
 		streamName = @"P>S";
 	} else {
-		NSLog(@"Unknown stream");
+		LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_ERROR, @"Unknown stream");
 		return;
 	}
 	if (self.remoteName) {
@@ -548,11 +548,8 @@
 			}
         } break;
         case NSStreamEventErrorOccurred: {
-			NSLog(@"Error %@",streamName);
-			NSError *err = [aStream streamError];
-			NSLog(@"code %ld",(long)[err code]);
-			NSLog(@"domain %@",[err domain]);
-			NSLog(@"userInfo %@",[err userInfo]);
+            NSError *err = [aStream streamError];
+            LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_ERROR, @"Error stream %@ with error code %ld, domain %@, userInfo %@", streamName, (long)[err code], [err domain], [err userInfo]);
             [self stopSendReceiveWithStatus:@"Stream open error"];
         } break;
         case NSStreamEventEndEncountered: {

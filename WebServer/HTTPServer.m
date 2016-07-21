@@ -132,7 +132,7 @@ NSString * const HTTPServerNotificationStateChanged = @"ServerNotificationStateC
 	[self stop];
 	
 	self.state = SERVER_STATE_IDLE;
-	NSLog(@"HTTPServer error: %@", self.lastError);
+	LOG_NETWORK_HTTP(NSLOGGER_LEVEL_ERROR, @"HTTPServer error: %@", self.lastError);
 }
 
 //
