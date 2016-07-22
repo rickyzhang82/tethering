@@ -208,6 +208,28 @@
 		self.sendbufferLimit=0;
 	}
 }
+- (void)readRemoteReceiveNetwork
+{
+  NSInteger bytesRead = kSendBufferSize-self.sendbufferLimit;
+
+  LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"S>P going to read %ld",(long)bytesRead);
+
+  bytesRead = [self.remoteReceiveNetworkStream read:&self.sendbuffer[self.sendbufferLimit]
+                                          maxLength:bytesRead];
+
+  LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Actually read %ld",(long)bytesRead);
+
+  self->_canReceiveRemote = FALSE;
+  if (bytesRead == -1) {
+    [self stopSendReceiveWithStatus:@"Remote network read error"];
+  } else if (bytesRead == 0) {
+    [self stopSendReceiveWithStatus:nil];
+  } else {
+    self.sendbufferLimit+=bytesRead;
+    [self.delegate _downloadData:bytesRead];
+    [self sendBuffer];
+  }
+}
 - (void)readReceiveNetwork
 {
     NSInteger       bytesRead = kReceiveBufferSize-self.receivebufferLimit;
@@ -509,21 +531,14 @@
 			if (aStream == self.remoteReceiveNetworkStream) {
 				// data is coming from the remote site
 				NSInteger       bytesRead=kSendBufferSize-self.sendbufferLimit;
-                LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"S>P going to read %ld",(long)bytesRead);
-				bytesRead = [self.remoteReceiveNetworkStream read:&self.sendbuffer[self.sendbufferLimit]
-												  maxLength:bytesRead];
-                LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Actually read %ld",(long)bytesRead);
-				if (bytesRead == -1) {
-					[self stopSendReceiveWithStatus:@"Remote network read error"];
-				} else if (bytesRead == 0) {
-					[self stopSendReceiveWithStatus:nil];
+
+      // Do not attempt the read until we have space to write into
+      if (bytesRead == 0) {
+        self->_canReceiveRemote = TRUE;
 					break;
-				} else {
-					self.sendbufferLimit+=bytesRead;
-                    [self.delegate _downloadData:bytesRead];
-					[self sendBuffer];
 				}
-				break;
+
+      [self readRemoteReceiveNetwork];
 			} else if (aStream == self.receivenetworkStream) {
                 LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"going to read C>P");
                 [self readReceiveNetwork];
@@ -545,6 +560,11 @@
 			} else if (aStream == self.sendnetworkStream) {
 				//local host is ready to receive data
 				[self sendBuffer];
+
+      NSInteger spaceAvailable=kSendBufferSize-self.sendbufferLimit;
+      if (spaceAvailable > 0 && self->_canReceiveRemote) {
+        [self readRemoteReceiveNetwork];
+      }
 			}
         } break;
         case NSStreamEventErrorOccurred: {
