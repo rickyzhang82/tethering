@@ -24,7 +24,7 @@
 #include <netinet/in.h>
 
 @interface SocksProxy ()
-- (void)socksProtocol;
+- (void)socksProtocol:(NSString*)streamName;
 
 // Properties that don't need to be seen by the outside world.
 
@@ -40,7 +40,7 @@
 @property (nonatomic, assign)   size_t              receivebufferLimit;
 @property (nonatomic, assign)   NSUInteger			protocolLocation;
 @property (nonatomic, strong)   NSString *			remoteName;
-
+@property (nonatomic, assign)   bool                shouldReceiveRemote;
 @end
 
 @implementation SocksProxy
@@ -132,13 +132,15 @@
     {
         LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_INFO, @"stop with no status");
         if (self.receivebufferOffset != self.receivebufferLimit) {
-            LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"We have %lu received data",self.receivebufferLimit-self.receivebufferOffset);
+            LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"We still have %lu data left in receivebuffer",self.receivebufferLimit-self.receivebufferOffset);
             return;
         }
         if (self.sendbufferLimit != self.sendbufferOffset) {
-            LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"We have send data %d",self.sendbufferLimit != self.sendbufferOffset);
+            LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"We still have %lu data left in sendbuffer", self.sendbufferLimit - self.sendbufferOffset);
             return;
         }
+    }else{
+        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_INFO, @"stop with status %@", statusString);
     }
     
     if (self.receivenetworkStream != nil) {
@@ -181,65 +183,107 @@
     [self.delegate _sendreceiveDidStopWithStatus:statusString];
 }
 
-- (void)sendBuffer
+#pragma mark * Internal transfer code
+- (void)checkSendBuffer:(NSString*)streamName
 {
-	if (![self.sendnetworkStream hasSpaceAvailable])
+    if (self.sendbufferOffset==self.sendbufferLimit) {
+        self.sendbufferOffset=0;
+        self.sendbufferLimit=0;
+    }
+}
+- (void)sendBuffer:(NSString*)streamName
+{
+    if (![self.sendnetworkStream hasSpaceAvailable]){
+        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"sendnetworkStream has NO space available for %@", streamName);
 		return;
-	if (self.sendbufferOffset == self.sendbufferLimit) 
+    }
+    if (self.sendbufferOffset == self.sendbufferLimit){
+        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"sendBuffer has no new data to send for %@", streamName);
 		return;
+    }
 	
 	NSInteger bytesWritten = self.sendbufferLimit - self.sendbufferOffset;
 
-	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"write P>C %ld", (long)bytesWritten);
+	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"attempt to sendBuffer %ld for %@", (long)bytesWritten, streamName);
 
 	bytesWritten = [self.sendnetworkStream write:&self.sendbuffer[self.sendbufferOffset] 
 									   maxLength:bytesWritten];
 
-	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"actually write %ld", (long)bytesWritten);
+	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Actually sendBuffer write %ld for %@", (long)bytesWritten, streamName);
 
 	assert(bytesWritten != 0);
 	if (bytesWritten == -1) {
-		[self stopSendReceiveWithStatus:@"Network write error"];
+        NSError *err = [self.sendnetworkStream streamError];
+        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_ERROR, @"ERROR: sendBuffer - stream %@ with error code %ld, domain %@, userInfo %@",
+                          streamName, (long)[err code], [err domain], [err userInfo]);
+        [self stopSendReceiveWithStatus:@"Network write error"];
 	} else {
 		self.sendbufferOffset += bytesWritten;
 	}
-	if (self.sendbufferOffset==self.sendbufferLimit) {
-		self.sendbufferOffset=0;
-		self.sendbufferLimit=0;
-	}
+    [self checkSendBuffer: streamName];
 }
-- (void)readReceiveNetwork
+- (void)readReceiveNetwork:(NSString*)streamName
 {
     NSInteger       bytesRead = kReceiveBufferSize-self.receivebufferLimit;
     if (bytesRead == 0) {
-        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"receive buffer full");
+        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"receive buffer is full for %@", streamName);
         return;
     }
     bytesRead = [self.receivenetworkStream read:&self.receivebuffer[self.receivebufferLimit]
                                       maxLength:bytesRead];
-    LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Actually read %ld",(long)bytesRead);
+    LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Actually readReceiveNetwork read %ld for %@",(long)bytesRead, streamName);
     if (bytesRead == -1) {
+        NSError *err = [self.receivenetworkStream streamError];
+        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_ERROR, @"ERROR: readReceiveNetwork - stream %@ with error code %ld, domain %@, userInfo %@",
+                          streamName, (long)[err code], [err domain], [err userInfo]);
         [self stopSendReceiveWithStatus:@"Network read error"];
     } else if (bytesRead == 0) {
         [self stopSendReceiveWithStatus:nil];
     } else {
         self.receivebufferLimit+=bytesRead;
-        [self socksProtocol];
+        [self socksProtocol: streamName];
     }
     
 }
-- (void)checkReceiveBuffer
+- (void)readRemoteReceiveNetwork:(NSString *)streamName
+{
+    // data is coming from the remote site
+    NSInteger       bytesRead=kSendBufferSize-self.sendbufferLimit;
+    if (bytesRead == 0){
+        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"remote receive buffer is full for %@", streamName);
+        //invoke readRemoteReceiveNetwork after sendBuffer method when sendBuffer is full
+        self.shouldReceiveRemote = YES;
+        return;
+    }
+    bytesRead = [self.remoteReceiveNetworkStream read:&self.sendbuffer[self.sendbufferLimit]
+                                            maxLength:bytesRead];
+    LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Actually readRemoteReceiveNetwork read %ld for %@",(long)bytesRead, streamName);
+    if (bytesRead == -1) {
+        NSError *err = [self.remoteReceiveNetworkStream streamError];
+        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_ERROR, @"ERROR: readRemoteReceiveNetwork - stream %@ with error code %ld, domain %@, userInfo %@",
+                          streamName, (long)[err code], [err domain], [err userInfo]);
+        [self stopSendReceiveWithStatus:@"Remote network read error"];
+    } else if (bytesRead == 0) {
+        [self stopSendReceiveWithStatus:nil];
+    } else {
+        self.shouldReceiveRemote = NO;
+        self.sendbufferLimit+=bytesRead;
+        [self.delegate _downloadData:bytesRead];
+        [self sendBuffer: streamName];
+    }
+}
+- (void)checkReceiveBuffer:(NSString*)streamName
 {
 	if (self.receivebufferOffset==self.receivebufferLimit) {
 		self.receivebufferOffset=0;
 		self.receivebufferLimit=0;
 	}
     if ([self.receivenetworkStream hasBytesAvailable]) {
-        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"more data");
-        [self readReceiveNetwork];
+        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"receivenetworkStream has more data for %@. going to read.", streamName);
+        [self readReceiveNetwork: streamName];
     }
 }
-- (void)sendremoteBuffer
+- (void)sendremoteBuffer:(NSString*)streamName
 {
 	if (![self.remoteSendNetworkStream hasSpaceAvailable])
 		return;
@@ -247,18 +291,21 @@
 	if (self.receivebufferOffset == self.receivebufferLimit)
         return;
 	NSInteger   bytesWritten=self.receivebufferLimit - self.receivebufferOffset;
-	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"write P>S %ld", (long)bytesWritten);
+	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"attempt to sendremoteBuffer %ld for %@", (long)bytesWritten, streamName);
 	bytesWritten = [self.remoteSendNetworkStream write:&self.receivebuffer[self.receivebufferOffset]
 								maxLength:bytesWritten];
-	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"actually write %ld", (long)bytesWritten);
+	LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Actually sendremoteBuffer write %ld for %@", (long)bytesWritten, streamName);
 	assert(bytesWritten != 0);
 	if (bytesWritten == -1) {
-		[self stopSendReceiveWithStatus:@"Remote network write error"];
+        NSError *err = [self.remoteSendNetworkStream streamError];
+        LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_ERROR, @"ERROR: sendremoteBuffer - stream %@ with error code %ld, domain %@, userInfo %@",
+                          streamName, (long)[err code], [err domain], [err userInfo]);
+        [self stopSendReceiveWithStatus:@"Remote network write error"];
 	} else {
 		self.receivebufferOffset += bytesWritten;
         [self.delegate _uploadData:bytesWritten];
 	}
-    [self checkReceiveBuffer];
+    [self checkReceiveBuffer: streamName];
 }
 
 
@@ -273,7 +320,7 @@
 	return n;
 }
 
-- (void)socksProtocol
+- (void)socksProtocol:(NSString*)streamName
 {
 	NSUInteger lastProtocolLocation = -1;
 	while (self.receivebufferLimit > self.receivebufferOffset) {
@@ -330,7 +377,7 @@
 					[self stopSendReceiveWithStatus:@"Cant send reply"];
 					break;								
 				}
-				[self sendBuffer];
+                [self sendBuffer: streamName];
 				
 				//advance buffer/protocol
 				self.receivebufferOffset=s-self.receivebuffer;
@@ -393,12 +440,15 @@
 				if(e-s<2) break;
 				int port = ntohs(*(ushort *)s);
 				s+=2;
-				
-				//execute the command
-				if (addr) {
-					self.remoteName=[NSString stringWithFormat:@"%@:%d",addr,port];
-					[self.delegate _updateStatus:self.remoteName];
-				}
+                
+                //update address
+                NSString *remoteAddress = addr;
+                if (!remoteAddress)
+                    remoteAddress = @"unkown host";
+                self.remoteName=[NSString stringWithFormat:@"%@:%d",remoteAddress,port];
+                [self.delegate _updateStatus:self.remoteName];
+                
+                //execute the command
 				if (command == 1) {
 					CFHostRef host;
 					if(!rc){
@@ -447,7 +497,7 @@
 					[self stopSendReceiveWithStatus:@"Cant send reply 2"];
 					break;								
 				}
-				[self sendBuffer];
+                [self sendBuffer: streamName];
 				
 				//advance buffer/protocol
 				self.receivebufferOffset=s-self.receivebuffer;
@@ -459,14 +509,14 @@
 
 				//send any data we already have to remote host
 				if(!rc)
-					[self sendremoteBuffer];
+                    [self sendremoteBuffer: streamName];
 			} break;
 			default: {
-				[self sendremoteBuffer];
+                [self sendremoteBuffer: streamName];
 			} break;
 		}
 	}
-    [self checkReceiveBuffer];
+    [self checkReceiveBuffer: streamName];
 }
 
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
@@ -507,26 +557,14 @@
 			LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Receive %@", streamName);
 	
 			if (aStream == self.remoteReceiveNetworkStream) {
-				// data is coming from the remote site
-				NSInteger       bytesRead=kSendBufferSize-self.sendbufferLimit;
-                LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"S>P going to read %ld",(long)bytesRead);
-				bytesRead = [self.remoteReceiveNetworkStream read:&self.sendbuffer[self.sendbufferLimit]
-												  maxLength:bytesRead];
-                LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Actually read %ld",(long)bytesRead);
-				if (bytesRead == -1) {
-					[self stopSendReceiveWithStatus:@"Remote network read error"];
-				} else if (bytesRead == 0) {
-					[self stopSendReceiveWithStatus:nil];
-					break;
-				} else {
-					self.sendbufferLimit+=bytesRead;
-                    [self.delegate _downloadData:bytesRead];
-					[self sendBuffer];
-				}
+                // data comming from remote server
+                LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"going to read %@", streamName);
+                [self readRemoteReceiveNetwork: streamName];
 				break;
 			} else if (aStream == self.receivenetworkStream) {
-                LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"going to read C>P");
-                [self readReceiveNetwork];
+                // data comming from local client
+                LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"going to read %@", streamName);
+                [self readReceiveNetwork: streamName];
             }
         } break;
         case NSStreamEventHasSpaceAvailable: {
@@ -535,16 +573,20 @@
 
 			if (aStream == self.remoteSendNetworkStream) {
 				//remote host is ready to receive data
-				[self sendremoteBuffer];
+                [self sendremoteBuffer: streamName];
                 // The sending may have freed up space that can be used to move data from the Computer side to the Server side
                 if (self.receivebufferLimit > self.receivebufferOffset) {
-                    LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Processing more data");
-                    [self socksProtocol];
+                    LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"Processing more data for %@", streamName);
+                    [self socksProtocol: streamName];
                 }
 				break;
 			} else if (aStream == self.sendnetworkStream) {
 				//local host is ready to receive data
-				[self sendBuffer];
+                [self sendBuffer: streamName];
+                if (self.shouldReceiveRemote) {
+                    LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_DEBUG, @"remoteReceiveNetworkStream has more data for %@. going to read", streamName);
+                    [self readRemoteReceiveNetwork: streamName];
+                }
 			}
         } break;
         case NSStreamEventErrorOccurred: {
