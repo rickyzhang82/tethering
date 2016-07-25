@@ -12,6 +12,10 @@ Ricky
 
 Change log
 ------------------------------------------------
+Release V1.6
+* Fix problem when remote network is faster than local network. Thanks @optimoid and @bsuh for their patch and bug report.
+* Refactor socks proxy message debug log.
+
 Release V1.5
 * Refactor DNS message log
 * Verify compatible with iOS 9.3
