@@ -10,13 +10,12 @@
 		1D3623EC0D0F72F000981E51 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		25E1FC4B1D5199F700C14AB7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25E1FC4A1D5199F700C14AB7 /* Images.xcassets */; };
+		25E1FC4D1D5420D500C14AB7 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 25E1FC4C1D5420D500C14AB7 /* LaunchScreen.xib */; };
 		49720A8B127C1B37001873A0 /* ColorC.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49720A8A127C1B37001873A0 /* ColorC.mm */; };
 		49847DDD12664F03001645B5 /* MOButton.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49847DDA12664F03001645B5 /* MOButton.mm */; };
 		49847DDE12664F03001645B5 /* MOGlassButton.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49847DDC12664F03001645B5 /* MOGlassButton.mm */; };
 		49847E0012665213001645B5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49847DFF12665213001645B5 /* QuartzCore.framework */; };
-		49B6F91D12394DEC005D89AC /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 49B6F91A12394DEC005D89AC /* icon.png */; };
-		49B6F91E12394DEC005D89AC /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 49B6F91B12394DEC005D89AC /* icon@2x.png */; };
-		49B6F91F12394DEC005D89AC /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 49B6F91C12394DEC005D89AC /* iTunesArtwork */; };
 		54122F1B10D88D4900836166 /* SocksProxyController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 54122F1A10D88D4900836166 /* SocksProxyController.mm */; };
 		542A644E1241261A003497CD /* SocksProxyController_TableView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 542A644B1241261A003497CD /* SocksProxyController_TableView.mm */; };
 		542A644F1241261A003497CD /* UIDevice_Extended.mm in Sources */ = {isa = PBXBuildFile; fileRef = 542A644D1241261A003497CD /* UIDevice_Extended.mm */; };
@@ -29,7 +28,6 @@
 		9C4CAB051AD73ABB0025CFE1 /* PacFileResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C4CAB001AD73ABB0025CFE1 /* PacFileResponse.m */; };
 		9C4CAB061AD73ABB0025CFE1 /* HTTPResponseHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C4CAB021AD73ABB0025CFE1 /* HTTPResponseHandler.m */; };
 		9C4CAB071AD73ABB0025CFE1 /* HTTPServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C4CAB041AD73ABB0025CFE1 /* HTTPServer.m */; };
-		9C5C8AB91825468200ED829D /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C5C8AB81825468200ED829D /* Default-568h@2x.png */; };
 		9C95E98618393629004559EB /* LoggerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C95E98418393629004559EB /* LoggerClient.m */; };
 		E40F66010FB1E38600D92710 /* SocksProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = E40F65FF0FB1E38600D92710 /* SocksProxy.mm */; };
 		E40F66BA0FB3029A00D92710 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E40F66B90FB3029A00D92710 /* CFNetwork.framework */; };
@@ -41,6 +39,8 @@
 		1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* Tethering.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tethering.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		25E1FC4A1D5199F700C14AB7 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Tethering/Images.xcassets; sourceTree = SOURCE_ROOT; };
+		25E1FC4C1D5420D500C14AB7 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		49720A89127C1B37001873A0 /* ColorC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorC.h; sourceTree = "<group>"; };
 		49720A8A127C1B37001873A0 /* ColorC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ColorC.mm; sourceTree = "<group>"; };
 		49847DD912664F03001645B5 /* MOButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MOButton.h; sourceTree = "<group>"; };
@@ -48,9 +48,6 @@
 		49847DDB12664F03001645B5 /* MOGlassButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MOGlassButton.h; sourceTree = "<group>"; };
 		49847DDC12664F03001645B5 /* MOGlassButton.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MOGlassButton.mm; sourceTree = "<group>"; };
 		49847DFF12665213001645B5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		49B6F91A12394DEC005D89AC /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
-		49B6F91B12394DEC005D89AC /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon@2x.png"; sourceTree = "<group>"; };
-		49B6F91C12394DEC005D89AC /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
 		54074CF2124127320036116E /* SocksProxy_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxy_Prefix.pch; sourceTree = "<group>"; };
 		54122F1A10D88D4900836166 /* SocksProxyController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SocksProxyController.mm; sourceTree = "<group>"; };
 		54122F1F10D88DBE00836166 /* SocksProxyController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxyController.h; sourceTree = "<group>"; };
@@ -74,7 +71,6 @@
 		9C4CAB021AD73ABB0025CFE1 /* HTTPResponseHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPResponseHandler.m; path = WebServer/HTTPResponseHandler.m; sourceTree = "<group>"; };
 		9C4CAB031AD73ABB0025CFE1 /* HTTPServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPServer.h; path = WebServer/HTTPServer.h; sourceTree = "<group>"; };
 		9C4CAB041AD73ABB0025CFE1 /* HTTPServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPServer.m; path = WebServer/HTTPServer.m; sourceTree = "<group>"; };
-		9C5C8AB81825468200ED829D /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		9C95E98318393629004559EB /* LoggerClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoggerClient.h; path = NSLogger/LoggerClient.h; sourceTree = "<group>"; };
 		9C95E98418393629004559EB /* LoggerClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LoggerClient.m; path = NSLogger/LoggerClient.m; sourceTree = "<group>"; };
 		9C95E98518393629004559EB /* LoggerCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoggerCommon.h; path = NSLogger/LoggerCommon.h; sourceTree = "<group>"; };
@@ -114,7 +110,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				9C5C8AB81825468200ED829D /* Default-568h@2x.png */,
 				9C1900741AD729A00022F53D /* Classes */,
 				54074CF1124126F10036116E /* Other Sources */,
 				E4D543FE0FAB45DC00630176 /* Resources */,
@@ -159,16 +154,6 @@
 				9C3FB279183FEB97001B81FA /* Main.storyboard */,
 			);
 			name = "Other Sources";
-			sourceTree = "<group>";
-		};
-		54074CF3124127510036116E /* images */ = {
-			isa = PBXGroup;
-			children = (
-				49B6F91A12394DEC005D89AC /* icon.png */,
-				49B6F91B12394DEC005D89AC /* icon@2x.png */,
-				49B6F91C12394DEC005D89AC /* iTunesArtwork */,
-			);
-			name = images;
 			sourceTree = "<group>";
 		};
 		54074CF4124127690036116E /* xibs */ = {
@@ -261,8 +246,9 @@
 		E4D543FE0FAB45DC00630176 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				25E1FC4A1D5199F700C14AB7 /* Images.xcassets */,
+				25E1FC4C1D5420D500C14AB7 /* LaunchScreen.xib */,
 				54074CF4124127690036116E /* xibs */,
-				54074CF3124127510036116E /* images */,
 				E4D544010FAB45DC00630176 /* Info.plist */,
 				E4D5443A0FAB4B1600630176 /* Info.html */,
 			);
@@ -272,9 +258,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1D6058900D05DD3D006BFB54 /* SOCKS */ = {
+		1D6058900D05DD3D006BFB54 /* Tethering */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "SOCKS" */;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "Tethering" */;
 			buildPhases = (
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -284,7 +270,7 @@
 			);
 			dependencies = (
 			);
-			name = SOCKS;
+			name = Tethering;
 			productName = TrivialStreamTransfer;
 			productReference = 1D6058910D05DD3D006BFB54 /* Tethering.app */;
 			productType = "com.apple.product-type.application";
@@ -298,11 +284,11 @@
 				LastUpgradeCheck = 0730;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = L527N68YVE;
+						DevelopmentTeam = R26GJ8D22R;
 					};
 				};
 			};
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "SOCKS" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Tethering" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -316,7 +302,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1D6058900D05DD3D006BFB54 /* SOCKS */,
+				1D6058900D05DD3D006BFB54 /* Tethering */,
 			);
 		};
 /* End PBXProject section */
@@ -326,13 +312,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25E1FC4D1D5420D500C14AB7 /* LaunchScreen.xib in Resources */,
 				9C3FB27A183FEB97001B81FA /* Main.storyboard in Resources */,
+				25E1FC4B1D5199F700C14AB7 /* Images.xcassets in Resources */,
 				E4D5443B0FAB4B1600630176 /* Info.html in Resources */,
-				9C5C8AB91825468200ED829D /* Default-568h@2x.png in Resources */,
 				546335FE10DAB3BE00D3A3AE /* README in Resources */,
-				49B6F91D12394DEC005D89AC /* icon.png in Resources */,
-				49B6F91E12394DEC005D89AC /* icon@2x.png in Resources */,
-				49B6F91F12394DEC005D89AC /* iTunesArtwork in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,6 +350,8 @@
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = entitlements.plist;
 				"CODE_SIGN_ENTITLEMENTS[sdk=*]" = "";
@@ -376,17 +362,19 @@
 				INFOPLIST_FILE = Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				OTHER_CFLAGS = "-DDEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.rickyzhang.${PRODUCT_NAME:identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = com.rickybloomfield.Tethering;
 				PRODUCT_NAME = Tethering;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -397,12 +385,12 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.rickyzhang.${PRODUCT_NAME:identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = com.rickybloomfield.Tethering;
 				PRODUCT_NAME = Tethering;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -491,7 +479,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "SOCKS" */ = {
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "Tethering" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Debug */,
@@ -500,7 +488,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "SOCKS" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Tethering" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
