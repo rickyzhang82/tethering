@@ -86,8 +86,10 @@
     
     [self.window addSubview:self.viewController.view];
     
-    
-	[self.window makeKeyAndVisible];
+    [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:0.082 green:0.492 blue:0.980 alpha:1.0]];
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+	
+    [self.window makeKeyAndVisible];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

@@ -17,7 +17,6 @@
 		49847DDE12664F03001645B5 /* MOGlassButton.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49847DDC12664F03001645B5 /* MOGlassButton.mm */; };
 		49847E0012665213001645B5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49847DFF12665213001645B5 /* QuartzCore.framework */; };
 		54122F1B10D88D4900836166 /* SocksProxyController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 54122F1A10D88D4900836166 /* SocksProxyController.mm */; };
-		542A644E1241261A003497CD /* SocksProxyController_TableView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 542A644B1241261A003497CD /* SocksProxyController_TableView.mm */; };
 		542A644F1241261A003497CD /* UIDevice_Extended.mm in Sources */ = {isa = PBXBuildFile; fileRef = 542A644D1241261A003497CD /* UIDevice_Extended.mm */; };
 		546335FE10DAB3BE00D3A3AE /* README in Resources */ = {isa = PBXBuildFile; fileRef = 546335FD10DAB3BE00D3A3AE /* README */; };
 		5463365810DABA8E00D3A3AE /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5463365410DABA8E00D3A3AE /* AppDelegate.mm */; };
@@ -51,8 +50,6 @@
 		54074CF2124127320036116E /* SocksProxy_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxy_Prefix.pch; sourceTree = "<group>"; };
 		54122F1A10D88D4900836166 /* SocksProxyController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SocksProxyController.mm; sourceTree = "<group>"; };
 		54122F1F10D88DBE00836166 /* SocksProxyController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxyController.h; sourceTree = "<group>"; };
-		542A644A1241261A003497CD /* SocksProxyController_TableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxyController_TableView.h; sourceTree = "<group>"; };
-		542A644B1241261A003497CD /* SocksProxyController_TableView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SocksProxyController_TableView.mm; sourceTree = "<group>"; };
 		542A644C1241261A003497CD /* UIDevice_Extended.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDevice_Extended.h; sourceTree = "<group>"; };
 		542A644D1241261A003497CD /* UIDevice_Extended.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UIDevice_Extended.mm; sourceTree = "<group>"; };
 		546335FD10DAB3BE00D3A3AE /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
@@ -138,8 +135,6 @@
 			children = (
 				54122F1F10D88DBE00836166 /* SocksProxyController.h */,
 				54122F1A10D88D4900836166 /* SocksProxyController.mm */,
-				542A644A1241261A003497CD /* SocksProxyController_TableView.h */,
-				542A644B1241261A003497CD /* SocksProxyController_TableView.mm */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -334,7 +329,6 @@
 				54122F1B10D88D4900836166 /* SocksProxyController.mm in Sources */,
 				5463365810DABA8E00D3A3AE /* AppDelegate.mm in Sources */,
 				5463365A10DABA8E00D3A3AE /* main.mm in Sources */,
-				542A644E1241261A003497CD /* SocksProxyController_TableView.mm in Sources */,
 				9C4CAB051AD73ABB0025CFE1 /* PacFileResponse.m in Sources */,
 				542A644F1241261A003497CD /* UIDevice_Extended.mm in Sources */,
 				49847DDD12664F03001645B5 /* MOButton.mm in Sources */,
