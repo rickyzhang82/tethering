@@ -54,7 +54,7 @@
 
 - (void)awakeFromNib {
 	[super awakeFromNib];
-	[self setupLayers];
+	//[self setupLayers];
 }
 
 
@@ -63,9 +63,9 @@
 - (void)layoutSubviews {
 	[super layoutSubviews];
 
-	gradientLayer1.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height/2);
-	gradientLayer2.frame = CGRectMake(0, self.frame.size.height/2, self.frame.size.width, self.frame.size.height/2);
-	outlineLayer.frame = CGRectMake(0, 1, self.frame.size.width, self.frame.size.height);
+	//gradientLayer1.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height/2);
+	//gradientLayer2.frame = CGRectMake(0, self.frame.size.height/2, self.frame.size.width, self.frame.size.height/2);
+	//outlineLayer.frame = CGRectMake(0, 1, self.frame.size.width, self.frame.size.height);
 }
 
 #pragma mark Default Button Background Colors
@@ -73,9 +73,9 @@
 - (void)setupForStandardButtons {
 	[self setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 	[self setTitleColor:[UIColor colorFromRGBIntegers:205 green:212 blue:220 alpha:1.0f] forState:UIControlStateDisabled];
-	self.titleLabel.shadowOffset = CGSizeMake(0, -1);
-	self.titleLabel.shadowColor = [UIColor colorFromRGBIntegers:192 green:73 blue:84 alpha:1.0f];
-	self.titleLabel.font = [UIFont boldSystemFontOfSize:20];
+	//self.titleLabel.shadowOffset = CGSizeMake(0, -1);
+	//self.titleLabel.shadowColor = [UIColor colorFromRGBIntegers:192 green:73 blue:84 alpha:1.0f];
+	self.titleLabel.font = [UIFont systemFontOfSize:20 weight:UIFontWeightLight];
 }
 
 
@@ -104,15 +104,15 @@
 
 - (void)setupAsSmallGreenButton {
 	[self setupAsGreenButton];
-	self.titleLabel.font = [UIFont boldSystemFontOfSize:15];
-	self.layer.cornerRadius = 4.0f;
+	self.titleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightLight];
+	//self.layer.cornerRadius = 4.0f;
 }
 
 
 - (void)setupAsSmallRedButton {
 	[self setupAsRedButton];
-	self.titleLabel.font = [UIFont boldSystemFontOfSize:15];
-	self.layer.cornerRadius = 4.0f;
+	self.titleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightLight];
+	//self.layer.cornerRadius = 4.0f;
 }
 
 @end
