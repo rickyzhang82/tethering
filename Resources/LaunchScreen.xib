@@ -16,7 +16,7 @@
                     <constraints>
                         <constraint firstAttribute="width" constant="176" id="h0A-Lg-K5V"/>
                     </constraints>
-                    <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="40"/>
+                    <fontDescription key="fontDescription" type="system" weight="light" pointSize="40"/>
                     <state key="normal" title="Tethering">
                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>

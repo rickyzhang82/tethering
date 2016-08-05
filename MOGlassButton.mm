@@ -75,7 +75,7 @@
 	[self setTitleColor:[UIColor colorFromRGBIntegers:205 green:212 blue:220 alpha:1.0f] forState:UIControlStateDisabled];
 	//self.titleLabel.shadowOffset = CGSizeMake(0, -1);
 	//self.titleLabel.shadowColor = [UIColor colorFromRGBIntegers:192 green:73 blue:84 alpha:1.0f];
-	//self.titleLabel.font = [UIFont boldSystemFontOfSize:20];
+	self.titleLabel.font = [UIFont systemFontOfSize:20 weight:UIFontWeightLight];
 }
 
 
@@ -104,14 +104,14 @@
 
 - (void)setupAsSmallGreenButton {
 	[self setupAsGreenButton];
-	self.titleLabel.font = [UIFont boldSystemFontOfSize:15];
+	self.titleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightLight];
 	//self.layer.cornerRadius = 4.0f;
 }
 
 
 - (void)setupAsSmallRedButton {
 	[self setupAsRedButton];
-	self.titleLabel.font = [UIFont boldSystemFontOfSize:15];
+	self.titleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightLight];
 	//self.layer.cornerRadius = 4.0f;
 }
 

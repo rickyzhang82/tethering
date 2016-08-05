@@ -21,18 +21,18 @@
 //
 
 #import "SocksProxyController.h"
-//#import "SocksProxyController_TableView.h"
 #import "AppDelegate.h"
 #import "UIDevice_Extended.h"
 #import "MOGlassButton.h"
 
 #include <CFNetwork/CFNetwork.h>
+#include <SafariServices/SafariServices.h>
 
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netinet/in.h>
 
-@interface SocksProxyController ()
+@interface SocksProxyController () <SFSafariViewControllerDelegate>
 
 // Properties that don't need to be seen by the outside world.
 
@@ -85,7 +85,7 @@ typedef enum {
 }
 
 
-#pragma mark * Status management
+#pragma mark - Status management
 
 // These methods are used by the core transfer code to update the UI.
 
@@ -210,7 +210,7 @@ typedef enum {
 	
 	[self refreshProxyTable];
 }
-#pragma mark * Core transfer code
+#pragma mark - Core transfer code
 
 // This is the code that actually does the networking.
 
@@ -479,7 +479,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 }
 
 
-#pragma mark * Actions
+#pragma mark - Actions
 
 - (IBAction)startOrStopAction:(id)sender
 {
@@ -520,7 +520,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 }
 
 
-#pragma mark * View controller boilerplate
+#pragma mark - View controller boilerplate
 
 @synthesize currentPort;
 @synthesize currentAddress;
@@ -565,6 +565,12 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
     self.title = @"Tethering";
+    
+    // Add info button
+    UIButton *infoLightButton = [UIButton buttonWithType:UIButtonTypeInfoDark];
+    infoLightButton.tintColor = [UIColor whiteColor];
+    [infoLightButton addTarget:self action:@selector(showInfo) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:infoLightButton];
 }
 
 
@@ -580,7 +586,36 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     [self _stopServer:nil];
 }
 
-#pragma mark Table View Data Source Methods
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+
+#pragma mark - Custom Methods
+
+- (void)showInfo {
+    NSString *URLString = @"https://github.com/rickyzhang82/tethering/wiki";
+    if ([SFSafariViewController class] != nil) {
+        // Use SFSafariViewController
+        SFSafariViewController *sfvc = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:URLString]];
+        sfvc.delegate = self;
+        sfvc.view.tintColor = [UIColor colorWithRed:0.082 green:0.492 blue:0.980 alpha:1.0];
+        [self presentViewController:sfvc animated:YES completion:nil];
+    } else {
+        // Open in Mobile Safari
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:URLString]];
+    }
+}
+
+#pragma mark - SFSafariViewController delegate methods
+-(void)safariViewController:(SFSafariViewController *)controller didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
+    // Load finished
+}
+
+-(void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+    // Done button pressed
+}
+
+#pragma mark - Table View Data Source Methods
 
 - (NSString *)tableView:(UITableView *)table titleForHeaderInSection:(NSInteger)section
 {
