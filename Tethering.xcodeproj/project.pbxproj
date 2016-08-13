@@ -11,6 +11,7 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		25020F261D5F672C00FA0071 /* silence.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 25020F251D5F672C00FA0071 /* silence.mp3 */; };
+		25020F281D5F69A300FA0071 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25020F271D5F69A300FA0071 /* AVFoundation.framework */; };
 		25D60A321D54D5A20001983F /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25D60A311D54D5A20001983F /* SafariServices.framework */; };
 		25E1FC4B1D5199F700C14AB7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25E1FC4A1D5199F700C14AB7 /* Images.xcassets */; };
 		25E1FC4D1D5420D500C14AB7 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 25E1FC4C1D5420D500C14AB7 /* LaunchScreen.xib */; };
@@ -41,6 +42,7 @@
 		1D6058910D05DD3D006BFB54 /* Tethering.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tethering.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		25020F251D5F672C00FA0071 /* silence.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = silence.mp3; sourceTree = "<group>"; };
+		25020F271D5F69A300FA0071 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		25D60A311D54D5A20001983F /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		25E1FC4A1D5199F700C14AB7 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Tethering/Images.xcassets; sourceTree = SOURCE_ROOT; };
 		25E1FC4C1D5420D500C14AB7 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25020F281D5F69A300FA0071 /* AVFoundation.framework in Frameworks */,
 				25D60A321D54D5A20001983F /* SafariServices.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
@@ -125,6 +128,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				25020F271D5F69A300FA0071 /* AVFoundation.framework */,
 				25D60A311D54D5A20001983F /* SafariServices.framework */,
 				49847DFF12665213001645B5 /* QuartzCore.framework */,
 				E40F66B90FB3029A00D92710 /* CFNetwork.framework */,
