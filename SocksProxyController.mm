@@ -25,6 +25,7 @@
 #import "UIDevice_Extended.h"
 #import "MOGlassButton.h"
 
+#import <AVFoundation/AVFoundation.h>
 #include <CFNetwork/CFNetwork.h>
 #include <SafariServices/SafariServices.h>
 
@@ -41,6 +42,7 @@
 @property (nonatomic, assign)   CFSocketRef         listeningSocket;
 @property (nonatomic, assign)   NSInteger			nConnections;
 @property (nonatomic, strong) NSMutableArray*       sendreceiveStream;
+@property (nonatomic, strong) AVPlayer*             bgPlayer;
 
 // Forward declarations
 
@@ -75,6 +77,7 @@ typedef enum {
 @synthesize nConnections  = _nConnections;
 // Because sendreceiveStream is declared as an array, you have to use a custom getter.  
 // A synthesised getter doesn't compile.
+@synthesize bgPlayer;
 
 
 - (NSMutableArray*)sendreceiveStream
@@ -100,6 +103,21 @@ typedef enum {
 	
 	// Enable proximity sensor (public as of 3.0)
 	[UIDevice currentDevice].proximityMonitoringEnabled = YES;
+    
+    // Enable backgrounding
+    // Set AVAudioSession
+    NSError *sessionError = nil;
+    #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionMixWithOthers error:&sessionError];
+    #else
+        NSLog(@"Warning: iOS 6 is required for background audio hiding.");
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&sessionError];
+    #endif
+    AVPlayerItem *item = [AVPlayerItem playerItemWithURL:[[NSBundle mainBundle] URLForResource:@"silence" withExtension:@"mp3"]];
+
+    [self setBgPlayer:[[AVPlayer alloc] initWithPlayerItem:item]];
+    [[self bgPlayer] setActionAtItemEnd:AVPlayerActionAtItemEndNone];
+    [[self bgPlayer] play];
 	
 	self.currentAddress = [UIDevice localWiFiIPAddress];
 	self.currentPort = port;
@@ -126,6 +144,9 @@ typedef enum {
 	
 	// Disable proximity sensor (public as of 3.0)
 	[UIDevice currentDevice].proximityMonitoringEnabled = NO;
+    
+    // Disable backgrounding
+    [self setBgPlayer:nil];
 	
 	self.currentAddress = @"";
 	self.currentPort = 0;
