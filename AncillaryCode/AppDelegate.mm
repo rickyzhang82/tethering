@@ -86,8 +86,11 @@
     
     [self.window addSubview:self.viewController.view];
     
+    [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:0.082 green:0.492 blue:0.980 alpha:1.0]];
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIFont systemFontOfSize:20 weight:UIFontWeightLight], NSFontAttributeName, [UIColor whiteColor], NSForegroundColorAttributeName, nil];
+    [[UINavigationBar appearance] setTitleTextAttributes:attributes];
     
-	[self.window makeKeyAndVisible];
+    [self.window makeKeyAndVisible];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

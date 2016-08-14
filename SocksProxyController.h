@@ -29,7 +29,7 @@
 
 @class MOGlassButton;
 
-@interface SocksProxyController : UIViewController <SocksProxyDelegate, NSNetServiceDelegate>
+@interface SocksProxyController : UITableViewController <SocksProxyDelegate, NSNetServiceDelegate>
 {
     UILabel *                   _portLabel;
     UILabel *                   _addressLabel;

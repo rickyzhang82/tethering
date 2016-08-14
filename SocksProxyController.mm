@@ -20,20 +20,20 @@
 //  Copyright 2010 coffeecoding. All rights reserved.
 //
 
-#import <AVFoundation/AVFoundation.h>
 #import "SocksProxyController.h"
-#import "SocksProxyController_TableView.h"
 #import "AppDelegate.h"
 #import "UIDevice_Extended.h"
 #import "MOGlassButton.h"
 
+#import <AVFoundation/AVFoundation.h>
 #include <CFNetwork/CFNetwork.h>
+#include <SafariServices/SafariServices.h>
 
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netinet/in.h>
 
-@interface SocksProxyController ()
+@interface SocksProxyController () <SFSafariViewControllerDelegate>
 
 // Properties that don't need to be seen by the outside world.
 
@@ -50,6 +50,29 @@
 
 @end
 
+/*!
+ * Specifies the sections of the table
+ */
+typedef enum {
+    SocksProxyTableSectionGeneral,
+    SocksProxyTableSectionConnections,
+    SocksProxyTableSectionCount
+} SocksProxyTableSection;
+
+/*!
+ * Specifies the rows of the table sections
+ */
+typedef enum {
+    SocksProxyTableRowAddress,
+    SocksProxyTableRowPort,
+    // connections section
+    SocksProxyTableRowConnections = 0,
+    SocksProxyTableRowConnectionsOpen,
+    SocksProxyTableRowUpload,
+    SocksProxyTableRowDownload,
+    SocksProxyTableRowStatus
+} SocksProxyTableRow;
+
 @implementation SocksProxyController
 @synthesize nConnections  = _nConnections;
 // Because sendreceiveStream is declared as an array, you have to use a custom getter.  
@@ -65,7 +88,7 @@
 }
 
 
-#pragma mark * Status management
+#pragma mark - Status management
 
 // These methods are used by the core transfer code to update the UI.
 
@@ -80,22 +103,22 @@
 	
 	// Enable proximity sensor (public as of 3.0)
 	[UIDevice currentDevice].proximityMonitoringEnabled = YES;
-	
+    
     // Enable backgrounding
     // Set AVAudioSession
     NSError *sessionError = nil;
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionMixWithOthers error:&sessionError];
-#else
-    NSLog(@"Warning: iOS 6 is required for background audio hiding.");
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&sessionError];
-#endif
+    #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionMixWithOthers error:&sessionError];
+    #else
+        NSLog(@"Warning: iOS 6 is required for background audio hiding.");
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&sessionError];
+    #endif
     AVPlayerItem *item = [AVPlayerItem playerItemWithURL:[[NSBundle mainBundle] URLForResource:@"silence" withExtension:@"mp3"]];
 
     [self setBgPlayer:[[AVPlayer alloc] initWithPlayerItem:item]];
     [[self bgPlayer] setActionAtItemEnd:AVPlayerActionAtItemEndNone];
     [[self bgPlayer] play];
-
+	
 	self.currentAddress = [UIDevice localWiFiIPAddress];
 	self.currentPort = port;
 	self.currentStatusText = NSLocalizedString(@"Started", nil);	
@@ -121,10 +144,10 @@
 	
 	// Disable proximity sensor (public as of 3.0)
 	[UIDevice currentDevice].proximityMonitoringEnabled = NO;
-	
+    
     // Disable backgrounding
     [self setBgPlayer:nil];
-
+	
 	self.currentAddress = @"";
 	self.currentPort = 0;
 	self.currentStatusText = reason;
@@ -208,7 +231,7 @@
 	
 	[self refreshProxyTable];
 }
-#pragma mark * Core transfer code
+#pragma mark - Core transfer code
 
 // This is the code that actually does the networking.
 
@@ -477,7 +500,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 }
 
 
-#pragma mark * Actions
+#pragma mark - Actions
 
 - (IBAction)startOrStopAction:(id)sender
 {
@@ -518,7 +541,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 }
 
 
-#pragma mark * View controller boilerplate
+#pragma mark - View controller boilerplate
 
 @synthesize currentPort;
 @synthesize currentAddress;
@@ -549,9 +572,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-	[UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
-    
+        
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(applicationDidEnterForeground:)
 												 name:UIApplicationWillEnterForegroundNotification
@@ -563,6 +584,14 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 	[self.startOrStopButton setupAsGreenButton];
     
     self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    
+    self.title = @"Tethering";
+    
+    // Add info button
+    UIButton *infoLightButton = [UIButton buttonWithType:UIButtonTypeInfoDark];
+    infoLightButton.tintColor = [UIColor whiteColor];
+    [infoLightButton addTarget:self action:@selector(showInfo) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:infoLightButton];
 }
 
 
@@ -576,6 +605,166 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 - (void)dealloc
 {
     [self _stopServer:nil];
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+
+#pragma mark - Custom Methods
+
+- (void)showInfo {
+    NSString *URLString = @"https://github.com/rickyzhang82/tethering/wiki";
+    if ([SFSafariViewController class] != nil) {
+        // Use SFSafariViewController
+        SFSafariViewController *sfvc = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:URLString]];
+        sfvc.delegate = self;
+        sfvc.view.tintColor = [UIColor colorWithRed:0.082 green:0.492 blue:0.980 alpha:1.0];
+        [self presentViewController:sfvc animated:YES completion:nil];
+    } else {
+        // Open in Mobile Safari
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:URLString]];
+    }
+}
+
+#pragma mark - SFSafariViewController delegate methods
+-(void)safariViewController:(SFSafariViewController *)controller didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
+    // Load finished
+}
+
+-(void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+    // Done button pressed
+}
+
+#pragma mark - Table View Data Source Methods
+
+- (NSString *)tableView:(UITableView *)table titleForHeaderInSection:(NSInteger)section
+{
+#pragma unused(table)
+    /*
+     if (section == SocksProxyTableSectionConnections)
+     return @"Connections";
+     */
+    return nil;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)table
+{
+#pragma unused(table)
+    
+    return SocksProxyTableSectionCount;
+}
+
+- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
+{
+#pragma unused(table)
+    
+    switch (section)
+    {
+        case SocksProxyTableSectionGeneral:
+            return 2;
+            
+        case SocksProxyTableSectionConnections:
+            return 5;
+    }
+    
+    return 0;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    //cell.selected = NO;
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)table cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+#pragma unused(table)
+    static NSString * cellId = @"cellid";
+    
+    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2
+                                                   reuseIdentifier:cellId];
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    cell.accessoryView = nil;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    NSString *text = nil; // the caption
+    NSString *detailText = nil;
+    
+    switch (indexPath.section)
+    {
+        case (SocksProxyTableSectionGeneral):
+            switch (indexPath.row)
+        {
+            case (SocksProxyTableRowAddress):
+            {
+                text = @"address";
+                detailText = self.currentAddress;
+                if (self.currentAddress.length == 0)
+                    detailText = @"n/a";
+            }
+                break;
+                
+            case (SocksProxyTableRowPort):
+            {
+                text = @"port";
+                if (self.currentPort)
+                    detailText = [@(self.currentPort) stringValue];
+                else
+                    detailText = @"n/a";
+            }
+                break;
+        }
+            break;
+            
+        case (SocksProxyTableSectionConnections):
+            switch (indexPath.row)
+        {
+            case (SocksProxyTableRowConnectionsOpen):
+            {
+                text = @"open";
+                detailText = [@(self.currentOpenConnections) stringValue];
+            }
+                break;
+                
+            case (SocksProxyTableRowConnections):
+            {
+                text = @"count";
+                detailText = [@(self.currentConnectionCount) stringValue];
+            }
+                break;
+                
+            case (SocksProxyTableRowDownload):
+            {
+                text = @"down";
+                detailText = [@(self.downloadData) stringValue];
+            }
+                break;
+                
+            case (SocksProxyTableRowUpload):
+            {
+                text = @"up";
+                detailText = [@(self.uploadData) stringValue];
+            }
+                break;
+                
+            case (SocksProxyTableRowStatus):
+            {
+                text = @"status";
+                detailText = self.currentStatusText;
+            }
+                break;
+        }
+            break;
+    }
+    
+    // set the field label title
+    cell.textLabel.text = text;
+    
+    // set the cell text
+    cell.detailTextLabel.text = detailText;
+    
+    return cell;
 }
 
 
