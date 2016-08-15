@@ -12,6 +12,10 @@ Ricky
 
 Change log
 ------------------------------------------------
+Release V1.7
+* Add unlimited background. Feel free to close screen to save battery. Thanks @bsuh for his patch.
+* Finally, we have a pull request to change ugly UI to a new modern look. Thanks @rickybloomfield for his patch.
+
 Release V1.6
 * Fix problem when remote network is faster than local network. Thanks @optimoid and @bsuh for their patch and bug report.
 * Refactor socks proxy message debug log.

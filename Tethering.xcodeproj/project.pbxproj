@@ -290,7 +290,7 @@
 				LastUpgradeCheck = 0730;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = R26GJ8D22R;
+						DevelopmentTeam = L527N68YVE;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -371,7 +371,7 @@
 				INFOPLIST_FILE = Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				OTHER_CFLAGS = "-DDEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.rickybloomfield.Tethering;
+				PRODUCT_BUNDLE_IDENTIFIER = com.whoever.Tethering;
 				PRODUCT_NAME = Tethering;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -392,7 +392,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.rickybloomfield.Tethering;
+				PRODUCT_BUNDLE_IDENTIFIER = com.whoever.Tethering;
 				PRODUCT_NAME = Tethering;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
