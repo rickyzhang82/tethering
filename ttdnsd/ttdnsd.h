@@ -59,8 +59,6 @@ const int MAX_TCP_WRITE_TIME = 10;
 // Magic numbers
 const int RECV_BUF_SIZE = 1502;
 
-const int NOBODY = 65534;
-const int NOGROUP = 65534;
 const int DEFAULT_DNS_PORT = 53;
 const char DEFAULT_DNS_IP[]= "8.8.8.8";
 const int DEFAULT_BIND_PORT = 53;
