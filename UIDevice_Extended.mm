@@ -36,7 +36,7 @@ SCNetworkConnectionFlags connectionFlags;
 				NSString *name = @(cursor->ifa_name);
                 
                 NSPredicate * isMatchWIFIInterfaceName = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @"en\\d+"];
-				NSPredicate * isMatchHotspotInterfaceName = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @"bridge\\d+"];
+                NSPredicate * isMatchHotspotInterfaceName = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @"bridge\\d+"];
 
 				if ([isMatchWIFIInterfaceName evaluateWithObject:name] || [isMatchHotspotInterfaceName evaluateWithObject:name])  // Wi-Fi or Hotspot adapter
                 {
