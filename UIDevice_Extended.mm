@@ -36,8 +36,9 @@ SCNetworkConnectionFlags connectionFlags;
 				NSString *name = @(cursor->ifa_name);
                 
                 NSPredicate * isMatchWIFIInterfaceName = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @"en\\d+"];
+				NSPredicate * isMatchHotspotInterfaceName = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @"bridge\\d+"];
 
-				if ([isMatchWIFIInterfaceName evaluateWithObject:name])  // Wi-Fi adapter
+				if ([isMatchWIFIInterfaceName evaluateWithObject:name] || [isMatchHotspotInterfaceName evaluateWithObject:name])  // Wi-Fi or Hotspot adapter
                 {
 					wifiIPAddress = [NSString stringWithUTF8String:
                                      (inet_ntoa(((struct sockaddr_in *)cursor->ifa_addr)->sin_addr))];
