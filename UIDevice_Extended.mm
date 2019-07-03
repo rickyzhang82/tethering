@@ -18,7 +18,7 @@ SCNetworkConnectionFlags connectionFlags;
 @implementation UIDevice (Reachability)
 // Matt Brown's get WiFi IP addy solution
 // http://mattbsoftware.blogspot.com/2009/04/how-to-get-ip-address-of-iphone-os-v221.html
-+ (NSString *) localWiFiIPAddress
++ (NSString *) ipAddressWithPredicate:(NSPredicate *)predicate
 {
 	BOOL success;
     NSString * wifiIPAddress = nil;
@@ -34,12 +34,9 @@ SCNetworkConnectionFlags connectionFlags;
 			if (cursor->ifa_addr->sa_family == AF_INET && (cursor->ifa_flags & IFF_LOOPBACK) == 0) 
 			{
 				NSString *name = @(cursor->ifa_name);
-                
-                NSPredicate * isMatchWIFIInterfaceName = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @"en\\d+"];
-                NSPredicate * isMatchHotspotInterfaceName = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @"bridge\\d+"];
 
-				if ([isMatchWIFIInterfaceName evaluateWithObject:name] || [isMatchHotspotInterfaceName evaluateWithObject:name])  // Wi-Fi or Hotspot adapter
-                {
+				if ([predicate evaluateWithObject:name])
+				{
 					wifiIPAddress = [NSString stringWithUTF8String:
                                      (inet_ntoa(((struct sockaddr_in *)cursor->ifa_addr)->sin_addr))];
                     break;
@@ -49,7 +46,22 @@ SCNetworkConnectionFlags connectionFlags;
         
 		freeifaddrs(addrList);
 	}
-    
+	return wifiIPAddress;
+}
+
++ (NSString *) localWiFiIPAddress
+{
+    NSString * wifiIPAddress = nil;
+
+    NSPredicate * isMatchWIFIInterfaceName = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @"en\\d+"];
+    wifiIPAddress = [[self class] ipAddressWithPredicate:isMatchWIFIInterfaceName];
+
+    if (wifiIPAddress == NULL)
+    {
+        NSPredicate * isMatchHotspotInterfaceName = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @"bridge\\d+"];
+        wifiIPAddress = [[self class] ipAddressWithPredicate:isMatchHotspotInterfaceName];
+    }
+
     return wifiIPAddress;
 }
 
