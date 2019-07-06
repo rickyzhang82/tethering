@@ -98,11 +98,8 @@ typedef enum {
     assert( (port > 0) && (port < 65536) );
 
 	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-	
-	// Disable device sleep mode
-	[UIApplication sharedApplication].idleTimerDisabled = YES;
-	
-	// Enable proximity sensor (public as of 3.0)
+    
+    // Enable proximity sensor (public as of 3.0)
 	[UIDevice currentDevice].proximityMonitoringEnabled = YES;
     
     // Enable backgrounding
