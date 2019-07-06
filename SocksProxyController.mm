@@ -634,7 +634,9 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
         [self presentViewController:sfvc animated:YES completion:nil];
     } else {
         // Open in Mobile Safari
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:URLString]];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:URLString]
+                                           options:@{}
+                                 completionHandler:nil];
     }
 }
 
