@@ -31,13 +31,8 @@
 
 @interface SocksProxyController : UITableViewController <SocksProxyDelegate, NSNetServiceDelegate>
 {
-    UILabel *                   _portLabel;
-    UILabel *                   _addressLabel;
-    UILabel *                   _statusLabel;
-	UILabel *					_countOpenLabel;
-	UILabel *					_nConnectionsLabel;
     MOGlassButton *                  _startOrStopButton;
-    
+
     NSNetService *              _netService;
     CFSocketRef                 _listeningSocket;
 	
@@ -56,6 +51,7 @@
 }
 
 @property (nonatomic, copy) NSString *currentStatusText;
+@property (nonatomic, copy) NSString *httpAutoProxyURL;
 @property (nonatomic, assign) NSInteger currentPort;
 @property (nonatomic, copy) NSString *currentAddress;
 @property (nonatomic, assign) NSInteger currentOpenConnections;

@@ -37,7 +37,7 @@
 
 // Properties that don't need to be seen by the outside world.
 
-@property (nonatomic, readonly) BOOL                isStarted;
+@property (nonatomic, readonly) BOOL                isSocksProxyStarted;
 @property (nonatomic, strong)   NSNetService *      netService;
 @property (nonatomic, assign)   CFSocketRef         listeningSocket;
 @property (nonatomic, assign)   NSInteger			nConnections;
@@ -46,7 +46,7 @@
 
 // Forward declarations
 
-- (void)_stopServer:(NSString *)reason;
+- (void)_stopSocksProxyServer:(NSString *)reason;
 
 @end
 
@@ -65,6 +65,7 @@ typedef enum {
 typedef enum {
     SocksProxyTableRowAddress,
     SocksProxyTableRowPort,
+    SocksProxyTableHttpAutoProxyUrl,
     // connections section
     SocksProxyTableRowConnections = 0,
     SocksProxyTableRowConnectionsOpen,
@@ -92,7 +93,7 @@ typedef enum {
 
 // These methods are used by the core transfer code to update the UI.
 
-- (void)_serverDidStartOnPort:(int)port
+- (void)_sockProxyServerDidStartOnPort:(int)port
 {
     assert( (port > 0) && (port < 65536) );
 
@@ -149,6 +150,7 @@ typedef enum {
     [self setBgPlayer:nil];
 	
 	self.currentAddress = @"";
+    self.httpAutoProxyURL = @"";
 	self.currentPort = 0;
 	self.currentStatusText = reason;
     [self.startOrStopButton setTitle:NSLocalizedString(@"Start" , nil)
@@ -239,7 +241,7 @@ typedef enum {
 @synthesize listeningSocket = _listeningSocket;
 
 
-- (BOOL)isStarted
+- (BOOL)isSocksProxyStarted
 {
     return (self.netService != nil);
 }
@@ -347,11 +349,45 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     assert(sender == self.netService);
     #pragma unused(errorDict)
     
-    [self _stopServer:@"Registration failed"];
+    [self _stopServers:@"Registration failed"];
 }
 
+- (void)_startServers
+{
+    //start socks proxy server
+    [self _startSocksProxyServer];
+    //start DNS server
+    _DNSServer = DNSServer::getInstance();
+    const char * ipv4Addr = [currentAddress cStringUsingEncoding:NSASCIIStringEncoding];
+    _DNSServer->startDNSServer(0, ipv4Addr);
+    //start HTTP server that advertise socks.pac
+    _HTTPServer = [HTTPServer sharedHTTPServerWithSocksProxyPort:currentPort];
+    HTTPServerState currentHTTPServerState = [_HTTPServer state] ;
+    if (currentHTTPServerState == SERVER_STATE_IDLE ||
+        currentHTTPServerState == SERVER_STATE_STOPPING)
+        [_HTTPServer start];
+    
+    if ([_HTTPServer state] == SERVER_STATE_RUNNING &&
+        _DNSServer->getDNSServerState() == DNS_SERVER_STARTED &&
+        self.isSocksProxyStarted)
+        [self _serversDidStart];
+}
 
-- (void)_startServer
+- (void)_stopServers:(NSString *)reason
+{
+    [self _stopSocksProxyServer:reason];
+    _DNSServer = DNSServer::getInstance();
+    _DNSServer->stopDNSServer();
+    _HTTPServer = [HTTPServer sharedHTTPServerWithSocksProxyPort:currentPort];
+    [_HTTPServer stop];
+}
+
+- (void)_serversDidStart
+{
+    self.httpAutoProxyURL = [_HTTPServer getAutomaticHttpProxyUrl];
+}
+
+- (void)_startSocksProxyServer
 {
     BOOL        success;
     int         err;
@@ -449,9 +485,9 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     // for more info about this simplifying assumption.
 
     if (success) {
-        self.netService = [[NSNetService alloc] initWithDomain:@""
-                                                          type:@"_socks5._tcp."
-                                                          name:@"iPhone"
+        self.netService = [[NSNetService alloc] initWithDomain:@"local"
+                                                          type:@"_socks._tcp."
+                                                          name:@""
                                                           port:port];
         success = (self.netService != nil);
     }
@@ -467,9 +503,9 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     
     if ( success ) {
         assert(port != 0);
-        [self _serverDidStartOnPort:port];
+        [self _sockProxyServerDidStartOnPort:port];
     } else {
-        [self _stopServer:@"Start failed"];
+        [self _stopServers:@"Start failed"];
         if (fd != -1) {
             junk = close(fd);
             assert(junk == 0);
@@ -478,7 +514,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 }
 
 
-- (void)_stopServer:(NSString *)reason
+- (void)_stopSocksProxyServer:(NSString *)reason
 {
 	for (SocksProxy* asocksProxy in self.sendreceiveStream)
 	{
@@ -505,32 +541,16 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 - (IBAction)startOrStopAction:(id)sender
 {
     #pragma unused(sender)
-    if (self.isStarted) {
-        [self _stopServer:nil];
-        _DNSServer = DNSServer::getInstance();
-        _DNSServer->stopDNSServer();
-        _HTTPServer = [HTTPServer sharedHTTPServerWithSocksProxyPort:currentPort];
-        [_HTTPServer stop];
+    if (self.isSocksProxyStarted) {
+        [self _stopServers:nil];
     } else {
         
         if(self.currentAddress == nil)
             self.currentAddress = [UIDevice localWiFiIPAddress];
         
         if(currentAddress != nil){
-            //start socks proxy server
-            [self _startServer];
-            //start DNS server
-            _DNSServer = DNSServer::getInstance();
-            const char * ipv4Addr = [currentAddress cStringUsingEncoding:NSASCIIStringEncoding];
-            _DNSServer->startDNSServer(0, ipv4Addr);
-            //start HTTP server that advertise socks.pac
-            _HTTPServer = [HTTPServer sharedHTTPServerWithSocksProxyPort:currentPort];
-            HTTPServerState currentHTTPServerState = [_HTTPServer state] ;
-            if (currentHTTPServerState == SERVER_STATE_IDLE ||
-                currentHTTPServerState == SERVER_STATE_STOPPING)
-                [_HTTPServer start];
+            [self _startServers];
         }else{
-            
             [self _updateStatus:@"Please connect to wifi."];
             LOG_NETWORK_SOCKS(NSLOGGER_LEVEL_WARNNING, @"No local IP can be retrieved. iPhone may not connect to wifi network\n");
         }
@@ -545,6 +565,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 
 @synthesize currentPort;
 @synthesize currentAddress;
+@synthesize httpAutoProxyURL;
 @synthesize currentOpenConnections;
 @synthesize currentConnectionCount;
 @synthesize downloadData, uploadData;
@@ -604,7 +625,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 
 - (void)dealloc
 {
-    [self _stopServer:nil];
+    [self _stopServers:nil];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -662,7 +683,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     switch (section)
     {
         case SocksProxyTableSectionGeneral:
-            return 2;
+            return 3;
             
         case SocksProxyTableSectionConnections:
             return 5;
@@ -698,7 +719,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
         {
             case (SocksProxyTableRowAddress):
             {
-                text = @"address";
+                text = @"socks address";
                 detailText = self.currentAddress;
                 if (self.currentAddress.length == 0)
                     detailText = @"n/a";
@@ -707,13 +728,25 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
                 
             case (SocksProxyTableRowPort):
             {
-                text = @"port";
+                text = @"socks port";
                 if (self.currentPort)
                     detailText = [@(self.currentPort) stringValue];
                 else
                     detailText = @"n/a";
             }
                 break;
+            case (SocksProxyTableHttpAutoProxyUrl):
+            {
+                text = @"automatic proxy";
+                detailText = self.httpAutoProxyURL;
+                if (self.httpAutoProxyURL.length == 0)
+                    detailText = @"n/a";
+                cell.textLabel.numberOfLines = 0;
+                cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+                cell.detailTextLabel.numberOfLines = 0;
+                cell.detailTextLabel.lineBreakMode = NSLineBreakByCharWrapping;
+            }
+            break;
         }
             break;
             
@@ -752,6 +785,8 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
             {
                 text = @"status";
                 detailText = self.currentStatusText;
+                cell.detailTextLabel.numberOfLines = 0;
+                cell.detailTextLabel.lineBreakMode = NSLineBreakByCharWrapping;
             }
                 break;
         }

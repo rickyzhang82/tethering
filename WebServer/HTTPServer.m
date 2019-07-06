@@ -101,7 +101,7 @@ NSString * const HTTPServerNotificationStateChanged = @"ServerNotificationStateC
 
 -(void)startBonjourServices
 {
-    netService = [[NSNetService alloc] initWithDomain:@"" type:@"_tetheringhttpserver._tcp." name:@"" port:self.httpServerPort];
+    netService = [[NSNetService alloc] initWithDomain:@"local" type:@"_http._tcp." name:@"" port:self.httpServerPort];
     netService.delegate = self;
     [netService publish];
 }
@@ -415,6 +415,37 @@ NSString * const HTTPServerNotificationStateChanged = @"ServerNotificationStateC
 - (UInt32)httpServerPort
 {
 	return HTTP_SERVER_PORT;
+}
+
+- (NSString *)getHostName
+{
+    if([self state] == SERVER_STATE_RUNNING)
+    {
+        char baseHostName[256];
+        int success = gethostname(baseHostName, 255);
+        if (success != 0) return nil;
+        baseHostName[255] = '\0';
+        
+#if !TARGET_IPHONE_SIMULATOR
+        return [NSString stringWithFormat:@"%s.local", baseHostName];
+#else
+        return [NSString stringWithFormat:@"%s", baseHostName];
+#endif
+    }
+    
+    return nil;
+}
+
+- (NSString *)getAutomaticHttpProxyUrl
+{
+    if([self state] == SERVER_STATE_RUNNING)
+    {
+        NSString *url = [NSString stringWithFormat:@"http://%@:%u/socks.pac",
+                         [self getHostName], [self httpServerPort]];
+        return url;
+    }
+    
+    return nil;
 }
 
 @end

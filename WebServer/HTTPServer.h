@@ -51,6 +51,8 @@ static const int HTTP_SERVER_PORT = 8080;
 
 - (void)start;
 - (void)stop;
+- (NSString *)getHostName;
+- (NSString *)getAutomaticHttpProxyUrl;
 
 - (void)closeHandler:(HTTPResponseHandler *)aHandler;
 
