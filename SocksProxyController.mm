@@ -178,11 +178,7 @@ typedef enum {
 	
 	NSInteger countOpen = [self countOpen];
 	self.currentOpenConnections = countOpen;
-	
-	if (!countOpen) {
-		[[AppDelegate sharedAppDelegate] didStartNetworking];
-	}
-	
+		
 	[self refreshProxyTable];
 }
 
@@ -206,9 +202,6 @@ typedef enum {
 	self.currentStatusText = statusString;
 	NSInteger countOpen = [self countOpen];
 	self.currentOpenConnections = countOpen;
-	if (!countOpen) {
-		[[AppDelegate sharedAppDelegate] didStopNetworking];		
-	}
 
 	[self refreshProxyTable];
 	

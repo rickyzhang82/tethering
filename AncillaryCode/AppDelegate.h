@@ -60,19 +60,10 @@
 	UIWindow *              _window;
 	UITabBarController *    _tabs;
 	SocksProxyController *		_viewController;
-    
-    NSInteger _networkingCount;
-	NSTimer	*_bgTimer;
-	BOOL _warningTimeAlertShown;
 }
 
 @property (nonatomic, strong) IBOutlet UIWindow *           window;
 @property (nonatomic, strong) IBOutlet UITabBarController * tabs;
 @property (nonatomic, strong) IBOutlet SocksProxyController * viewController;
-
-
-+ (AppDelegate *)sharedAppDelegate;
-- (void)didStartNetworking;
-- (void)didStopNetworking;
 
 @end

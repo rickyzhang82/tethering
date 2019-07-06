@@ -54,30 +54,11 @@
 #import "AppDelegate.h"
 #import "SocksProxyController.h"
 
-/// background timer task constants
-// converts mins to seconds
-#define MINS(N) N * 60
-// number of minutes until the critical or warning UIAlert is displayed
-#define PROXY_BG_TIME_WARNING_MINS 1
-// interval of seconds to poll/check the time remaining for the background task
-#define PROXY_BG_TIME_CHECK_SECS 5
-
-@interface AppDelegate ()
-@property (nonatomic, assign) NSInteger networkingCount;
-@end
-
 @implementation AppDelegate
-
-+ (AppDelegate *)sharedAppDelegate
-{
-    return (AppDelegate *) [UIApplication sharedApplication].delegate;
-}
 
 @synthesize window = _window;
 @synthesize tabs = _tabs;
 @synthesize viewController = _viewController;
-
-@synthesize networkingCount = _networkingCount;
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application
 {
@@ -91,103 +72,5 @@
     [[UINavigationBar appearance] setTitleTextAttributes:attributes];
     
     [self.window makeKeyAndVisible];
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application
-{
-    #pragma unused(application)
-	
-	// Reenable device sleep mode on exit
-	[UIApplication sharedApplication].idleTimerDisabled = NO;
-	
-    [[NSUserDefaults standardUserDefaults] setInteger:self.tabs.selectedIndex forKey:@"currentTab"];
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-    LOG_GENERAL(NSLOGGER_LEVEL_TRACE, @"Entered into backgrond mode.");
-
-	// if no networking, then ignore the bg operations
-
-	_warningTimeAlertShown = NO;
-	_bgTimer = [NSTimer scheduledTimerWithTimeInterval:PROXY_BG_TIME_CHECK_SECS
-												target:self
-											  selector:@selector(checkBackgroundTimeRemaining:)
-											  userInfo:nil
-											   repeats:YES];
-    __block UIBackgroundTaskIdentifier ident;
-	
-    ident = [application beginBackgroundTaskWithExpirationHandler: ^{
-        LOG_GENERAL(NSLOGGER_LEVEL_TRACE, @"Background task expiring!");
-		
-        [application endBackgroundTask: ident];
-    }];
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-	application.applicationIconBadgeNumber = 0;
-	[application cancelAllLocalNotifications];
-	[_bgTimer invalidate];
-}
-
-- (void)didStartNetworking
-{
-    self.networkingCount += 1;
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-}
-
-- (void)didStopNetworking
-{
-	if (self.networkingCount > 0)
-		self.networkingCount -= 1;
-	
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = (self.networkingCount > 0);
-}
-
-- (void)checkBackgroundTimeRemaining:(NSTimer *)timer
-{
-	// if no networking, then ignore the bg operations
-	if ([UIApplication sharedApplication].networkActivityIndicatorVisible == FALSE)
-		return;
-	
-	NSTimeInterval timeLeft = [UIApplication sharedApplication].backgroundTimeRemaining;
-	
-	LOG_GENERAL(NSLOGGER_LEVEL_TRACE, @"Background time remaining: %.0f seconds (~%d mins)", timeLeft, (int)timeLeft / 60);
-
-	UILocalNotification *badge = nil;
-	badge = [UILocalNotification new];
-	[badge setApplicationIconBadgeNumber:(int)timeLeft/60];
-	[[UIApplication sharedApplication] presentLocalNotificationNow:badge];
-	if (timeLeft < MINS(1))
-	{
-		[UIApplication sharedApplication].applicationIconBadgeNumber = 0;
-	}
-	
-	UILocalNotification *notif = nil;
-
-	// check the critical and warning thresholds
-	if (timeLeft < MINS(PROXY_BG_TIME_WARNING_MINS)
-		&& !_warningTimeAlertShown)
-	{
-		NSString *msg = NSLocalizedString(@"Your connection will be closed immediately", nil);
-        
-        LOG_GENERAL(NSLOGGER_LEVEL_TRACE, msg);
-		
-		// build the UIAlert to be displayed
-		notif = [UILocalNotification new];
-		notif.alertBody = [NSString stringWithFormat:msg, PROXY_BG_TIME_WARNING_MINS];
-		notif.soundName = UILocalNotificationDefaultSoundName;
-		
-		_warningTimeAlertShown = YES;
-	}
- 
-	if (notif) 
-	{		
-		notif.alertAction = NSLocalizedString(@"Renew", nil);
-		
-		// show the alert immediately
-		[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
-	}
 }
 @end
