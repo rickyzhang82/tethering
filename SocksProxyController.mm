@@ -695,11 +695,22 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 #pragma unused(table)
     static NSString * cellId = @"cellid";
     
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2
+    UITableViewCellStyle cellStyle = UITableViewCellStyleValue2;
+    if (indexPath.section == SocksProxyTableSectionGeneral)
+    {
+        cellStyle = UITableViewCellStyleSubtitle;
+    }
+    
+    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:cellStyle
                                                    reuseIdentifier:cellId];
     cell.accessoryType = UITableViewCellAccessoryNone;
     cell.accessoryView = nil;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    if (indexPath.section == SocksProxyTableSectionGeneral)
+    {
+        cell.textLabel.textColor = [UIColor colorWithRed:0.082 green:0.492 blue:0.980 alpha:1.0];
+    }
     
     NSString *text = nil; // the caption
     NSString *detailText = nil;
@@ -733,10 +744,6 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
                 detailText = self.httpAutoProxyURL;
                 if (self.httpAutoProxyURL.length == 0)
                     detailText = @"n/a";
-                cell.textLabel.numberOfLines = 0;
-                cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-                cell.detailTextLabel.numberOfLines = 0;
-                cell.detailTextLabel.lineBreakMode = NSLineBreakByCharWrapping;
             }
             break;
         }
