@@ -19,7 +19,6 @@
 		49847E0012665213001645B5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49847DFF12665213001645B5 /* QuartzCore.framework */; };
 		54122F1B10D88D4900836166 /* SocksProxyController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 54122F1A10D88D4900836166 /* SocksProxyController.mm */; };
 		542A644F1241261A003497CD /* UIDevice_Extended.mm in Sources */ = {isa = PBXBuildFile; fileRef = 542A644D1241261A003497CD /* UIDevice_Extended.mm */; };
-		546335FE10DAB3BE00D3A3AE /* README in Resources */ = {isa = PBXBuildFile; fileRef = 546335FD10DAB3BE00D3A3AE /* README */; };
 		5463365810DABA8E00D3A3AE /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5463365410DABA8E00D3A3AE /* AppDelegate.mm */; };
 		5463365A10DABA8E00D3A3AE /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5463365710DABA8E00D3A3AE /* main.mm */; };
 		54A0F9C6124127CC008878EF /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54A0F9C5124127CC008878EF /* SystemConfiguration.framework */; };
@@ -56,7 +55,6 @@
 		54122F1F10D88DBE00836166 /* SocksProxyController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxyController.h; sourceTree = "<group>"; };
 		542A644C1241261A003497CD /* UIDevice_Extended.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDevice_Extended.h; sourceTree = "<group>"; };
 		542A644D1241261A003497CD /* UIDevice_Extended.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UIDevice_Extended.mm; sourceTree = "<group>"; };
-		546335FD10DAB3BE00D3A3AE /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		5463365310DABA8E00D3A3AE /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = AncillaryCode/AppDelegate.h; sourceTree = "<group>"; };
 		5463365410DABA8E00D3A3AE /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = AncillaryCode/AppDelegate.mm; sourceTree = "<group>"; };
 		5463365710DABA8E00D3A3AE /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = AncillaryCode/main.mm; sourceTree = "<group>"; };
@@ -120,7 +118,6 @@
 				E4D543FE0FAB45DC00630176 /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				546335FD10DAB3BE00D3A3AE /* README */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -327,7 +324,6 @@
 				25EE9D561D601F8B00774FFF /* Images.xcassets in Resources */,
 				9C3FB27A183FEB97001B81FA /* Main.storyboard in Resources */,
 				E4D5443B0FAB4B1600630176 /* Info.html in Resources */,
-				546335FE10DAB3BE00D3A3AE /* README in Resources */,
 				905DD2691C896C69000EA271 /* silence.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
