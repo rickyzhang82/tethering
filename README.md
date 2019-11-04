@@ -35,6 +35,20 @@ Apple require you to reinstall the apps in development every 2 weeks - just buil
 
 
 
+
+
+## Test the proxy server is working
+
+curl example:  
+
+`curl -s --socks5-hostname 169.254.190.190:3128 ifconfig.co`   - this should return a public IP of your cell provider. 
+
+
+
+
+
+&nbsp; 
+
 ## Original readme
 
 This iOS App was forked from [an abandoned project](https://code.google.com/p/iphone-socks-proxy/). The current goal is to make this iOS App great again. Please read [my user guide](https://github.com/rickyzhang82/tethering/wiki).
