@@ -10,6 +10,7 @@ Open the `Tethering.xcodeproj` file in Xcode and make the following changes:
 
  - In the Projects/Targets menu, set the `Bundle Identifer` to something unique. 
  - In the 'Signing and Capabilities' menu, set the `Team` to your Apple ID/account.
+ - Connect your device and hit the Build/Run button to install the app
 
 &nbsp;
 
