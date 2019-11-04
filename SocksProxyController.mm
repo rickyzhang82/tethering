@@ -603,6 +603,18 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     infoLightButton.tintColor = [UIColor whiteColor];
     [infoLightButton addTarget:self action:@selector(showInfo) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:infoLightButton];
+    
+    // Play background audio constantly - a hack to allow the proxy to run in the background forever
+    {
+        NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"silence" ofType:@"mp3"]];
+        AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+        [[AVAudioSession sharedInstance] setActive: YES error: nil];
+        [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+        audioPlayer.numberOfLoops = -1;
+        [audioPlayer play];
+        [super viewDidLoad];
+    }
 }
 
 
