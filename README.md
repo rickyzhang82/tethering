@@ -33,7 +33,7 @@ You can also use the automatic proxy URL when available: `http://your-iphone-nam
 
 Apple require you to reinstall the apps in development every 2 weeks - just build/run the app again via Xcode to refresh.
 
-
+Forked from https://github.com/rickyzhang82/tethering, I've added logic to allow the proxy server to run in background continuously 
 
 
 
