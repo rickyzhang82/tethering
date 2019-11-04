@@ -625,7 +625,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 #pragma mark - Custom Methods
 
 - (void)showInfo {
-    NSString *URLString = @"https://github.com/rickyzhang82/tethering/wiki";
+    NSString *URLString = @"https://github.com/richstokes/tethering";
     if ([SFSafariViewController class] != nil) {
         // Use SFSafariViewController
         SFSafariViewController *sfvc = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:URLString]];
@@ -722,7 +722,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
         {
             case (SocksProxyTableRowAddress):
             {
-                text = @"socks address";
+                text = @"SOCKS address";
                 detailText = self.currentAddress;
                 if (self.currentAddress.length == 0)
                     detailText = @"n/a";
@@ -731,7 +731,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
                 
             case (SocksProxyTableRowPort):
             {
-                text = @"socks port";
+                text = @"SOCKS port";
                 if (self.currentPort)
                     detailText = [@(self.currentPort) stringValue];
                 else
@@ -740,7 +740,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
                 break;
             case (SocksProxyTableHttpAutoProxyUrl):
             {
-                text = @"automatic proxy";
+                text = @"Automatic proxy";
                 detailText = self.httpAutoProxyURL;
                 if (self.httpAutoProxyURL.length == 0)
                     detailText = @"n/a";

@@ -1,4 +1,6 @@
-This app runs a SOCKS5 proxy server on your iOS device (iPhone, iPad). This allows you to tether to your phone as a hotspot, and bypass carrier restrictions. 
+This app runs a SOCKS5 proxy server (with DNS) on your iOS device (iPhone, iPad). This allows you to tether to your phone as a hotspot, and bypass carrier restrictions.
+
+&nbsp; 
 
 
 ## Installing
@@ -9,12 +11,14 @@ Open the `Tethering.xcodeproj` file in Xcode and make the following changes:
  - In the Projects/Targets menu, set the `Bundle Identifer` to something unique. 
  - In the 'Signing and Capabilities' menu, set the `Team` to your Apple ID/account.
 
+&nbsp;
+
 
 ## Running
 
 1. On your computer setup an Adhoc wifi network
 2. Connect your iPhone/iPad to this Adhoc network
-3. Launch the tethering app
+3. Launch the tethering app on your mobile device
 4. Hit `Start` in the app 
 5. Configure your browser/application to use the SOCKS IP address and port as listed in the app. Use the `proxy DNS when using SOCKS` option
 
