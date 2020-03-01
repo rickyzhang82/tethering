@@ -1,6 +1,6 @@
 This iOS App was forked from [an abandoned project](https://code.google.com/p/iphone-socks-proxy/). The current goal is to make this iOS App great again. Please read [my user guide](https://github.com/rickyzhang82/tethering/wiki).
 
-If you like this App, please visit [UNICEF tap project website](http://tap.unicefusa.org/) and make a donation to the kids who are in desperate need of clean water supply.
+If you like this App, please visit [American Red Cross website](https://www.redcross.org/) and make a donation to your local Red Cross chapter.
 
 Thanks for your support.
 
