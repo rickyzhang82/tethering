@@ -2,4 +2,4 @@ osx_image: xcode12.2
 language: objective-c
 
 script:
-    - xcodebuild -project Tethering.xcodeproj  CODE_SIGNING_REQUIRED=NO
+    - xcodebuild [DEFAULT_OPTIONS] CODE_SIGNING_REQUIRED=NO
