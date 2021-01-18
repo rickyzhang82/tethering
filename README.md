@@ -8,7 +8,12 @@ Ricky
 
 Change log
 
----
+----
+
+Release V1.8
+* Added a request to access local wifi network. Please enable it in your privacy setting.
+* Added infos of Bonjour services for socks5, http PAC files, NSLogger.
+
 Release V1.7
 * Add unlimited background. Feel free to close screen to save battery. Thanks @bsuh for his patch.
 * Finally, we have a pull request to change ugly UI to a new modern look. Thanks @rickybloomfield for his patch.
