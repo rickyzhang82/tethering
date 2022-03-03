@@ -1,6 +1,12 @@
 This iOS App was forked from [an abandoned project](https://code.google.com/p/iphone-socks-proxy/). The current goal is to make this iOS App great again. Please read [my user guide](https://github.com/rickyzhang82/tethering/wiki).
 
-If you like this App, please visit [American Red Cross website](https://www.redcross.org/) and make a donation to your local Red Cross chapter.
+EMERGENCY
+=========
+
+Please consider making your donation to the National Bank of Ukraine. The fundraiser [National Bank of Ukraine or NBU](https://en.wikipedia.org/wiki/National_Bank_of_Ukraine) is the central bank of Ukraine. You could help freedom fighters and Ukrainian civilians in humanitarian crisis:
+
+- [Funds for Ukraine’s Armed Forces](https://bank.gov.ua/en/news/all/natsionalniy-bank-vidkriv-spetsrahunok-dlya-zboru-koshtiv-na-potrebi-armiyi)
+- [Funds for Humanitarian Assistance to Ukrainians Affected by Russia’s Aggression](https://bank.gov.ua/en/news/all/natsionalniy-bank-vidkriv-rahunok-dlya-gumanitarnoyi-dopomogi-ukrayintsyam-postrajdalim-vid-rosiyskoyi-agresiyi)
 
 Thanks for your support.
 
