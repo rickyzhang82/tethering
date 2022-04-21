@@ -1,14 +1,18 @@
 This iOS App was forked from [an abandoned project](https://code.google.com/p/iphone-socks-proxy/). The current goal is to make this iOS App great again. Please read [my user guide](https://github.com/rickyzhang82/tethering/wiki).
 
-EMERGENCY
-=========
+Protecting the World against the tyranny
+========================================
 
 Please consider making your donation to the National Bank of Ukraine. The fundraiser [National Bank of Ukraine or NBU](https://en.wikipedia.org/wiki/National_Bank_of_Ukraine) is the central bank of Ukraine. You could help freedom fighters and Ukrainian civilians in humanitarian crisis:
 
 - [Funds for Ukraine’s Armed Forces](https://bank.gov.ua/en/news/all/natsionalniy-bank-vidkriv-spetsrahunok-dlya-zboru-koshtiv-na-potrebi-armiyi)
 - [Funds for Humanitarian Assistance to Ukrainians Affected by Russia’s Aggression](https://bank.gov.ua/en/news/all/natsionalniy-bank-vidkriv-rahunok-dlya-gumanitarnoyi-dopomogi-ukrayintsyam-postrajdalim-vid-rosiyskoyi-agresiyi)
 
-Thanks for your support.
+If you are against funding bombs and arms, you could also donate to [Come Back Alive Charity](https://www.comebackalive.in.ua) which helps the Ukrainian armed forces with defense including medical assistance and rehabilitation. The organization is transparent with the donation and its spending.
+
+- [Come Back Alive Charity](https://www.comebackalive.in.ua/donate)
+
+Thank you for your support.
 
 Ricky
 
