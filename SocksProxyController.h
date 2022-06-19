@@ -31,13 +31,13 @@
 
 @interface SocksProxyController : UITableViewController <SocksProxyDelegate, NSNetServiceDelegate>
 {
-    MOGlassButton *                  _startOrStopButton;
+    MOGlassButton *         _startOrStopButton;
 
-    NSNetService *              _netService;
-    CFSocketRef                 _listeningSocket;
+    NSNetService *          _netService;
+    CFSocketRef             _listeningSocket;
 	
 	NSInteger				_nConnections;
-	IBOutlet UITableView * proxyTableView;
+	IBOutlet UITableView *  proxyTableView;
 	
 @private
 	NSString *currentStatusText;

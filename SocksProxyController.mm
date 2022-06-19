@@ -326,20 +326,17 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 
 - (void)netService:(NSNetService *)sender didNotPublish:(NSDictionary *)errorDict
     // A NSNetService delegate callback that's called if our Bonjour registration 
-    // fails.  We respond by shutting down the server.
+    // fails.
     //
-    // This is another of the big simplifying assumptions in this sample. 
-    // A real server would use the real name of the device for registrations, 
-    // and handle automatically renaming the service on conflicts.  A real 
-    // client would allow the user to browse for services.  To simplify things 
-    // we just hard-wire the service name in the client and, in the server, fail 
-    // if there's a service name conflict.
+    // We only show the error in the status bar and output to the log.
 {
     #pragma unused(sender)
     assert(sender == self.netService);
-    #pragma unused(errorDict)
     
-    [self _stopServers:@"Registration failed"];
+    NSString *msg = [NSString stringWithFormat:@"sock Bonjour registration failed: error code %@",
+                     errorDict[NSNetServicesErrorCode]];
+    [self _updateStatus:msg];
+    LOG_NETWORK_HTTP(NSLOGGER_LEVEL_ERROR, @"%@", msg);
 }
 
 - (void)_startServers
