@@ -29,7 +29,7 @@
 		9C4CAB051AD73ABB0025CFE1 /* PacFileResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C4CAB001AD73ABB0025CFE1 /* PacFileResponse.m */; };
 		9C4CAB061AD73ABB0025CFE1 /* HTTPResponseHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C4CAB021AD73ABB0025CFE1 /* HTTPResponseHandler.m */; };
 		9C4CAB071AD73ABB0025CFE1 /* HTTPServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C4CAB041AD73ABB0025CFE1 /* HTTPServer.m */; };
-		9C95E98618393629004559EB /* LoggerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C95E98418393629004559EB /* LoggerClient.m */; };
+		9C95E98618393629004559EB /* LoggerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C95E98418393629004559EB /* LoggerClient.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		E40F66010FB1E38600D92710 /* SocksProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = E40F65FF0FB1E38600D92710 /* SocksProxy.mm */; };
 		E40F66BA0FB3029A00D92710 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E40F66B90FB3029A00D92710 /* CFNetwork.framework */; };
 		E4D5443B0FAB4B1600630176 /* Info.html in Resources */ = {isa = PBXBuildFile; fileRef = E4D5443A0FAB4B1600630176 /* Info.html */; };
