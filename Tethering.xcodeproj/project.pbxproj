@@ -62,6 +62,9 @@
 		905DD2681C896C69000EA271 /* silence.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = silence.mp3; sourceTree = "<group>"; };
 		90F2B7111C5B3F5000CFB28B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		9C182A351828295F00F3F950 /* ttdnsd_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ttdnsd_platform.h; path = ttdnsd/ttdnsd_platform.h; sourceTree = "<group>"; };
+		9C198A7D2E5BE6B3003D12A6 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = SOURCE_ROOT; };
+		9C198A7E2E5BE6D7003D12A6 /* COPYING.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = COPYING.txt; sourceTree = SOURCE_ROOT; };
+		9C198A7F2E5BE6D7003D12A6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		9C310C041826EF0000299F00 /* ttdnsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ttdnsd.h; path = ttdnsd/ttdnsd.h; sourceTree = "<group>"; };
 		9C310C051826EF0000299F00 /* ttdnsd.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ttdnsd.mm; path = ttdnsd/ttdnsd.mm; sourceTree = "<group>"; };
 		9C3FB279183FEB97001B81FA /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
@@ -113,6 +116,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				9C198A7C2E5BE5F4003D12A6 /* Docs */,
 				9C1900741AD729A00022F53D /* Classes */,
 				54074CF1124126F10036116E /* Other Sources */,
 				E4D543FE0FAB45DC00630176 /* Resources */,
@@ -208,6 +212,16 @@
 				9C95E9821839353D004559EB /* NSLogger */,
 			);
 			name = Utility;
+			sourceTree = "<group>";
+		};
+		9C198A7C2E5BE5F4003D12A6 /* Docs */ = {
+			isa = PBXGroup;
+			children = (
+				9C198A7E2E5BE6D7003D12A6 /* COPYING.txt */,
+				9C198A7F2E5BE6D7003D12A6 /* README.md */,
+				9C198A7D2E5BE6B3003D12A6 /* CLAUDE.md */,
+			);
+			path = Docs;
 			sourceTree = "<group>";
 		};
 		9C310C031826EEE900299F00 /* DNSServer */ = {
